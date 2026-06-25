@@ -26,6 +26,16 @@ npm run lint
 npm run build
 ```
 
+## Documentação
+
+- [Instruções para agentes](AGENTS.md)
+- [Produto](docs/PRODUCT.md)
+- [Roadmap](docs/ROADMAP.md)
+- [Contexto técnico](docs/TECHNICAL_CONTEXT.md)
+- [Decisões](docs/DECISIONS.md)
+- [Histórico de prompts](docs/PROMPTS.md)
+- [Testes e validação](docs/TESTING.md)
+
 ## Próximos passos planejados
 
 - Integrar geração real com OpenAI API.
