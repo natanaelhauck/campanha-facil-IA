@@ -9,6 +9,8 @@ import { Select } from "@/components/Select";
 import { Textarea } from "@/components/Textarea";
 import type { CampaignFormData } from "@/types/campaign";
 
+const campaignStorageKey = "campaign-form-data";
+
 const initialForm: CampaignFormData = {
   businessName: "",
   businessType: "",
@@ -32,7 +34,7 @@ export default function CreateCampaignPage() {
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    localStorage.setItem("campaign-form", JSON.stringify(form));
+    localStorage.setItem(campaignStorageKey, JSON.stringify(form));
     router.push("/resultado");
   }
 
