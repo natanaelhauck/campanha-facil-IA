@@ -6,7 +6,7 @@ export function Header() {
     <header className="border-b border-stone-200 bg-white/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
         <Link href="/" className="text-base font-bold text-stone-950">
-          Campanha Facil IA
+          Campanha Fácil IA
         </Link>
         <nav className="flex items-center gap-3">
           <Link
@@ -16,7 +16,7 @@ export function Header() {
             Criar campanha
           </Link>
           <Button href="/criar-campanha" className="px-4 py-2">
-            Comecar
+            Começar
           </Button>
         </nav>
       </div>

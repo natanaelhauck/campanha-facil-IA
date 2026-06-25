@@ -4,25 +4,25 @@ import { Header } from "@/components/Header";
 
 const benefits = [
   {
-    title: "Feito para leigos",
+    title: "Feito para quem não domina anúncios",
     description:
-      "Perguntas simples transformam informacoes do negocio em um plano claro de campanha.",
+      "Perguntas simples organizam as informações do negócio em um plano inicial fácil de entender.",
   },
   {
-    title: "Foco em canais reais",
+    title: "Foco nos canais que o pequeno negócio usa",
     description:
-      "Organize campanhas para Meta Ads, Instagram, Facebook e WhatsApp sem jargao tecnico.",
+      "Estruture campanhas para Meta Ads, Instagram, Facebook e WhatsApp sem jargão técnico.",
   },
   {
-    title: "Plano pronto para executar",
+    title: "Orientação para começar com mais clareza",
     description:
-      "Receba textos, ideias de criativos, checklist e rotina de acompanhamento.",
+      "Receba textos, ideias de criativos, checklist e uma rotina simples de acompanhamento.",
   },
 ];
 
 const steps = [
-  "Informe o negocio, a oferta e o publico que deseja alcancar.",
-  "Veja uma recomendacao inicial com objetivo, publico, verba e anuncios.",
+  "Informe o negócio, a oferta, a região e o público que deseja alcançar.",
+  "Veja uma recomendação inicial com objetivo, público, verba e textos de anúncio.",
   "Use o passo a passo para configurar, publicar e acompanhar a campanha.",
 ];
 
@@ -34,15 +34,15 @@ export default function Home() {
       <section className="mx-auto grid max-w-6xl gap-10 px-5 py-16 md:grid-cols-[1.1fr_0.9fr] md:items-center md:py-20">
         <div>
           <p className="text-sm font-semibold uppercase tracking-wide text-emerald-800">
-            Campanha Facil IA
+            Campanha Fácil IA
           </p>
           <h1 className="mt-4 max-w-3xl text-4xl font-bold leading-tight text-stone-950 sm:text-5xl">
-            Crie um plano de anuncios simples para vender mais no seu negocio
+            Monte um plano inicial de anúncios para o seu pequeno negócio
           </h1>
           <p className="mt-5 max-w-2xl text-lg leading-8 text-stone-700">
-            Uma ferramenta guiada para pequenos negocios e pessoas leigas em
-            anuncios montarem campanhas para Meta Ads, Instagram, Facebook e
-            WhatsApp com mais seguranca.
+            Uma ferramenta guiada para pequenos negócios brasileiros planejarem
+            campanhas no Meta Ads, Instagram, Facebook e WhatsApp com linguagem
+            simples, sem prometer resultados garantidos.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Button href="/criar-campanha">Criar minha campanha</Button>
@@ -59,13 +59,13 @@ export default function Home() {
               Campanha de mensagens no WhatsApp
             </h2>
             <p className="mt-3 text-sm leading-6 text-stone-200">
-              Objetivo, publico, textos, criativos e checklist organizados para
-              publicar com menos duvida.
+              Objetivo, público, textos, criativos e checklist organizados para
+              você começar com mais confiança e acompanhar os dados.
             </p>
           </div>
           <div className="mt-5 grid gap-3 text-sm text-stone-700">
             <div className="rounded-md bg-emerald-50 p-4">
-              Publico local com interesses amplos
+              Público local com interesses amplos
             </div>
             <div className="rounded-md bg-amber-50 p-4">
               3 textos prontos para teste inicial
@@ -79,7 +79,7 @@ export default function Home() {
 
       <section className="bg-white py-14">
         <div className="mx-auto max-w-6xl px-5">
-          <h2 className="text-2xl font-bold text-stone-950">Beneficios</h2>
+          <h2 className="text-2xl font-bold text-stone-950">Benefícios</h2>
           <div className="mt-6 grid gap-4 md:grid-cols-3">
             {benefits.map((benefit) => (
               <Card key={benefit.title}>

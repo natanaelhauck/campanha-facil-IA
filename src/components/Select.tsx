@@ -9,7 +9,7 @@ type SelectProps = SelectHTMLAttributes<HTMLSelectElement> & {
 export function Select({
   label,
   options,
-  placeholder = "Selecione uma opcao",
+  placeholder = "Selecione uma opção",
   id,
   className = "",
   ...props

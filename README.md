@@ -1,6 +1,6 @@
-# Campanha Facil IA
+# Campanha Fácil IA
 
-MVP de uma aplicacao web para ajudar pequenos negocios e pessoas leigas em anuncios a montar um plano inicial de campanha para Meta Ads, Instagram, Facebook e WhatsApp.
+MVP de uma aplicação web para ajudar pequenos negócios e pessoas leigas em anúncios a montar um plano inicial de campanha para Meta Ads, Instagram, Facebook e WhatsApp.
 
 ## Stack
 
@@ -19,16 +19,16 @@ npm run dev
 
 Depois acesse `http://localhost:3000`.
 
-## Scripts uteis
+## Scripts úteis
 
 ```bash
 npm run lint
 npm run build
 ```
 
-## Proximos passos planejados
+## Próximos passos planejados
 
-- Integrar geracao real com OpenAI API.
+- Integrar geração real com OpenAI API.
 - Adicionar Supabase para salvar campanhas.
-- Implementar login e historico do usuario.
-- Evoluir o resultado com mais personalizacao por segmento.
+- Implementar login e histórico do usuário.
+- Evoluir o resultado com mais personalização por segmento.
