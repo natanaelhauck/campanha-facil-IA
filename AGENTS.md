@@ -24,6 +24,11 @@ O produto deve guiar o usuário por perguntas simples e transformar as respostas
 - Não adicione dependências sem justificativa clara.
 - Não altere layout, copy ou comportamento quando a tarefa for apenas técnica ou documental.
 - Use português do Brasil em textos de produto e documentação.
+- Não transforme o produto em uma ferramenta técnica para gestores avançados de tráfego.
+- Preserve o foco em pequenos negócios brasileiros e pessoas leigas em anúncios.
+- Não antecipe integração com Meta Ads, MCPs ou APIs sem planejamento explícito.
+- Não implemente ações automáticas que possam gastar dinheiro, publicar anúncios ou alterar campanhas reais sem confirmação humana explícita.
+- Trate futuras integrações com Meta Ads como infraestrutura de apoio, não como o coração inicial do produto.
 
 ## Como Rodar O Projeto
 
@@ -68,6 +73,8 @@ Corrija qualquer erro de lint ou build antes de commitar.
 - Evite promessas de resultado garantido em anúncios.
 - Trate o plano gerado como orientação inicial, não como garantia de venda, lucro ou performance.
 - Futuras integrações com Meta Ads devem respeitar permissões, políticas da plataforma e consentimento do usuário.
+- Qualquer ação futura em conta real de anúncios deve exigir revisão e confirmação humana antes de executar.
+- Não automatize orçamento, publicação, pausa ou edição de campanha real sem consentimento claro, específico e registrado.
 
 ## Orientação De Escopo
 

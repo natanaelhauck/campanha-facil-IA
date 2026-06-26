@@ -2,6 +2,15 @@
 
 Todas as mudanças relevantes do projeto serão resumidas neste arquivo.
 
+## Estratégia
+
+### Posicionamento Frente A MCPs E Conectores Meta Ads
+
+- Registrada a decisão de não posicionar o Campanha Fácil IA como apenas mais um conector técnico de Meta Ads.
+- Reforçado o foco em camada guiada, simples e segura para pequenos negócios e pessoas leigas.
+- Meta Ads MCP/API passa a ser tratado como possível infraestrutura futura para leitura de dados, diagnóstico e ações assistidas.
+- Documentada a exigência de consentimento e confirmação humana antes de qualquer ação que possa alterar campanhas reais ou gastar dinheiro.
+
 ## MVP Visual Funcional
 
 ### MVP Inicial

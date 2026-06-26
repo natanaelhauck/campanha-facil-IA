@@ -6,6 +6,27 @@ A integração com Meta Ads foi adiada porque envolve permissões, revisão de p
 
 Decisão atual: primeiro validar a utilidade do plano guiado.
 
+## Continuar Mesmo Com MCPs E Conectores De Meta Ads
+
+Existem MCPs, conectores e APIs que podem permitir a IAs operar contas de anúncio, ler relatórios, auditar campanhas, criar estruturas e executar ações via linguagem natural.
+
+Isso não invalida o **Campanha Fácil IA**.
+
+Decisão atual: diferenciar o produto pela experiência guiada para pequenos negócios e pessoas leigas, não apenas pela existência de uma integração técnica.
+
+O produto deve continuar com a estratégia "leigo primeiro":
+
+- linguagem simples;
+- orientação passo a passo;
+- foco em WhatsApp, Instagram e pequenos negócios brasileiros;
+- segurança antes de automação;
+- explicação clara do que revisar antes de investir;
+- nenhuma promessa de venda, lucro ou performance.
+
+MCP/API da Meta pode ser considerada como camada futura de infraestrutura para leitura de dados, diagnóstico e ações assistidas. Não deve ser tratada como prioridade imediata nem como o coração inicial do produto.
+
+Qualquer futura ação que publique campanha, altere orçamento, pause anúncios ou modifique campanhas reais deve exigir confirmação humana explícita.
+
 ## Começar Sem Supabase
 
 Supabase foi planejado para fases futuras. No MVP, não há login nem histórico persistente em banco.

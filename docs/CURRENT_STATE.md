@@ -6,6 +6,18 @@ O **Campanha Fácil IA** é um MVP web para ajudar pequenos negócios brasileiro
 
 A versão atual não usa IA real. Ela gera um plano simulado e personalizado localmente com base nas respostas do formulário.
 
+## Direção Estratégica Atual
+
+O projeto quer ser uma camada guiada, simples e segura para pequenos negócios e pessoas leigas organizarem campanhas antes de investir dinheiro.
+
+Ele não quer ser, neste momento, uma ferramenta técnica avançada para gestores de tráfego nem apenas mais um conector de Meta Ads.
+
+A existência de MCPs, conectores e APIs capazes de operar contas de anúncio não invalida o produto, porque o diferencial pretendido está na experiência, na educação, na linguagem simples e na redução de risco para quem ainda não sabe por onde começar.
+
+Meta Ads MCP/API pode ser infraestrutura futura para leitura de dados, diagnóstico e ações assistidas, sempre com consentimento e confirmação humana antes de qualquer alteração real.
+
+Próximos passos recomendados: consolidar a geração real de plano com IA, depois avançar para diagnóstico por métricas inseridas manualmente e só então avaliar integrações com contas de anúncio.
+
 ## Stack
 
 - Next.js

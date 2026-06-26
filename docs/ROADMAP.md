@@ -1,6 +1,6 @@
 # Roadmap
 
-## Fase 1: MVP Visual Funcional Sem IA Real
+## Fase 1: MVP Guiado Sem Conta Conectada
 
 Status: concluída como primeira versão visual funcional. Deve continuar recebendo pequenos ajustes de copy, documentação, acessibilidade e validação manual, mas o fluxo principal já está operacional.
 
@@ -77,72 +77,85 @@ Status: concluída como primeira versão visual funcional. Deve continuar recebe
 - Fallback funcionando quando a IA falhar.
 - Lint, build e teste manual passam.
 
-## Fase 3: Autenticação E Histórico Com Supabase
+## Fase 3: Diagnóstico Manual Por Métricas Informadas
 
 ### Entregas
 
-- Login de usuário.
-- Persistência de campanhas.
-- Histórico de planos gerados.
-- Regras básicas de acesso aos dados.
-- Estrutura inicial de tabelas e políticas.
+- Formulário simples para o usuário informar métricas manualmente.
+- Diagnóstico inicial com base em gastos, cliques, contatos, custo por contato e qualidade das conversas.
+- Recomendações de leitura simples: manter, pausar, revisar oferta, ajustar criativo ou acompanhar por mais tempo.
+- Explicações educativas sobre sinais básicos de campanha.
+- Avisos claros de que a análise depende dos dados informados pelo usuário.
 
 ### Riscos
 
-- Modelagem prematura de dados.
-- Políticas de acesso mal configuradas.
-- Complexidade de autenticação antes de validar uso real.
+- Usuário informar métricas incorretas ou incompletas.
+- Produto parecer diagnóstico definitivo.
+- Recomendações ficarem genéricas demais.
+- Linguagem técnica confundir usuários leigos.
 
 ### Critérios De Conclusão
 
-- Usuário autenticado acessa apenas seus dados.
-- Campanhas são salvas e recuperadas corretamente.
-- Variáveis de ambiente documentadas.
-- Fluxo sem login continua tratado, se necessário.
+- Usuário entende quais métricas precisa inserir.
+- Diagnóstico aparece com linguagem simples.
+- Nenhuma recomendação promete venda, lucro ou performance.
+- Lint, build e teste manual passam.
 
-## Fase 4: Versão SaaS Inicial
-
-### Entregas
-
-- Dashboard simples.
-- Limites de uso por plano.
-- Melhor organização do histórico.
-- Página de conta ou preferências.
-- Primeira estrutura para cobrança, se fizer sentido.
-
-### Riscos
-
-- Monetização antes de validação de valor.
-- Aumento de escopo em painel administrativo.
-- Necessidade de suporte e recuperação de conta.
-
-### Critérios De Conclusão
-
-- Usuário consegue criar, revisar e reutilizar campanhas.
-- Limites de uso estão claros.
-- Jornada principal continua simples.
-- Métricas básicas de uso estão definidas.
-
-## Fase 5: Integrações Futuras Com Meta Ads
+## Fase 4: Leitura De Dados Via Integração, Com Consentimento
 
 ### Entregas
 
-- Estudo de permissões e políticas da Meta.
-- Conexão assistida com conta de anúncios.
-- Leitura de métricas, se permitido.
-- Sugestões baseadas em dados reais.
-- Possível criação assistida de campanhas.
+- Estudo de permissões, políticas e escopo mínimo de leitura da Meta.
+- Conexão assistida com conta de anúncios, apenas com consentimento explícito.
+- Leitura de dados para diagnóstico, sem alterar campanhas.
+- Mensagens claras sobre quais dados serão lidos e por quê.
+- Tratamento de tokens, expiração, revogação e erros de permissão.
 
 ### Riscos
 
-- Complexidade e instabilidade de APIs externas.
-- Revisão de permissões pela Meta.
-- Responsabilidade sobre alterações em campanhas reais.
-- Erros com orçamento real do usuário.
+- Permissões mal dimensionadas.
+- Falhas na segurança de tokens.
+- Usuário não entender o que está autorizando.
+- Dependência de APIs externas instáveis.
+- Leitura de dados ser interpretada como garantia de resultado.
 
 ### Critérios De Conclusão
 
 - Escopo de permissões validado.
-- Usuário entende e autoriza qualquer ação externa.
-- Nenhuma alteração real é feita sem confirmação explícita.
-- Logs e mensagens de erro são claros.
+- Consentimento explícito antes da conexão.
+- Nenhuma ação real é feita na conta.
+- Tokens tratados com segurança.
+- Diagnóstico continua compreensível para leigos.
+
+## Fase 5: Ações Assistidas Com Aprovação Humana
+
+### Entregas
+
+- Sugestões de alterações baseadas em plano, diagnóstico e dados reais.
+- Revisão humana obrigatória antes de publicar, pausar, alterar orçamento ou editar campanha.
+- Confirmações claras para qualquer ação que possa gastar dinheiro ou alterar campanhas reais.
+- Logs mínimos de ações solicitadas e confirmadas.
+- Possível uso de Meta Ads MCP/API como infraestrutura, se a estratégia e as permissões estiverem maduras.
+
+### Riscos
+
+- Ações automáticas em contas de anúncio sem entendimento do usuário.
+- Alteração indevida de orçamento, público, criativo ou status da campanha.
+- Promessa indevida de resultado.
+- Responsabilidade operacional sobre verba real.
+- Tokens e permissões com escopo amplo demais.
+- Falta de trilha clara de consentimento.
+
+### Critérios De Conclusão
+
+- Nenhuma publicação ou alteração acontece sem confirmação humana.
+- Usuário entende o impacto de cada ação antes de confirmar.
+- Permissões são mínimas para o escopo proposto.
+- Erros são tratados de forma clara.
+- A experiência continua guiada para pequenos negócios, não técnica para gestores avançados.
+
+## Fase Futura: SaaS, Histórico E Persistência
+
+Supabase, autenticação, histórico, limites de uso e eventual cobrança continuam possíveis, mas devem entrar quando houver validação de valor e necessidade clara de uso recorrente.
+
+Essa fase não deve antecipar integrações complexas nem transformar o produto em painel avançado antes de consolidar a experiência guiada.

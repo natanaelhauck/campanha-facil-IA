@@ -30,6 +30,24 @@ Ferramenta prática para pequenos negócios que precisam de orientação antes d
 
 O produto não substitui um gestor de tráfego, mas ajuda o usuário a começar com mais clareza.
 
+## Posicionamento Estratégico Frente A Meta Ads MCP/API
+
+O **Campanha Fácil IA** não deve ser tratado apenas como mais um conector técnico de Meta Ads.
+
+Mesmo que existam MCPs, conectores e APIs capazes de conectar IAs diretamente a contas de anúncio, gerar relatórios, auditar sinais, criar campanhas ou operar por linguagem natural, o diferencial do produto está na experiência guiada para pessoas leigas.
+
+O foco do projeto é ser uma camada simples, segura e educativa para pequenos negócios brasileiros que vendem pelo WhatsApp, Instagram, Facebook ou loja local e precisam organizar o básico antes de investir.
+
+Isso significa:
+
+- explicar decisões em linguagem simples;
+- ajudar o usuário a escolher objetivo, público, oferta, orçamento e canal;
+- orientar próximos passos sem prometer resultado garantido;
+- reduzir risco de ações impulsivas com verba real;
+- tratar integrações com Meta Ads, MCPs ou APIs como infraestrutura futura, não como o coração inicial do produto.
+
+Em fases futuras, uma integração com Meta Ads poderá apoiar diagnóstico, leitura de dados e ações assistidas. Ainda assim, qualquer ação que possa publicar campanha, alterar orçamento ou gastar dinheiro deve exigir consentimento claro e confirmação humana.
+
 ## O Que O Produto Não Promete
 
 - Não garante vendas.
