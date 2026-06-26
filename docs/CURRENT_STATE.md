@@ -35,11 +35,15 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Salvamento dos dados do formulário no `localStorage` com a chave `campaign-form-data`.
 - Chamada para `POST /api/generate-campaign` ao enviar o formulário.
 - Geração com OpenAI Responses API quando há chave configurada.
+- Modelo configurável por `OPENAI_MODEL`, com fallback de desenvolvimento `gpt-4.1-mini`.
+- Limite conservador de saída por `OPENAI_MAX_OUTPUT_TOKENS`, com padrão 1800.
+- Validação de payload com campos obrigatórios, limites por campo e limite total de entrada.
 - Fallback mock automático quando não há chave, quando a IA está desabilitada ou quando a geração falha.
 - Salvamento do plano gerado no `localStorage` com a chave `campaign-plan-result`.
 - Salvamento da origem do plano com a chave `campaign-plan-source`.
 - Carregamento dos dados salvos ao voltar de `/resultado` para ajustar informações.
 - Resultado em `/resultado` usando o plano salvo ou fallback local quando necessário.
+- Indicação discreta da origem do plano: IA ou demonstração.
 - Estado vazio amigável em `/resultado` quando não há dados salvos.
 - Textos de anúncio com botão para copiar.
 - Próximos passos, checklist, ideias de criativos e acompanhamento em 3, 7 e 14 dias.
@@ -85,6 +89,7 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Testar a geração real com chave de desenvolvimento.
 - Ajustar prompt e schema a partir de exemplos reais.
 - Planejar limites de uso e custo por geração antes de liberar publicamente.
+- Implementar limite por usuário/IP em fase futura.
 - Melhorar observabilidade sem registrar dados sensíveis.
 - Revisar mensagens de orientação para evitar promessa exagerada.
 
@@ -98,7 +103,7 @@ npm run build
 git status --short --branch
 ```
 
-Para testar IA real localmente, copie `.env.example` para `.env.local` e configure `OPENAI_API_KEY`. Sem chave, o modo mock é esperado.
+Para testar IA real localmente, copie `.env.example` para `.env.local` e configure `OPENAI_API_KEY`. Sem chave, o modo mock é esperado. Ajuste `OPENAI_MODEL` se sua conta não tiver acesso ao modelo padrão.
 
 ## Estado Atual De Validação
 

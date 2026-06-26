@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import { createMockCampaignPlan } from "@/data/mockCampaignResult";
+import { isCampaignPlanResult } from "@/lib/campaignPlanValidation";
 import type {
   CampaignFormData,
   CampaignPlanResult,
@@ -14,91 +15,82 @@ type GenerateCampaignPlanResponse = {
   warning?: string;
 };
 
-type UnknownRecord = Record<string, unknown>;
+const defaultOpenAIModel = "gpt-4.1-mini";
+const defaultMaxOutputTokens = 1800;
+const minMaxOutputTokens = 800;
+const maxMaxOutputTokens = 4000;
 
 function isGenerationEnabled() {
   return process.env.AI_GENERATION_ENABLED !== "false";
 }
 
-function isRecord(value: unknown): value is UnknownRecord {
-  return Boolean(value) && typeof value === "object";
-}
-
-function isStringArray(value: unknown, minItems = 1) {
-  return (
-    Array.isArray(value) &&
-    value.length >= minItems &&
-    value.every((item) => typeof item === "string" && item.trim().length > 0)
-  );
-}
-
-function isAdTextArray(value: unknown) {
-  return (
-    Array.isArray(value) &&
-    value.length === 3 &&
-    value.every(
-      (item) =>
-        isRecord(item) &&
-        typeof item.title === "string" &&
-        typeof item.text === "string",
-    )
-  );
-}
-
-function isNextStepArray(value: unknown) {
-  return (
-    Array.isArray(value) &&
-    value.length >= 3 &&
-    value.length <= 5 &&
-    value.every(
-      (item) =>
-        isRecord(item) &&
-        typeof item.title === "string" &&
-        typeof item.description === "string",
-    )
-  );
-}
-
-function isFollowUpPlan(value: unknown) {
-  const allowedPeriods = new Set(["3 dias", "7 dias", "14 dias"]);
-
-  return (
-    Array.isArray(value) &&
-    value.length === 3 &&
-    value.every(
-      (item) =>
-        isRecord(item) &&
-        typeof item.period === "string" &&
-        allowedPeriods.has(item.period) &&
-        isStringArray(item.actions, 2),
-    )
-  );
-}
-
-function isCampaignPlan(value: unknown): value is CampaignPlanResult {
-  return (
-    isRecord(value) &&
-    typeof value.summary === "string" &&
-    typeof value.recommendedObjective === "string" &&
-    typeof value.suggestedAudience === "string" &&
-    typeof value.budgetGuidance === "string" &&
-    isAdTextArray(value.adTexts) &&
-    isStringArray(value.creativeIdeas, 3) &&
-    isStringArray(value.setupSteps, 4) &&
-    isStringArray(value.prePublishChecklist, 5) &&
-    isFollowUpPlan(value.followUpPlan) &&
-    isNextStepArray(value.nextSteps) &&
-    typeof value.disclaimer === "string"
-  );
-}
-
 function safeParsePlan(value: string): CampaignPlanResult | null {
   try {
     const parsed = JSON.parse(value) as unknown;
-    return isCampaignPlan(parsed) ? parsed : null;
+    return isCampaignPlanResult(parsed) ? parsed : null;
   } catch {
     return null;
   }
+}
+
+function getOpenAIModel() {
+  return process.env.OPENAI_MODEL?.trim() || defaultOpenAIModel;
+}
+
+function getMaxOutputTokens() {
+  const rawValue = Number.parseInt(
+    process.env.OPENAI_MAX_OUTPUT_TOKENS ?? "",
+    10,
+  );
+
+  if (!Number.isFinite(rawValue)) {
+    return defaultMaxOutputTokens;
+  }
+
+  return Math.min(Math.max(rawValue, minMaxOutputTokens), maxMaxOutputTokens);
+}
+
+function extractOutputText(response: unknown) {
+  if (!response || typeof response !== "object") {
+    return "";
+  }
+
+  const outputText = (response as { output_text?: unknown }).output_text;
+
+  if (typeof outputText === "string" && outputText.trim()) {
+    return outputText;
+  }
+
+  const output = (response as { output?: unknown }).output;
+
+  if (!Array.isArray(output)) {
+    return "";
+  }
+
+  return output
+    .flatMap((item) => {
+      if (!item || typeof item !== "object") {
+        return [];
+      }
+
+      const content = (item as { content?: unknown }).content;
+
+      if (!Array.isArray(content)) {
+        return [];
+      }
+
+      return content
+        .map((contentItem) => {
+          if (!contentItem || typeof contentItem !== "object") {
+            return "";
+          }
+
+          const text = (contentItem as { text?: unknown }).text;
+          return typeof text === "string" ? text : "";
+        })
+        .filter(Boolean);
+    })
+    .join("");
 }
 
 function fallbackMock(
@@ -134,10 +126,11 @@ export async function generateCampaignPlan(
   try {
     const client = new OpenAI({ apiKey });
     const response = await client.responses.create({
-      model: process.env.OPENAI_MODEL || "gpt-5.5",
+      model: getOpenAIModel(),
       instructions:
         "Você gera planos iniciais de campanha seguros e práticos para pequenos negócios brasileiros. Nunca prometa resultado garantido.",
       input: buildCampaignPrompt(form),
+      max_output_tokens: getMaxOutputTokens(),
       text: {
         format: campaignPlanResponseFormat,
         verbosity: "medium",
@@ -145,7 +138,7 @@ export async function generateCampaignPlan(
       store: false,
     });
 
-    const plan = safeParsePlan(response.output_text);
+    const plan = safeParsePlan(extractOutputText(response));
 
     if (!plan) {
       return fallbackMock(

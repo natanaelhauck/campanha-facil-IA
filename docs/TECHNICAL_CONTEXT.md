@@ -45,7 +45,7 @@ src/
 4. Em `/criar-campanha`, preenche um formulário guiado por seções: negócio, oferta, público/região e configuração inicial.
 5. Ao enviar, o formulário chama `POST /api/generate-campaign`.
 6. A rota valida os campos obrigatórios e chama o serviço de geração.
-7. Se `OPENAI_API_KEY` estiver configurada e `AI_GENERATION_ENABLED` não for `false`, o serviço tenta gerar o plano com OpenAI Responses API e saída estruturada.
+7. Se `OPENAI_API_KEY` estiver configurada e `AI_GENERATION_ENABLED` não for `false`, o serviço tenta gerar o plano com OpenAI Responses API, saída estruturada e limite conservador de saída.
 8. Se a chave estiver ausente, a geração estiver desabilitada ou ocorrer erro/formato inesperado, o serviço retorna fallback mock compatível.
 9. O client salva os dados do formulário, o plano gerado e a origem do plano no `localStorage`.
 10. O usuário é redirecionado para `/resultado`.
@@ -72,18 +72,23 @@ A primeira base de IA real fica em `src/lib/ai/` e `src/app/api/generate-campaig
 
 - `buildCampaignPrompt.ts` monta instruções em português do Brasil com foco em pequenos negócios, linguagem simples, WhatsApp/Instagram quando fizer sentido e nenhuma promessa de resultado.
 - `campaignPlanSchema.ts` define o formato estruturado esperado do plano.
-- `generateCampaignPlan.ts` decide entre OpenAI e fallback mock, valida o JSON retornado e nunca envia detalhes sensíveis de erro ao frontend.
-- A rota `POST /api/generate-campaign` aceita dados do formulário, valida campos obrigatórios e retorna `{ success, data, source, warning }`.
+- `generateCampaignPlan.ts` decide entre OpenAI e fallback mock, define modelo e limite de tokens, valida o JSON retornado e nunca envia detalhes sensíveis de erro ao frontend.
+- A rota `POST /api/generate-campaign` aceita dados do formulário, limita tamanho do payload, valida campos obrigatórios, normaliza textos e retorna `{ success, data, source, warning }`.
 
 Variáveis esperadas:
 
 ```bash
 OPENAI_API_KEY=
-OPENAI_MODEL=gpt-5.5
+OPENAI_MODEL=gpt-4.1-mini
+OPENAI_MAX_OUTPUT_TOKENS=1800
 AI_GENERATION_ENABLED=true
 ```
 
 `.env.local` deve ficar local e ignorado pelo Git. Sem chave real, o modo mock continua funcionando.
+
+`OPENAI_MODEL` é configurável porque a disponibilidade de modelos depende da conta e do momento. O fallback atual de desenvolvimento é `gpt-4.1-mini`; ajuste quando necessário.
+
+`OPENAI_MAX_OUTPUT_TOKENS` controla o tamanho máximo da resposta. O serviço aplica um intervalo defensivo entre 800 e 4000 tokens, com padrão 1800.
 
 ## Comportamentos Client-Side Atuais
 
@@ -114,6 +119,7 @@ Pontos ainda pendentes para amadurecer a IA:
 - Melhorar logs sem armazenar dados sensíveis.
 - Criar fallback e mensagens para indisponibilidade prolongada.
 - Avaliar validação mais rígida do payload e do plano antes de uso em produção.
+- Implementar limite por usuário/IP em fase futura com autenticação, middleware ou camada de infraestrutura.
 
 ## Pontos Planejados Para Supabase
 

@@ -18,7 +18,8 @@ Para testar geração real, crie um `.env.local` local, nunca commitado:
 
 ```bash
 OPENAI_API_KEY=sua-chave-local
-OPENAI_MODEL=gpt-5.5
+OPENAI_MODEL=gpt-4.1-mini
+OPENAI_MAX_OUTPUT_TOKENS=1800
 AI_GENERATION_ENABLED=true
 ```
 
@@ -27,6 +28,8 @@ Para forçar o modo mock mesmo com chave configurada:
 ```bash
 AI_GENERATION_ENABLED=false
 ```
+
+Se sua conta não tiver acesso ao modelo configurado, ajuste `OPENAI_MODEL` para um modelo disponível. O build e o fluxo mock não dependem de modelo válido.
 
 ## Checklist Manual Do Fluxo Principal
 
@@ -70,6 +73,7 @@ AI_GENERATION_ENABLED=false
 - Confirme que a chave `campaign-form-data` foi salva no `localStorage`.
 - Confirme que a rota `POST /api/generate-campaign` respondeu com sucesso.
 - Sem `OPENAI_API_KEY`, confirme que o fluxo usa fallback mock e continua sem erro.
+- Confirme que payloads muito longos recebem erro amigável e não geram plano.
 - Depois de gerar o resultado, clique em `Ajustar informações`.
 - Confirme que `/criar-campanha` abre com os dados anteriores preenchidos.
 - Edite um campo e gere novamente o plano.
@@ -81,6 +85,7 @@ Após enviar o formulário:
 - Confirme que a página mostra o nome do negócio.
 - Confirme que oferta, cidade/região, objetivo, orçamento, público, diferencial, canal e experiência aparecem no plano.
 - Confirme que o resultado usa `campaign-plan-result` quando essa chave existe.
+- Se `campaign-plan-result` estiver inválido, confirme que a página usa fallback local e não quebra.
 - Confirme que o aviso de orientação sem garantia está visível.
 - Confirme que não há tela de erro do Next.js.
 - Confirme que a seção `O que fazer primeiro` está visível.
@@ -119,6 +124,7 @@ Use apenas uma chave de desenvolvimento em `.env.local`.
 - Confirme que `/resultado` abre sem erro.
 - Confirme que `campaign-plan-source` é `ai` quando a API responde no formato esperado.
 - Confirme que o texto continua em português do Brasil, simples, orientativo e sem promessa de venda ou resultado garantido.
+- Confirme que `OPENAI_MAX_OUTPUT_TOKENS` está em um valor conservador antes de testar com tráfego real.
 
 Se a API falhar, o comportamento esperado é fallback mock com `campaign-plan-source` igual a `mock`.
 

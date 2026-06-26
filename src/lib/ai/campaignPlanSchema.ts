@@ -59,6 +59,7 @@ export const campaignPlanSchema = {
     creativeIdeas: {
       type: "array",
       minItems: 3,
+      maxItems: 4,
       items: {
         type: "string",
       },
@@ -66,6 +67,7 @@ export const campaignPlanSchema = {
     setupSteps: {
       type: "array",
       minItems: 4,
+      maxItems: 6,
       items: {
         type: "string",
       },
@@ -73,6 +75,7 @@ export const campaignPlanSchema = {
     prePublishChecklist: {
       type: "array",
       minItems: 5,
+      maxItems: 6,
       items: {
         type: "string",
       },
@@ -93,6 +96,7 @@ export const campaignPlanSchema = {
           actions: {
             type: "array",
             minItems: 2,
+            maxItems: 3,
             items: {
               type: "string",
             },

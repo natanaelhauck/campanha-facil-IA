@@ -26,11 +26,14 @@ Copie `.env.example` para `.env.local` e preencha a chave quando quiser testar g
 
 ```bash
 OPENAI_API_KEY=
-OPENAI_MODEL=gpt-5.5
+OPENAI_MODEL=gpt-4.1-mini
+OPENAI_MAX_OUTPUT_TOKENS=1800
 AI_GENERATION_ENABLED=true
 ```
 
 Não versione `.env.local` nem chaves reais. Sem `OPENAI_API_KEY`, ou com `AI_GENERATION_ENABLED=false`, o endpoint usa fallback mock e o fluxo continua funcionando.
+
+O modelo padrão de desenvolvimento é `gpt-4.1-mini`. Ajuste `OPENAI_MODEL` se sua conta usar outro modelo disponível.
 
 ## Scripts úteis
 

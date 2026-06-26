@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/Button";
 import { Header } from "@/components/Header";
 import { createMockCampaignPlan } from "@/data/mockCampaignResult";
+import { isCampaignPlanResult } from "@/lib/campaignPlanValidation";
 import type {
   CampaignFormData,
   CampaignPlanResult,
@@ -54,29 +55,8 @@ function parseCampaignPlan(value: string | null): CampaignPlanResult | null {
   }
 
   try {
-    const parsed = JSON.parse(value) as Partial<CampaignPlanResult>;
-
-    if (!parsed || typeof parsed !== "object") {
-      return null;
-    }
-
-    if (
-      typeof parsed.summary !== "string" ||
-      typeof parsed.recommendedObjective !== "string" ||
-      typeof parsed.suggestedAudience !== "string" ||
-      typeof parsed.budgetGuidance !== "string" ||
-      !Array.isArray(parsed.adTexts) ||
-      !Array.isArray(parsed.creativeIdeas) ||
-      !Array.isArray(parsed.setupSteps) ||
-      !Array.isArray(parsed.prePublishChecklist) ||
-      !Array.isArray(parsed.followUpPlan) ||
-      !Array.isArray(parsed.nextSteps) ||
-      typeof parsed.disclaimer !== "string"
-    ) {
-      return null;
-    }
-
-    return parsed as CampaignPlanResult;
+    const parsed = JSON.parse(value) as unknown;
+    return isCampaignPlanResult(parsed) ? parsed : null;
   } catch {
     return null;
   }
@@ -228,11 +208,14 @@ export default function ResultPage() {
   const mainChannel = display(form.mainChannel, "canal principal");
   const experienceLevel = display(form.experienceLevel, "não informado");
   const plan = savedPlan ?? createMockCampaignPlan(form);
+  const effectivePlanSource: CampaignPlanSource = savedPlan
+    ? (planSource ?? "mock")
+    : "mock";
   const sourceLabel =
-    planSource === "ai"
+    effectivePlanSource === "ai"
       ? "Plano gerado com IA"
-      : planSource === "mock"
-        ? "Plano simulado"
+      : effectivePlanSource === "mock"
+        ? "Plano inicial de demonstração"
         : "Plano inicial";
 
   const planHighlights = [
