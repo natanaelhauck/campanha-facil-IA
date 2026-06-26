@@ -1,9 +1,12 @@
+"use client";
+
 import Link from "next/link";
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type { ButtonHTMLAttributes, MouseEvent, ReactNode } from "react";
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   children: ReactNode;
   href?: string;
+  scrollTargetId?: string;
   variant?: "primary" | "secondary";
 };
 
@@ -20,15 +23,37 @@ const variants = {
 export function Button({
   children,
   href,
+  scrollTargetId,
   variant = "primary",
   className = "",
   ...props
 }: ButtonProps) {
   const classes = `${baseClass} ${variants[variant]} ${className}`.trim();
+  const targetId =
+    scrollTargetId ?? (href?.startsWith("#") ? href.slice(1) : undefined);
+
+  function handleAnchorClick(event: MouseEvent<HTMLAnchorElement>) {
+    if (!targetId) {
+      return;
+    }
+
+    const target = document.getElementById(targetId);
+
+    if (!target) {
+      return;
+    }
+
+    event.preventDefault();
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    if (href?.startsWith("#")) {
+      history.replaceState(null, "", href);
+    }
+  }
 
   if (href) {
     return (
-      <Link className={classes} href={href}>
+      <Link className={classes} href={href} onClick={handleAnchorClick}>
         {children}
       </Link>
     );

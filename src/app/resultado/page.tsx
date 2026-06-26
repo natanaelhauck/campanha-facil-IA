@@ -261,7 +261,7 @@ export default function ResultPage() {
               <Button href="/criar-campanha" variant="secondary">
                 Ajustar informações
               </Button>
-              <Button href="#primeiros-passos" variant="secondary">
+              <Button href="#proximos-passos" variant="secondary">
                 Ver próximos passos
               </Button>
             </div>
@@ -311,7 +311,7 @@ export default function ResultPage() {
             title="O que fazer primeiro"
             eyebrow="Próximos passos recomendados"
           >
-            <div id="primeiros-passos" className="grid gap-3 md:grid-cols-5">
+            <div id="proximos-passos" className="grid gap-3 md:grid-cols-5">
               {nextSteps.map((step, index) => (
                 <article
                   key={step.title}
