@@ -36,36 +36,47 @@ Status: concluída como primeira versão visual funcional. Deve continuar recebe
 - `npm run lint` e `npm run build` passam.
 - Fluxo principal validado manualmente.
 
-### Antes Da IA Real
+### Transição Para IA Real
 
 - Manter documentação atualizada.
 - Revisar manualmente copy de orientação para evitar promessa de resultado.
-- Definir formato esperado de resposta da IA antes de implementar endpoint.
+- Definir formato esperado de resposta da IA.
 - Definir limites básicos de uso/custo para chamadas de IA.
 - Planejar fallback quando a geração real falhar.
 
 ## Fase 2: IA Real Com OpenAI API
 
-### Entregas
+Status: iniciada. A base técnica de geração foi adicionada de forma incremental, com endpoint backend, schema estruturado e fallback mock. Ainda faltam testes com chave real, calibração de resposta e limites de uso antes de considerar a fase concluída.
+
+### Entregas Concluídas Nesta Base Inicial
 
 - Endpoint server-side para gerar plano com IA.
 - Prompt estruturado com dados do formulário.
 - Formato de resposta previsível para preencher seções do resultado.
-- Tratamento de erros e limites de resposta.
+- Tratamento de erros com fallback mock.
 - Avisos claros sobre orientação e ausência de garantia.
-- Possível modo de fallback quando a IA falhar.
-- Limites simples de uso para controlar custo.
+- Modo de fallback quando a chave está ausente, a geração está desabilitada ou a IA falha.
+- Chave da OpenAI restrita ao servidor.
+
+### Entregas Pendentes
+
+- Testar geração real com chave de desenvolvimento.
+- Ajustar prompt e schema a partir de respostas reais.
+- Definir limites simples de uso para controlar custo.
+- Melhorar validação e observabilidade sem registrar dados sensíveis.
+- Definir política de erro para indisponibilidade prolongada da API.
 
 ### Riscos
 
 - Custo por uso sem limite.
-- Respostas inconsistentes ou longas demais.
+- Respostas inconsistentes, incompletas ou longas demais.
 - Exposição indevida de chave de API no cliente.
 - Promessas exageradas de resultado.
 - Prompt injection ou entradas maliciosas no formulário.
 - Falta de validação do formato retornado pela IA.
 - Falha da API sem fallback amigável.
 - Logs excessivos com dados sensíveis do usuário.
+- Uso público sem limite de frequência ou proteção contra abuso.
 
 ### Critérios De Conclusão
 

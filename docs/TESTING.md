@@ -10,6 +10,24 @@ npm run build
 git status --short --branch
 ```
 
+## Configuração De Ambiente
+
+Para o teste padrão de desenvolvimento, não é necessário ter `OPENAI_API_KEY`. Sem chave, o endpoint retorna um plano mockado compatível.
+
+Para testar geração real, crie um `.env.local` local, nunca commitado:
+
+```bash
+OPENAI_API_KEY=sua-chave-local
+OPENAI_MODEL=gpt-5.5
+AI_GENERATION_ENABLED=true
+```
+
+Para forçar o modo mock mesmo com chave configurada:
+
+```bash
+AI_GENERATION_ENABLED=false
+```
+
 ## Checklist Manual Do Fluxo Principal
 
 1. Rode o servidor local:
@@ -22,11 +40,14 @@ git status --short --branch
 3. Clique em `Criar minha campanha`.
 4. Preencha o formulário com dados simples.
 5. Clique em `Gerar plano inicial`.
-6. Confirme que `/resultado` abre sem erro.
-7. Confirme que o resultado mostra dados personalizados do formulário.
-8. Clique em `Ajustar informações` e confirme que volta para `/criar-campanha`.
-9. Confirme que os dados anteriores aparecem preenchidos.
-10. Edite uma informação, gere o plano novamente e confirme que `/resultado` reflete a alteração.
+6. Confirme que o botão mostra estado de carregamento enquanto o plano é gerado.
+7. Confirme que `/resultado` abre sem erro.
+8. Confirme que o resultado mostra dados personalizados do formulário.
+9. Confirme que o plano salvo aparece no `localStorage` com as chaves `campaign-plan-result` e `campaign-plan-source`.
+10. Em modo sem chave, confirme que `campaign-plan-source` é `mock`.
+11. Clique em `Ajustar informações` e confirme que volta para `/criar-campanha`.
+12. Confirme que os dados anteriores aparecem preenchidos.
+13. Edite uma informação, gere o plano novamente e confirme que `/resultado` reflete a alteração.
 
 ## Como Testar A Home
 
@@ -47,6 +68,8 @@ git status --short --branch
 - Preencha exemplos realistas.
 - Envie o formulário.
 - Confirme que a chave `campaign-form-data` foi salva no `localStorage`.
+- Confirme que a rota `POST /api/generate-campaign` respondeu com sucesso.
+- Sem `OPENAI_API_KEY`, confirme que o fluxo usa fallback mock e continua sem erro.
 - Depois de gerar o resultado, clique em `Ajustar informações`.
 - Confirme que `/criar-campanha` abre com os dados anteriores preenchidos.
 - Edite um campo e gere novamente o plano.
@@ -57,6 +80,7 @@ Após enviar o formulário:
 
 - Confirme que a página mostra o nome do negócio.
 - Confirme que oferta, cidade/região, objetivo, orçamento, público, diferencial, canal e experiência aparecem no plano.
+- Confirme que o resultado usa `campaign-plan-result` quando essa chave existe.
 - Confirme que o aviso de orientação sem garantia está visível.
 - Confirme que não há tela de erro do Next.js.
 - Confirme que a seção `O que fazer primeiro` está visível.
@@ -72,6 +96,8 @@ No navegador, limpe o storage do site ou execute no console:
 
 ```js
 localStorage.removeItem("campaign-form-data");
+localStorage.removeItem("campaign-plan-result");
+localStorage.removeItem("campaign-plan-source");
 ```
 
 Depois acesse `http://localhost:3000/resultado`.
@@ -81,6 +107,20 @@ Resultado esperado:
 - A página deve mostrar `Nenhum plano encontrado`.
 - Deve haver um botão para voltar e criar uma campanha.
 - A página não deve quebrar.
+
+## Como Testar Modo IA Real
+
+Use apenas uma chave de desenvolvimento em `.env.local`.
+
+- Configure `OPENAI_API_KEY`.
+- Rode `npm run dev`.
+- Preencha `/criar-campanha` com dados realistas.
+- Envie o formulário.
+- Confirme que `/resultado` abre sem erro.
+- Confirme que `campaign-plan-source` é `ai` quando a API responde no formato esperado.
+- Confirme que o texto continua em português do Brasil, simples, orientativo e sem promessa de venda ou resultado garantido.
+
+Se a API falhar, o comportamento esperado é fallback mock com `campaign-plan-source` igual a `mock`.
 
 ## Como Testar Responsividade
 

@@ -22,7 +22,7 @@ Muitos pequenos negócios querem anunciar, mas travam em decisões básicas: obj
 
 Gerar um plano de campanha inicial, claro e acionável, a partir de perguntas simples sobre o negócio, a oferta, o público, o orçamento e o canal principal.
 
-Na versão atual, o resultado é simulado e personalizado localmente. Em fases futuras, a geração poderá ser feita com IA real.
+Na versão atual, a geração real com OpenAI API já existe no backend de forma inicial e segura. Quando a chave não está configurada, o produto usa fallback mock para manter o fluxo funcionando.
 
 ## Posicionamento Inicial
 

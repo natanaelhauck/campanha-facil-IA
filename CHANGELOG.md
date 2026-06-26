@@ -11,6 +11,18 @@ Todas as mudanças relevantes do projeto serão resumidas neste arquivo.
 - Meta Ads MCP/API passa a ser tratado como possível infraestrutura futura para leitura de dados, diagnóstico e ações assistidas.
 - Documentada a exigência de consentimento e confirmação humana antes de qualquer ação que possa alterar campanhas reais ou gastar dinheiro.
 
+## Fase 2: Base De IA Real
+
+### OpenAI API Com Fallback Mock
+
+- Adicionada dependência oficial `openai`.
+- Criado endpoint `POST /api/generate-campaign` para gerar o plano no backend do Next.js.
+- Adicionados prompt builder, schema de saída estruturada e serviço de geração com OpenAI Responses API.
+- Criado fallback mock quando `OPENAI_API_KEY` está ausente, quando `AI_GENERATION_ENABLED=false` ou quando a geração falha.
+- O formulário passou a salvar dados, plano gerado e origem do resultado no `localStorage`.
+- A página `/resultado` passou a priorizar o plano salvo e manter fallback local quando necessário.
+- Criado `.env.example` sem chave real.
+
 ## MVP Visual Funcional
 
 ### MVP Inicial

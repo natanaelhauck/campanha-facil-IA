@@ -9,6 +9,7 @@ MVP de uma aplicação web para ajudar pequenos negócios e pessoas leigas em an
 - App Router
 - Tailwind CSS
 - ESLint
+- OpenAI SDK no backend do Next.js
 
 ## Como rodar localmente
 
@@ -18,6 +19,18 @@ npm run dev
 ```
 
 Depois acesse `http://localhost:3000`.
+
+## Configuração Da IA
+
+Copie `.env.example` para `.env.local` e preencha a chave quando quiser testar geração real:
+
+```bash
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-5.5
+AI_GENERATION_ENABLED=true
+```
+
+Não versione `.env.local` nem chaves reais. Sem `OPENAI_API_KEY`, ou com `AI_GENERATION_ENABLED=false`, o endpoint usa fallback mock e o fluxo continua funcionando.
 
 ## Scripts úteis
 
@@ -40,7 +53,8 @@ npm run build
 
 ## Próximos passos planejados
 
-- Integrar geração real com OpenAI API.
+- Testar e calibrar a geração real com OpenAI API.
+- Definir limites simples de uso e custo para chamadas de IA.
 - Adicionar Supabase para salvar campanhas.
 - Implementar login e histórico do usuário.
 - Evoluir o resultado com mais personalização por segmento.

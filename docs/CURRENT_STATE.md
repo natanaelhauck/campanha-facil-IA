@@ -4,7 +4,7 @@
 
 O **Campanha Fácil IA** é um MVP web para ajudar pequenos negócios brasileiros e pessoas leigas em anúncios a organizar um plano inicial de campanha para Meta Ads, Instagram, Facebook e WhatsApp.
 
-A versão atual não usa IA real. Ela gera um plano simulado e personalizado localmente com base nas respostas do formulário.
+A versão atual já tem a primeira base de IA real no backend do Next.js. Quando `OPENAI_API_KEY` não está configurada, o sistema usa fallback mock e mantém o fluxo funcionando.
 
 ## Direção Estratégica Atual
 
@@ -25,6 +25,7 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - App Router
 - Tailwind CSS
 - ESLint
+- OpenAI SDK no backend
 - `localStorage` para persistência temporária no navegador
 
 ## Funcionalidades Existentes
@@ -32,8 +33,13 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Home em `/` com proposta de valor, prévia do plano, benefícios, seção "Para quem é" e "Como funciona".
 - Formulário guiado em `/criar-campanha`, organizado por seções.
 - Salvamento dos dados do formulário no `localStorage` com a chave `campaign-form-data`.
+- Chamada para `POST /api/generate-campaign` ao enviar o formulário.
+- Geração com OpenAI Responses API quando há chave configurada.
+- Fallback mock automático quando não há chave, quando a IA está desabilitada ou quando a geração falha.
+- Salvamento do plano gerado no `localStorage` com a chave `campaign-plan-result`.
+- Salvamento da origem do plano com a chave `campaign-plan-source`.
 - Carregamento dos dados salvos ao voltar de `/resultado` para ajustar informações.
-- Resultado em `/resultado` com plano inicial simulado/personalizado.
+- Resultado em `/resultado` usando o plano salvo ou fallback local quando necessário.
 - Estado vazio amigável em `/resultado` quando não há dados salvos.
 - Textos de anúncio com botão para copiar.
 - Próximos passos, checklist, ideias de criativos e acompanhamento em 3, 7 e 14 dias.
@@ -42,11 +48,9 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 
 ## Funcionalidades Que Ainda Não Existem
 
-- OpenAI API.
 - Supabase.
 - Login.
 - Banco de dados.
-- Backend próprio.
 - Histórico de campanhas.
 - Exportação para PDF.
 - Publicação automática de campanhas.
@@ -58,15 +62,18 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 1. Usuário acessa `/`.
 2. Clica em `Criar minha campanha` ou `Começar`.
 3. Preenche o formulário guiado em `/criar-campanha`.
-4. O formulário salva os dados no `localStorage`.
-5. O usuário é redirecionado para `/resultado`.
-6. `/resultado` lê os dados salvos e exibe o plano inicial simulado.
-7. O usuário pode copiar textos de anúncio, revisar próximos passos e acompanhar checklist.
-8. O usuário pode clicar em `Ajustar informações` para voltar ao formulário com os dados preenchidos.
+4. O formulário chama `POST /api/generate-campaign`.
+5. O endpoint gera o plano com IA quando possível ou retorna fallback mock.
+6. O client salva formulário, plano e origem no `localStorage`.
+7. O usuário é redirecionado para `/resultado`.
+8. `/resultado` lê o plano salvo e exibe o plano inicial personalizado.
+9. O usuário pode copiar textos de anúncio, revisar próximos passos e acompanhar checklist.
+10. O usuário pode clicar em `Ajustar informações` para voltar ao formulário com os dados preenchidos.
 
 ## Principais Decisões
 
-- Começar sem IA real para validar fluxo, estrutura e utilidade do produto.
+- Adicionar IA real primeiro no backend, sem expor chave no frontend.
+- Manter fallback mock para desenvolvimento, falhas e ausência de chave.
 - Usar `localStorage` no MVP para evitar backend e banco de dados cedo demais.
 - Não prometer venda, lucro, performance ou aprovação de anúncios.
 - Tratar o plano gerado como orientação inicial.
@@ -75,11 +82,10 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 
 ## Próximos Passos Recomendados
 
-- Definir o formato esperado do plano gerado por IA.
-- Criar endpoint server-side para OpenAI API quando a Fase 2 começar.
-- Planejar limites de uso e custo por geração.
-- Implementar fallback amigável para falhas da IA.
-- Validar respostas antes de exibir na UI.
+- Testar a geração real com chave de desenvolvimento.
+- Ajustar prompt e schema a partir de exemplos reais.
+- Planejar limites de uso e custo por geração antes de liberar publicamente.
+- Melhorar observabilidade sem registrar dados sensíveis.
 - Revisar mensagens de orientação para evitar promessa exagerada.
 
 ## Comandos Úteis
@@ -92,6 +98,8 @@ npm run build
 git status --short --branch
 ```
 
+Para testar IA real localmente, copie `.env.example` para `.env.local` e configure `OPENAI_API_KEY`. Sem chave, o modo mock é esperado.
+
 ## Estado Atual De Validação
 
 Últimos checkpoints visuais validaram:
@@ -101,7 +109,8 @@ git status --short --branch
 - CTA `Começar` no header.
 - Botão `Ver como funciona` com rolagem repetida.
 - Formulário guiado com preenchimento e persistência.
-- Resultado personalizado com dados do formulário.
+- Resultado personalizado com dados do formulário e plano salvo.
+- Fallback mock sem `OPENAI_API_KEY`.
 - Botões `Copiar texto`.
 - Botões `Ver próximos passos` e `Voltar ao topo`.
 - `npm run lint` passando.

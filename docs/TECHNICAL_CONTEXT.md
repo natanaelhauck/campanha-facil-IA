@@ -7,13 +7,15 @@
 - Tailwind CSS.
 - ESLint.
 - React Client Components para páginas que acessam `localStorage`.
-- Sem backend próprio no MVP.
+- Rota backend no App Router para geração de plano.
+- OpenAI SDK usado apenas no servidor.
 
 ## Estrutura De Pastas Atual
 
 ```text
 src/
   app/
+    api/generate-campaign/route.ts
     criar-campanha/page.tsx
     resultado/page.tsx
     globals.css
@@ -28,6 +30,10 @@ src/
     Select.tsx
     Textarea.tsx
   data/mockCampaignResult.ts
+  lib/ai/
+    buildCampaignPrompt.ts
+    campaignPlanSchema.ts
+    generateCampaignPlan.ts
   types/campaign.ts
 ```
 
@@ -37,53 +43,77 @@ src/
 2. A home apresenta a proposta de valor, uma prévia do plano, benefícios e a seção `#como-funciona`.
 3. O usuário clica em `Criar minha campanha` ou `Começar`.
 4. Em `/criar-campanha`, preenche um formulário guiado por seções: negócio, oferta, público/região e configuração inicial.
-5. Ao enviar, os dados são serializados em JSON e salvos no `localStorage`.
-6. O usuário é redirecionado para `/resultado`.
-7. A página de resultado lê os dados salvos no client e monta um plano inicial simulado/personalizado.
-8. O usuário pode clicar em `Ajustar informações` para voltar ao formulário com os dados anteriores carregados.
+5. Ao enviar, o formulário chama `POST /api/generate-campaign`.
+6. A rota valida os campos obrigatórios e chama o serviço de geração.
+7. Se `OPENAI_API_KEY` estiver configurada e `AI_GENERATION_ENABLED` não for `false`, o serviço tenta gerar o plano com OpenAI Responses API e saída estruturada.
+8. Se a chave estiver ausente, a geração estiver desabilitada ou ocorrer erro/formato inesperado, o serviço retorna fallback mock compatível.
+9. O client salva os dados do formulário, o plano gerado e a origem do plano no `localStorage`.
+10. O usuário é redirecionado para `/resultado`.
+11. A página de resultado lê o plano salvo no client. Se não houver plano salvo, mantém fallback local com base nos dados do formulário.
+12. O usuário pode clicar em `Ajustar informações` para voltar ao formulário com os dados anteriores carregados.
 
 ## Uso Atual De localStorage
 
-A chave atual é `campaign-form-data`.
+As chaves atuais são:
+
+- `campaign-form-data`: dados preenchidos no formulário.
+- `campaign-plan-result`: plano retornado pelo endpoint ou fallback mock.
+- `campaign-plan-source`: origem do plano, `ai` ou `mock`.
 
 O `localStorage` é usado apenas como persistência temporária do MVP. Ele não substitui banco de dados e não deve ser usado para dados sensíveis.
 
 Em `/criar-campanha`, a leitura acontece no client com `useEffect`, parse seguro e preenchimento do formulário quando há dados válidos. Isso permite editar informações anteriores ao voltar de `/resultado`.
 
-Em `/resultado`, a leitura também acontece no client, com `useEffect`, `try/catch` no `JSON.parse` e estado amigável quando os dados não existem ou são inválidos.
+Em `/resultado`, a leitura também acontece no client, com `useEffect`, `try/catch` no `JSON.parse` e estado amigável quando os dados não existem ou são inválidos. A página prioriza `campaign-plan-result` quando ele existe.
+
+## Geração Com OpenAI
+
+A primeira base de IA real fica em `src/lib/ai/` e `src/app/api/generate-campaign/route.ts`.
+
+- `buildCampaignPrompt.ts` monta instruções em português do Brasil com foco em pequenos negócios, linguagem simples, WhatsApp/Instagram quando fizer sentido e nenhuma promessa de resultado.
+- `campaignPlanSchema.ts` define o formato estruturado esperado do plano.
+- `generateCampaignPlan.ts` decide entre OpenAI e fallback mock, valida o JSON retornado e nunca envia detalhes sensíveis de erro ao frontend.
+- A rota `POST /api/generate-campaign` aceita dados do formulário, valida campos obrigatórios e retorna `{ success, data, source, warning }`.
+
+Variáveis esperadas:
+
+```bash
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-5.5
+AI_GENERATION_ENABLED=true
+```
+
+`.env.local` deve ficar local e ignorado pelo Git. Sem chave real, o modo mock continua funcionando.
 
 ## Comportamentos Client-Side Atuais
 
 - O componente `Button` trata links internos com hash usando `scrollIntoView({ behavior: "smooth" })`, para que botões como `Ver como funciona`, `Ver próximos passos` e `Voltar ao topo` funcionem repetidamente.
 - A página `/resultado` usa `navigator.clipboard.writeText` para copiar textos de anúncio, com feedback simples de sucesso ou erro.
 - O formulário em `/criar-campanha` usa validação HTML simples com campos obrigatórios.
-- O envio do formulário mantém a chave `campaign-form-data` compatível com `/resultado`.
+- O envio do formulário mantém a chave `campaign-form-data` compatível com `/resultado` e adiciona o plano salvo quando a API responde.
 
 ## O Que Ainda Não Existe
 
-- Não há OpenAI API.
 - Não há Supabase.
 - Não há login.
 - Não há banco de dados.
-- Não há backend próprio.
 - Não há histórico de campanhas.
 - Não há exportação para PDF.
 - Não há publicação automática de campanhas.
 - Não há integração com Meta Ads API.
 - Não há cobrança, planos pagos ou painel SaaS completo.
 
-## Ausência Proposital De Backend
+## Limites Da Base Atual De IA
 
-O MVP não possui API, banco de dados, autenticação ou processamento server-side próprio. Essa decisão reduz complexidade e permite validar o fluxo principal antes de adicionar infraestrutura.
+A Fase 2 inicial adiciona somente a base backend para geração de plano. Ainda não há persistência, autenticação, limite por usuário, painel de histórico, cobrança, integração com Meta Ads ou publicação automática.
 
-## Pontos Planejados Para OpenAI API
+Pontos ainda pendentes para amadurecer a IA:
 
-- Receber os dados do formulário em rota server-side.
-- Validar e normalizar entradas.
-- Montar prompt estruturado.
-- Chamar OpenAI API no servidor.
-- Retornar plano em formato previsível.
-- Tratar erros, limites e custos.
+- Calibrar prompt e formato com testes reais.
+- Definir limite de uso e custo por geração.
+- Melhorar logs sem armazenar dados sensíveis.
+- Criar fallback e mensagens para indisponibilidade prolongada.
+- Avaliar validação mais rígida do payload e do plano antes de uso em produção.
 
 ## Pontos Planejados Para Supabase
 
@@ -100,4 +130,4 @@ O MVP não possui API, banco de dados, autenticação ou processamento server-si
 - Tailwind CSS mantém a interface simples e rápida de evoluir.
 - `localStorage` foi escolhido para o MVP por simplicidade.
 - `useSyncExternalStore` não deve ser usado para ler o plano atual, pois parsing de JSON no snapshot pode gerar objetos novos e causar renderizações problemáticas.
-- O resultado atual é simulado e não deve ser apresentado como recomendação garantida.
+- O resultado pode vir da IA ou do fallback mock e nunca deve ser apresentado como recomendação garantida.

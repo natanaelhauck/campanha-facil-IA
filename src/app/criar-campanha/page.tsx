@@ -7,9 +7,14 @@ import { Header } from "@/components/Header";
 import { Input } from "@/components/Input";
 import { Select } from "@/components/Select";
 import { Textarea } from "@/components/Textarea";
-import type { CampaignFormData } from "@/types/campaign";
+import type {
+  CampaignFormData,
+  CampaignGenerationResponse,
+} from "@/types/campaign";
 
 const campaignStorageKey = "campaign-form-data";
+const campaignPlanStorageKey = "campaign-plan-result";
+const campaignPlanSourceStorageKey = "campaign-plan-source";
 
 const initialForm: CampaignFormData = {
   businessName: "",
@@ -84,6 +89,8 @@ function FormSection({
 
 export default function CreateCampaignPage() {
   const [form, setForm] = useState(initialForm);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -100,10 +107,37 @@ export default function CreateCampaignPage() {
     setForm((current) => ({ ...current, [field]: value }));
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    localStorage.setItem(campaignStorageKey, JSON.stringify(form));
-    router.push("/resultado");
+    setSubmitError("");
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/generate-campaign", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
+
+      const result = (await response.json()) as CampaignGenerationResponse;
+
+      if (!response.ok || !result.success || !result.data || !result.source) {
+        throw new Error(result.error ?? "Erro ao gerar plano.");
+      }
+
+      localStorage.setItem(campaignStorageKey, JSON.stringify(form));
+      localStorage.setItem(campaignPlanStorageKey, JSON.stringify(result.data));
+      localStorage.setItem(campaignPlanSourceStorageKey, result.source);
+      router.push("/resultado");
+    } catch {
+      setSubmitError(
+        "Não foi possível gerar o plano agora. Confira sua conexão e tente novamente.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -135,10 +169,7 @@ export default function CreateCampaignPage() {
           </div>
         </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="grid gap-5"
-        >
+        <form onSubmit={handleSubmit} className="grid gap-5">
           <FormSection
             number="1"
             title="Sobre o negócio"
@@ -283,12 +314,21 @@ export default function CreateCampaignPage() {
 
           <div className="rounded-lg border border-stone-200 bg-white p-5 shadow-sm md:p-6">
             <p className="mb-4 max-w-2xl text-sm leading-6 text-stone-600">
-              A versão atual gera um plano inicial simulado e orientativo com
-              base nas suas respostas. Ele serve para organizar os próximos
-              passos, não para garantir resultado.
+              O plano gerado é uma orientação inicial com base nas suas
+              respostas. Se a IA não estiver configurada, o sistema usa um
+              fallback simulado para manter o fluxo funcionando.
             </p>
-            <Button type="submit" className="w-full sm:w-auto">
-              Gerar plano inicial
+            {submitError ? (
+              <p className="mb-4 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm leading-6 text-amber-950">
+                {submitError}
+              </p>
+            ) : null}
+            <Button
+              type="submit"
+              className="w-full sm:w-auto"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Gerando plano..." : "Gerar plano inicial"}
             </Button>
           </div>
         </form>

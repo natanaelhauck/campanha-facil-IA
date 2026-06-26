@@ -3,10 +3,16 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/Button";
 import { Header } from "@/components/Header";
-import { mockCampaignResult } from "@/data/mockCampaignResult";
-import type { CampaignFormData } from "@/types/campaign";
+import { createMockCampaignPlan } from "@/data/mockCampaignResult";
+import type {
+  CampaignFormData,
+  CampaignPlanResult,
+  CampaignPlanSource,
+} from "@/types/campaign";
 
 const campaignStorageKey = "campaign-form-data";
+const campaignPlanStorageKey = "campaign-plan-result";
+const campaignPlanSourceStorageKey = "campaign-plan-source";
 type CopyStatus = "idle" | "copied" | "error";
 
 function parseCampaignForm(value: string | null): CampaignFormData | null {
@@ -40,6 +46,44 @@ function parseCampaignForm(value: string | null): CampaignFormData | null {
 
 function display(value: string, fallback: string) {
   return value.trim() || fallback;
+}
+
+function parseCampaignPlan(value: string | null): CampaignPlanResult | null {
+  if (!value) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(value) as Partial<CampaignPlanResult>;
+
+    if (!parsed || typeof parsed !== "object") {
+      return null;
+    }
+
+    if (
+      typeof parsed.summary !== "string" ||
+      typeof parsed.recommendedObjective !== "string" ||
+      typeof parsed.suggestedAudience !== "string" ||
+      typeof parsed.budgetGuidance !== "string" ||
+      !Array.isArray(parsed.adTexts) ||
+      !Array.isArray(parsed.creativeIdeas) ||
+      !Array.isArray(parsed.setupSteps) ||
+      !Array.isArray(parsed.prePublishChecklist) ||
+      !Array.isArray(parsed.followUpPlan) ||
+      !Array.isArray(parsed.nextSteps) ||
+      typeof parsed.disclaimer !== "string"
+    ) {
+      return null;
+    }
+
+    return parsed as CampaignPlanResult;
+  } catch {
+    return null;
+  }
+}
+
+function parsePlanSource(value: string | null): CampaignPlanSource | null {
+  return value === "ai" || value === "mock" ? value : null;
 }
 
 function ResultSection({
@@ -139,12 +183,20 @@ function EmptyResult() {
 
 export default function ResultPage() {
   const [form, setForm] = useState<CampaignFormData | null>(null);
+  const [savedPlan, setSavedPlan] = useState<CampaignPlanResult | null>(null);
+  const [planSource, setPlanSource] = useState<CampaignPlanSource | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     queueMicrotask(() => {
       const savedForm = localStorage.getItem(campaignStorageKey);
       setForm(parseCampaignForm(savedForm));
+      setSavedPlan(
+        parseCampaignPlan(localStorage.getItem(campaignPlanStorageKey)),
+      );
+      setPlanSource(
+        parsePlanSource(localStorage.getItem(campaignPlanSourceStorageKey)),
+      );
       setIsLoading(false);
     });
   }, []);
@@ -173,69 +225,32 @@ export default function ResultPage() {
   const goal = display(form.goal, "receber contatos qualificados");
   const dailyBudget = display(form.dailyBudget, "orçamento inicial informado");
   const audience = display(form.audience, "pessoas com interesse na oferta");
-  const differentiator = display(form.differentiator, "atendimento confiável");
   const mainChannel = display(form.mainChannel, "canal principal");
   const experienceLevel = display(form.experienceLevel, "não informado");
-
-  const personalizedAdTexts = [
-    `${businessName} ajuda quem procura ${offer} em ${region}. Fale pelo ${mainChannel} e tire suas dúvidas de forma simples.`,
-    `Está buscando ${offer}? Conheça o atendimento da ${businessName} e veja como o diferencial "${differentiator}" pode ajudar.`,
-    `Oferta para ${audience}. Chame a ${businessName} pelo ${mainChannel} e receba uma orientação inicial.`,
-  ];
-
-  const nextSteps = [
-    {
-      title: "Revise a oferta",
-      description: `Confirme se "${offer}" está claro, com benefício fácil de entender e uma chamada simples para contato.`,
-    },
-    {
-      title: `Prepare o ${mainChannel}`,
-      description:
-        "Confira se o canal está funcionando, com alguém pronto para responder os primeiros contatos.",
-    },
-    {
-      title: "Separe criativos reais",
-      description: `Use fotos ou vídeos simples que mostrem ${offer} e reforcem ${differentiator}.`,
-    },
-    {
-      title: "Configure com verba controlada",
-      description: `Comece com ${dailyBudget} e acompanhe por alguns dias antes de aumentar o investimento.`,
-    },
-    {
-      title: "Acompanhe as conversas",
-      description:
-        "Observe dúvidas frequentes, qualidade dos contatos e sinais comerciais antes de fazer ajustes maiores.",
-    },
-  ];
+  const plan = savedPlan ?? createMockCampaignPlan(form);
+  const sourceLabel =
+    planSource === "ai"
+      ? "Plano gerado com IA"
+      : planSource === "mock"
+        ? "Plano simulado"
+        : "Plano inicial";
 
   const planHighlights = [
     {
       title: "Objetivo",
       value: goal,
-      description:
-        "Comece buscando contato direto e conversas qualificadas antes de ampliar a campanha.",
+      description: plan.recommendedObjective,
     },
     {
       title: "Público",
       value: audience,
-      description: `Use ${region} como base e evite segmentações muito estreitas no primeiro teste.`,
+      description: plan.suggestedAudience,
     },
     {
       title: "Orçamento",
       value: dailyBudget,
-      description:
-        "Mantenha uma verba diária consistente por pelo menos alguns dias para conseguir comparar os sinais.",
+      description: plan.budgetGuidance,
     },
-  ];
-
-  const creativeIdeas = [
-    `Mostre ${offer} em uma imagem real, destacando ${differentiator}.`,
-    ...mockCampaignResult.creativeIdeas,
-  ];
-
-  const checklistItems = [
-    `O canal principal (${mainChannel}) está pronto para receber contatos.`,
-    ...mockCampaignResult.prePublishChecklist,
   ];
 
   return (
@@ -246,7 +261,7 @@ export default function ResultPage() {
           <div className="flex flex-col justify-between gap-5 md:flex-row md:items-start">
             <div>
               <p className="text-sm font-semibold uppercase tracking-wide text-emerald-800">
-                Plano inicial recebido
+                {sourceLabel}
               </p>
               <h1 className="mt-3 max-w-3xl text-3xl font-bold leading-tight text-stone-950 md:text-4xl">
                 Resultado para {businessName}
@@ -301,9 +316,7 @@ export default function ResultPage() {
         </div>
 
         <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-5 text-sm leading-6 text-amber-950">
-          Este é um plano inicial gerado para orientação. Ele não garante
-          resultados e deve ser acompanhado e ajustado conforme os dados da
-          campanha.
+          {plan.disclaimer}
         </div>
 
         <div className="grid gap-5">
@@ -312,7 +325,7 @@ export default function ResultPage() {
             eyebrow="Próximos passos recomendados"
           >
             <div id="proximos-passos" className="grid gap-3 md:grid-cols-5">
-              {nextSteps.map((step, index) => (
+              {plan.nextSteps.map((step, index) => (
                 <article
                   key={step.title}
                   className="rounded-lg border border-stone-200 bg-stone-50 p-4"
@@ -333,15 +346,12 @@ export default function ResultPage() {
 
           <ResultSection title="Resumo do plano">
             <div className="grid gap-4 md:grid-cols-[1fr_1fr]">
+              <p>{plan.summary}</p>
               <p>
-                A campanha será criada para <strong>{businessName}</strong>, um
-                negócio do tipo <strong>{businessType}</strong> que atua em{" "}
-                <strong>{region}</strong>.
-              </p>
-              <p>
-                A oferta principal é <strong>{offer}</strong>, com foco em{" "}
-                <strong>{goal}</strong> pelo canal{" "}
-                <strong>{mainChannel}</strong>.
+                Dados usados: <strong>{businessName}</strong>,{" "}
+                <strong>{businessType}</strong>, <strong>{offer}</strong>,{" "}
+                <strong>{region}</strong>, canal <strong>{mainChannel}</strong>{" "}
+                e experiência <strong>{experienceLevel}</strong>.
               </p>
             </div>
           </ResultSection>
@@ -370,15 +380,19 @@ export default function ResultPage() {
             eyebrow="Use como ponto de partida"
           >
             <div className="grid gap-3">
-              {personalizedAdTexts.map((text, index) => (
-                <CopyableAdText key={text} index={index + 1} text={text} />
+              {plan.adTexts.map((adText, index) => (
+                <CopyableAdText
+                  key={`${adText.title}-${adText.text}`}
+                  index={index + 1}
+                  text={adText.text}
+                />
               ))}
             </div>
           </ResultSection>
 
           <ResultSection title="Ideias de criativos">
             <div className="grid gap-3 md:grid-cols-2">
-              {creativeIdeas.map((idea) => (
+              {plan.creativeIdeas.map((idea) => (
                 <div
                   key={idea}
                   className="rounded-lg border border-stone-200 bg-stone-50 p-4"
@@ -391,7 +405,7 @@ export default function ResultPage() {
 
           <ResultSection title="Passo a passo">
             <ol className="grid gap-3">
-              {mockCampaignResult.setupSteps.map((step, index) => (
+              {plan.setupSteps.map((step, index) => (
                 <li
                   key={step}
                   className="flex gap-3 rounded-lg bg-stone-50 p-4"
@@ -407,7 +421,7 @@ export default function ResultPage() {
 
           <ResultSection title="Checklist antes de publicar">
             <ul className="grid gap-3 md:grid-cols-2">
-              {checklistItems.map((item) => (
+              {plan.prePublishChecklist.map((item) => (
                 <li key={item} className="flex gap-3 rounded-lg bg-stone-50 p-4">
                   <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border border-emerald-700 text-xs font-bold text-emerald-800">
                     ✓
@@ -420,14 +434,17 @@ export default function ResultPage() {
 
           <ResultSection title="Acompanhamento em 3, 7 e 14 dias">
             <div className="grid gap-4 md:grid-cols-3">
-              {mockCampaignResult.followUpPlan.map((period) => (
+              {plan.followUpPlan.map((period) => (
                 <div key={period.period} className="rounded-lg bg-stone-50 p-4">
                   <h3 className="text-base font-bold text-stone-950">
                     {period.period}
                   </h3>
                   <ul className="mt-3 grid gap-2">
                     {period.actions.map((action) => (
-                      <li key={action} className="border-l-2 border-emerald-700 pl-3">
+                      <li
+                        key={action}
+                        className="border-l-2 border-emerald-700 pl-3"
+                      >
                         {action}
                       </li>
                     ))}

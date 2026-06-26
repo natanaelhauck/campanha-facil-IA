@@ -33,11 +33,11 @@ Supabase foi planejado para fases futuras. No MVP, não há login nem histórico
 
 Decisão atual: usar `localStorage` para manter o fluxo simples e validar a experiência.
 
-## Começar Com Resultado Simulado E Personalizado
+## Começar Com Resultado Simulado E Evoluir Para IA Real
 
-A primeira versão não usa IA real. O resultado combina dados do formulário com textos mockados.
+A primeira versão não usava IA real. O resultado combinava dados do formulário com textos mockados para validar estrutura, copy e utilidade antes de pagar por geração com IA.
 
-Decisão atual: validar estrutura, copy e utilidade do fluxo antes de pagar por geração com IA.
+Decisão atual: adicionar OpenAI API apenas no backend, manter fallback mock quando não houver chave ou quando a geração falhar, e não expor detalhes técnicos ou chaves no frontend.
 
 ## Usar Next.js, TypeScript E Tailwind
 
