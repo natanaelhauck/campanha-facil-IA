@@ -2,12 +2,14 @@ import type { SelectHTMLAttributes } from "react";
 
 type SelectProps = SelectHTMLAttributes<HTMLSelectElement> & {
   label: string;
+  helpText?: string;
   options: string[];
   placeholder?: string;
 };
 
 export function Select({
   label,
+  helpText,
   options,
   placeholder = "Selecione uma opção",
   id,
@@ -31,6 +33,7 @@ export function Select({
           </option>
         ))}
       </select>
+      {helpText ? <span className="text-xs font-normal text-stone-500">{helpText}</span> : null}
     </label>
   );
 }
