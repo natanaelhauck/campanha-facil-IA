@@ -29,6 +29,8 @@ npm run build
 ## Documentação
 
 - [Instruções para agentes](AGENTS.md)
+- [Estado atual do projeto](docs/CURRENT_STATE.md)
+- [Changelog](CHANGELOG.md)
 - [Produto](docs/PRODUCT.md)
 - [Roadmap](docs/ROADMAP.md)
 - [Contexto técnico](docs/TECHNICAL_CONTEXT.md)

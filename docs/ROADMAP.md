@@ -1,29 +1,48 @@
 # Roadmap
 
-## Fase 1: MVP Sem IA Real
+## Fase 1: MVP Visual Funcional Sem IA Real
 
-### Entregas
+Status: concluída como primeira versão visual funcional. Deve continuar recebendo pequenos ajustes de copy, documentação, acessibilidade e validação manual, mas o fluxo principal já está operacional.
+
+### Entregas Concluídas
 
 - Página inicial explicando a proposta.
-- Formulário guiado em `/criar-campanha`.
-- Resultado simulado em `/resultado`.
+- Página inicial com hero, prévia do plano, benefícios, seção "Para quem é" e "Como funciona".
+- Formulário guiado em `/criar-campanha`, organizado por seções.
+- Carregamento dos dados salvos ao voltar de `/resultado` para ajustar informações.
+- Resultado simulado em `/resultado`, com plano inicial personalizado.
 - Personalização local com `localStorage`.
+- Textos de anúncio copiáveis.
+- Próximos passos, checklist e acompanhamento em `/resultado`.
+- Botões de rolagem por âncora funcionando repetidamente.
 - Componentes reutilizáveis básicos.
 - Documentação base do projeto.
+- Checkpoint de documentação do estado atual.
 
-### Riscos
+### Riscos Atuais
 
 - Usuário interpretar o resultado simulado como recomendação definitiva.
 - Fluxo ficar genérico demais para segmentos específicos.
 - Falta de persistência real limitar uso recorrente.
+- Ajustes visuais futuros aumentarem escopo antes de validar uso real.
 
-### Critérios De Conclusão
+### Critérios De Conclusão Atendidos
 
 - Formulário salva dados no navegador.
 - Resultado exibe informações personalizadas.
 - Estado sem dados em `/resultado` funciona.
+- Formulário recarrega dados salvos ao ajustar informações.
+- Home, formulário e resultado são responsivos.
 - `npm run lint` e `npm run build` passam.
 - Fluxo principal validado manualmente.
+
+### Antes Da IA Real
+
+- Manter documentação atualizada.
+- Revisar manualmente copy de orientação para evitar promessa de resultado.
+- Definir formato esperado de resposta da IA antes de implementar endpoint.
+- Definir limites básicos de uso/custo para chamadas de IA.
+- Planejar fallback quando a geração real falhar.
 
 ## Fase 2: IA Real Com OpenAI API
 
@@ -31,9 +50,11 @@
 
 - Endpoint server-side para gerar plano com IA.
 - Prompt estruturado com dados do formulário.
+- Formato de resposta previsível para preencher seções do resultado.
 - Tratamento de erros e limites de resposta.
 - Avisos claros sobre orientação e ausência de garantia.
 - Possível modo de fallback quando a IA falhar.
+- Limites simples de uso para controlar custo.
 
 ### Riscos
 
@@ -41,6 +62,10 @@
 - Respostas inconsistentes ou longas demais.
 - Exposição indevida de chave de API no cliente.
 - Promessas exageradas de resultado.
+- Prompt injection ou entradas maliciosas no formulário.
+- Falta de validação do formato retornado pela IA.
+- Falha da API sem fallback amigável.
+- Logs excessivos com dados sensíveis do usuário.
 
 ### Critérios De Conclusão
 
@@ -48,6 +73,8 @@
 - Plano gerado com tempo de resposta aceitável.
 - Erros tratados de forma amigável.
 - Custo e limites documentados.
+- Resposta validada antes de exibir na UI.
+- Fallback funcionando quando a IA falhar.
 - Lint, build e teste manual passam.
 
 ## Fase 3: Autenticação E Histórico Com Supabase
