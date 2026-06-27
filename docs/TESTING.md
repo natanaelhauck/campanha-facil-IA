@@ -128,6 +128,10 @@ Use apenas uma chave de desenvolvimento em `.env.local`.
 
 Se a API falhar, o comportamento esperado é fallback mock com `campaign-plan-source` igual a `mock`.
 
+Em desenvolvimento, inspecione o campo `debug` da resposta de `POST /api/generate-campaign` ou o log `[campaign-ai]`. O diagnóstico mostra apenas metadados seguros. Não deve registrar chave, headers, payload, resposta completa ou stack trace.
+
+Se o debug mostrar `fallbackReason: "quota_exceeded"`, `apiStatus: 429` e `apiCode: "insufficient_quota"`, regularize a cota ou o faturamento do projeto OpenAI antes de repetir o teste real. O SDK está configurado sem retries automáticos para evitar chamadas adicionais nesse cenário.
+
 ## Como Testar Responsividade
 
 - Reduza a largura do navegador ou use DevTools em largura próxima de 390px.

@@ -13,6 +13,17 @@ export type CampaignFormData = {
 
 export type CampaignPlanSource = "ai" | "mock";
 
+export type CampaignFallbackReason =
+  | "missing_key"
+  | "disabled"
+  | "quota_exceeded"
+  | "api_error"
+  | "incomplete_response"
+  | "refusal"
+  | "empty_response"
+  | "invalid_json"
+  | "validation_failed";
+
 export type CampaignPlanText = {
   title: string;
   text: string;
@@ -48,6 +59,15 @@ export type CampaignGenerationResponse = {
   source?: CampaignPlanSource;
   warning?: string;
   error?: string;
+  debug?: {
+    fallbackReason?: CampaignFallbackReason;
+    model: string;
+    generationEnabled: boolean;
+    apiStatus?: number;
+    apiCode?: string;
+    responseStatus?: string;
+    incompleteReason?: string;
+  };
 };
 
 export type CampaignResult = CampaignPlanResult;

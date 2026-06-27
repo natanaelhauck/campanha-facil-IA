@@ -151,11 +151,14 @@ export async function POST(request: Request) {
   }
 
   const result = await generateCampaignPlan(validation.data);
+  const debug =
+    process.env.NODE_ENV === "development" ? result.debug : undefined;
 
   return NextResponse.json({
     success: true,
     data: result.data,
     source: result.source,
     warning: result.warning,
+    debug,
   });
 }

@@ -39,6 +39,8 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Limite conservador de saída por `OPENAI_MAX_OUTPUT_TOKENS`, com padrão 1800.
 - Validação de payload com campos obrigatórios, limites por campo e limite total de entrada.
 - Fallback mock automático quando não há chave, quando a IA está desabilitada ou quando a geração falha.
+- Diagnóstico seguro em desenvolvimento com motivo do fallback, sem expor chave, payload ou resposta bruta.
+- Chamadas OpenAI sem retries automáticos, evitando novas tentativas em erros como cota insuficiente.
 - Salvamento do plano gerado no `localStorage` com a chave `campaign-plan-result`.
 - Salvamento da origem do plano com a chave `campaign-plan-source`.
 - Carregamento dos dados salvos ao voltar de `/resultado` para ajustar informações.
@@ -86,7 +88,8 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 
 ## Próximos Passos Recomendados
 
-- Testar a geração real com chave de desenvolvimento.
+- Regularizar a cota/faturamento do projeto OpenAI usado no desenvolvimento.
+- Repetir um único teste de geração real após a cota estar disponível.
 - Ajustar prompt e schema a partir de exemplos reais.
 - Planejar limites de uso e custo por geração antes de liberar publicamente.
 - Implementar limite por usuário/IP em fase futura.
@@ -116,6 +119,8 @@ Para testar IA real localmente, copie `.env.example` para `.env.local` e configu
 - Formulário guiado com preenchimento e persistência.
 - Resultado personalizado com dados do formulário e plano salvo.
 - Fallback mock sem `OPENAI_API_KEY`.
+- Modo mock forçado com `AI_GENERATION_ENABLED=false`.
+- Tentativa real chegando à OpenAI e retornando `429 insufficient_quota`, com fallback seguro.
 - Botões `Copiar texto`.
 - Botões `Ver próximos passos` e `Voltar ao topo`.
 - `npm run lint` passando.

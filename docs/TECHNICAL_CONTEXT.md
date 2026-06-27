@@ -72,8 +72,10 @@ A primeira base de IA real fica em `src/lib/ai/` e `src/app/api/generate-campaig
 
 - `buildCampaignPrompt.ts` monta instruções em português do Brasil com foco em pequenos negócios, linguagem simples, WhatsApp/Instagram quando fizer sentido e nenhuma promessa de resultado.
 - `campaignPlanSchema.ts` define o formato estruturado esperado do plano.
-- `generateCampaignPlan.ts` decide entre OpenAI e fallback mock, define modelo e limite de tokens, valida o JSON retornado e nunca envia detalhes sensíveis de erro ao frontend.
+- `generateCampaignPlan.ts` decide entre OpenAI e fallback mock, define modelo e limite de tokens, valida o JSON retornado e classifica falhas sem registrar chave, payload, resposta bruta ou stack trace.
 - A rota `POST /api/generate-campaign` aceita dados do formulário, limita tamanho do payload, valida campos obrigatórios, normaliza textos e retorna `{ success, data, source, warning }`.
+- Em `development`, a rota também retorna `debug` com metadados não sensíveis, como modelo, geração habilitada, status da API e motivo do fallback. Esse bloco não é retornado em produção.
+- O cliente OpenAI usa `maxRetries: 0`. Assim, erros de cota, autenticação ou configuração caem imediatamente no fallback e não geram tentativas reais adicionais automáticas.
 
 Variáveis esperadas:
 
@@ -89,6 +91,8 @@ AI_GENERATION_ENABLED=true
 `OPENAI_MODEL` é configurável porque a disponibilidade de modelos depende da conta e do momento. O fallback atual de desenvolvimento é `gpt-4.1-mini`; ajuste quando necessário.
 
 `OPENAI_MAX_OUTPUT_TOKENS` controla o tamanho máximo da resposta. O serviço aplica um intervalo defensivo entre 800 e 4000 tokens, com padrão 1800.
+
+Os motivos de fallback distinguem chave ausente, geração desabilitada, cota insuficiente, erro de API, resposta incompleta, recusa, resposta vazia, JSON inválido e falha de validação. Um `429` com `apiCode: "insufficient_quota"` é classificado como `quota_exceeded`.
 
 ## Comportamentos Client-Side Atuais
 

@@ -35,6 +35,8 @@ Não versione `.env.local` nem chaves reais. Sem `OPENAI_API_KEY`, ou com `AI_GE
 
 O modelo padrão de desenvolvimento é `gpt-4.1-mini`. Ajuste `OPENAI_MODEL` se sua conta usar outro modelo disponível.
 
+Em desenvolvimento, a resposta do endpoint inclui um bloco `debug` sem dados sensíveis, com modelo, estado da geração e motivo do fallback. Um erro `429` com código `insufficient_quota` indica falta de cota ou faturamento disponível no projeto OpenAI; nesse caso, o sistema mantém o plano de demonstração.
+
 ## Scripts úteis
 
 ```bash
