@@ -1,6 +1,9 @@
 import OpenAI from "openai";
 import type { CampaignFallbackReason, CampaignFormData } from "@/types/campaign";
-import { buildCampaignPrompt } from "./buildCampaignPrompt";
+import {
+  buildCampaignPrompt,
+  campaignPlanSystemInstruction,
+} from "./buildCampaignPrompt";
 import {
   getProviderModel,
   parseCampaignPlanJson,
@@ -122,8 +125,7 @@ export async function generateCampaignPlanWithOpenAI(
     });
     const response = await client.responses.create({
       model,
-      instructions:
-        "Você gera planos iniciais de campanha seguros e práticos para pequenos negócios brasileiros. Nunca prometa resultado garantido.",
+      instructions: campaignPlanSystemInstruction,
       input: buildCampaignPrompt(form),
       max_output_tokens: getMaxOutputTokens(),
       text: {

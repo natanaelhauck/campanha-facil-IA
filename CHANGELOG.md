@@ -13,6 +13,14 @@ Todas as mudanças relevantes do projeto serão resumidas neste arquivo.
 
 ## Fase 2: Base De IA Real
 
+### Qualidade Dos Planos Gerados
+
+- Refinado o prompt compartilhado por OpenAI e Gemini para gerar orientações mais práticas, específicas e adequadas a pessoas leigas.
+- Padronizados três papéis para textos de anúncio, cinco próximos passos concretos e acompanhamento em 3, 7 e 14 dias.
+- Reforçadas as regras de orçamento conservador, prioridade ao canal informado e ausência de aumento automático de verba.
+- Adicionada validação local contra promessas claras e próximos passos vagos, mantendo fallback mock para respostas inválidas.
+- Atualizado o plano mock para refletir as mesmas orientações operacionais.
+
 ### Gemini Como Provedor Alternativo
 
 - Adicionada dependência oficial `@google/genai`.

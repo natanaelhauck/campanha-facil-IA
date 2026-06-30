@@ -71,12 +71,13 @@ Em `/resultado`, a leitura também acontece no client, com `useEffect`, `try/cat
 
 A camada de provedores fica em `src/lib/ai/` e `src/app/api/generate-campaign/route.ts`.
 
-- `buildCampaignPrompt.ts` monta instruções em português do Brasil com foco em pequenos negócios, linguagem simples, WhatsApp/Instagram quando fizer sentido e nenhuma promessa de resultado.
-- `campaignPlanSchema.ts` define o formato estruturado esperado do plano.
+- `buildCampaignPrompt.ts` monta instruções em português do Brasil com foco em ações executáveis, adaptação à oferta e ao canal, orçamento conservador e nenhuma promessa de resultado.
+- `campaignPlanSchema.ts` exige três textos de anúncio com papéis distintos, cinco próximos passos e acompanhamento em 3, 7 e 14 dias.
 - `generateCampaignPlan.ts` seleciona `mock`, OpenAI ou Gemini e centraliza o fallback.
 - `generateCampaignPlanWithOpenAI.ts` usa OpenAI Responses API com Structured Outputs.
 - `generateCampaignPlanWithGemini.ts` usa `@google/genai`, `generateContent`, JSON Schema e validação local.
 - `campaignPlanProvider.ts` contém o contrato comum, modelos padrão e parse seguro do plano.
+- `campaignPlanValidation.ts` valida quantidades, ordem do acompanhamento, tamanho dos textos e rejeita promessas claras ou próximos passos vagos antes de aceitar a resposta de IA.
 - A rota `POST /api/generate-campaign` aceita dados do formulário, limita tamanho do payload, valida campos obrigatórios, normaliza textos e retorna `{ success, data, source, provider, warning }`.
 - Em `development`, a rota também retorna `debug` com provedor tentado, modelo, geração habilitada, status da API e motivo do fallback. Esse bloco não é retornado em produção.
 - O cliente OpenAI usa `maxRetries: 0`. Assim, erros de cota, autenticação ou configuração caem imediatamente no fallback e não geram tentativas reais adicionais automáticas.
@@ -127,11 +128,11 @@ A Fase 2 inicial adiciona somente a base backend para geração de plano. Ainda 
 
 Pontos ainda pendentes para amadurecer a IA:
 
-- Calibrar prompt e formato com testes reais.
+- Continuar calibrando prompt e formato com amostras reais de diferentes tipos de negócio.
 - Definir limite de uso e custo por geração.
 - Melhorar logs sem armazenar dados sensíveis.
 - Criar fallback e mensagens para indisponibilidade prolongada.
-- Avaliar validação mais rígida do payload e do plano antes de uso em produção.
+- Ampliar testes automatizados da validação semântica antes de uso em produção.
 - Implementar limite por usuário/IP em fase futura com autenticação, middleware ou camada de infraestrutura.
 
 ## Pontos Planejados Para Supabase

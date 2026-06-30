@@ -1,6 +1,9 @@
 import { ApiError, GoogleGenAI } from "@google/genai";
 import type { CampaignFallbackReason, CampaignFormData } from "@/types/campaign";
-import { buildCampaignPrompt } from "./buildCampaignPrompt";
+import {
+  buildCampaignPrompt,
+  campaignPlanSystemInstruction,
+} from "./buildCampaignPrompt";
 import {
   getProviderModel,
   parseCampaignPlanJson,
@@ -49,8 +52,7 @@ export async function generateCampaignPlanWithGemini(
       model,
       contents: buildCampaignPrompt(form),
       config: {
-        systemInstruction:
-          "Você gera planos iniciais de campanha seguros e práticos para pequenos negócios brasileiros. Nunca prometa resultado garantido.",
+        systemInstruction: campaignPlanSystemInstruction,
         responseMimeType: "application/json",
         responseJsonSchema: campaignPlanSchema,
         maxOutputTokens,

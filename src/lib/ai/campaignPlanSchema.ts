@@ -18,12 +18,12 @@ export const campaignPlanSchema = {
     summary: {
       type: "string",
       description:
-        "Resumo curto do plano inicial, usando dados do negócio e sem prometer resultado.",
+        "Resumo específico em até duas frases, usando dados do negócio e apresentando o plano como ponto de partida.",
     },
     recommendedObjective: {
       type: "string",
       description:
-        "Objetivo recomendado explicado em linguagem simples para pequenos negócios.",
+        "Objetivo recomendado em linguagem simples e coerente com o canal; para Meta com WhatsApp, priorizar mensagens ou conversas.",
     },
     suggestedAudience: {
       type: "string",
@@ -33,7 +33,7 @@ export const campaignPlanSchema = {
     budgetGuidance: {
       type: "string",
       description:
-        "Orientação de orçamento conservadora, respeitando o valor informado pelo usuário.",
+        "Orientação conservadora que cita o orçamento informado e recomenda observar os primeiros dias antes de alterar a verba.",
     },
     adTexts: {
       type: "array",
@@ -46,12 +46,13 @@ export const campaignPlanSchema = {
         properties: {
           title: {
             type: "string",
-            description: "Título curto, como Texto 1, Texto 2 ou Texto 3.",
+            description:
+              "Usar Texto 1, Texto 2 e Texto 3, respectivamente e sem repetir.",
           },
           text: {
             type: "string",
             description:
-              "Texto de anúncio em português do Brasil, simples e sem promessa garantida.",
+              "Texto adaptado à oferta, com até 300 caracteres, CTA claro, sem exagero ou promessa. Texto 1 é direto; Texto 2 destaca benefício ou diferencial; Texto 3 convida levemente para uma conversa no canal informado.",
           },
         },
       },
@@ -60,6 +61,8 @@ export const campaignPlanSchema = {
       type: "array",
       minItems: 3,
       maxItems: 4,
+      description:
+        "Ideias simples de fotos ou vídeos reais que o pequeno negócio consiga produzir.",
       items: {
         type: "string",
       },
@@ -68,6 +71,8 @@ export const campaignPlanSchema = {
       type: "array",
       minItems: 4,
       maxItems: 6,
+      description:
+        "Etapas operacionais simples: objetivo, região, orçamento informado, poucos criativos e acompanhamento de mensagens, custo e qualidade.",
       items: {
         type: "string",
       },
@@ -76,6 +81,8 @@ export const campaignPlanSchema = {
       type: "array",
       minItems: 5,
       maxItems: 6,
+      description:
+        "Verificações práticas antes de publicar, incluindo canal, atendimento, oferta, criativo, orçamento e público ou localização.",
       items: {
         type: "string",
       },
@@ -84,6 +91,8 @@ export const campaignPlanSchema = {
       type: "array",
       minItems: 3,
       maxItems: 3,
+      description:
+        "Acompanhamento na ordem 3, 7 e 14 dias, sem aumento automático de orçamento.",
       items: {
         type: "object",
         additionalProperties: false,
@@ -106,8 +115,10 @@ export const campaignPlanSchema = {
     },
     nextSteps: {
       type: "array",
-      minItems: 3,
+      minItems: 5,
       maxItems: 5,
+      description:
+        "Exatamente cinco ações concretas em ordem de execução. Não incluir estudo genérico, aprendizado sobre ferramentas ou revisão de políticas.",
       items: {
         type: "object",
         additionalProperties: false,
@@ -115,9 +126,12 @@ export const campaignPlanSchema = {
         properties: {
           title: {
             type: "string",
+            description: "Ação curta iniciada por um verbo.",
           },
           description: {
             type: "string",
+            description:
+              "Instrução específica e executável, relacionada aos dados do negócio.",
           },
         },
       },
@@ -125,7 +139,7 @@ export const campaignPlanSchema = {
     disclaimer: {
       type: "string",
       description:
-        "Aviso claro de que o plano é orientativo e não garante vendas, lucro ou performance.",
+        "Aviso claro de que o plano é inicial, precisa ser revisado e não garante vendas, lucro, aprovação ou performance.",
     },
   },
 } as const;

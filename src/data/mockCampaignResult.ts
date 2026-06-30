@@ -24,7 +24,7 @@ export const mockCampaignResult: CampaignPlanResult = {
     },
     {
       title: "Texto 3",
-      text: "Oferta para quem está na região. Chame agora e veja como podemos ajudar.",
+      text: "Quer saber se esta oferta faz sentido para você? Chame pelo WhatsApp e converse com a gente.",
     },
   ],
   creativeIdeas: [
@@ -34,10 +34,10 @@ export const mockCampaignResult: CampaignPlanResult = {
   ],
   setupSteps: [
     "Abra o Gerenciador de Anúncios da Meta e escolha criar uma nova campanha.",
-    "Selecione o objetivo recomendado e defina a região de atendimento.",
-    "Configure o público usando interesses amplos e linguagem simples.",
-    "Adicione os textos e criativos, mantendo uma chamada clara para o canal principal.",
-    "Publique com orçamento controlado e acompanhe os primeiros resultados diariamente.",
+    "Selecione o objetivo de mensagens ou conversas e defina a região de atendimento.",
+    "Use o orçamento diário informado sem configurações avançadas.",
+    "Publique com poucos textos, fotos ou vídeos reais e uma chamada clara para contato.",
+    "Acompanhe mensagens, custo por contato e qualidade das conversas nos primeiros dias.",
   ],
   prePublishChecklist: [
     "O WhatsApp, Instagram, site ou endereço informado está funcionando.",
@@ -64,8 +64,8 @@ export const mockCampaignResult: CampaignPlanResult = {
     {
       period: "14 dias",
       actions: [
-        "Aumente o orçamento aos poucos apenas se houver retorno comercial ou bons sinais.",
-        "Teste um novo criativo usando aprendizados das primeiras conversas.",
+        "Decida se mantém, ajusta ou pausa a campanha conforme o custo e a qualidade dos contatos.",
+        "Teste um novo criativo ou considere aumentar a verba apenas se os sinais forem consistentes.",
       ],
     },
   ],
@@ -131,7 +131,7 @@ export function createMockCampaignPlan(
       },
       {
         title: "Texto 3",
-        text: `Oferta para ${audience}. Chame a ${businessName} pelo ${mainChannel} e receba uma orientação inicial.`,
+        text: `Quer saber mais sobre ${offer}? Chame a ${businessName} pelo ${mainChannel} e converse com a gente sem compromisso.`,
       },
     ],
     creativeIdeas: [

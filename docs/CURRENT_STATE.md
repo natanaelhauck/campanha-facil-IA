@@ -39,6 +39,7 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Modelos configuráveis por `OPENAI_MODEL` e `GEMINI_MODEL`.
 - Limite conservador de saída por `OPENAI_MAX_OUTPUT_TOKENS`, com padrão 1800.
 - Validação de payload com campos obrigatórios, limites por campo e limite total de entrada.
+- Validação do plano com três textos de anúncio, cinco próximos passos concretos, acompanhamento ordenado em 3, 7 e 14 dias e rejeição de promessas ou orientações vagas.
 - Fallback mock automático quando não há chave, quando a IA está desabilitada ou quando a geração falha.
 - Diagnóstico seguro em desenvolvimento com motivo do fallback, sem expor chave, payload ou resposta bruta.
 - Chamadas OpenAI sem retries automáticos, evitando novas tentativas em erros como cota insuficiente.
@@ -94,11 +95,11 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 
 - Regularizar a cota/faturamento do projeto OpenAI usado no desenvolvimento.
 - Repetir um único teste de geração real após a cota estar disponível.
-- Ajustar prompt e schema a partir de exemplos reais.
+- Calibrar o prompt refinado com amostras de diferentes tipos de negócio.
 - Planejar limites de uso e custo por geração antes de liberar publicamente.
 - Implementar limite por usuário/IP em fase futura.
 - Melhorar observabilidade sem registrar dados sensíveis.
-- Revisar mensagens de orientação para evitar promessa exagerada.
+- Criar testes automatizados específicos para regras de qualidade do plano.
 
 ## Comandos Úteis
 

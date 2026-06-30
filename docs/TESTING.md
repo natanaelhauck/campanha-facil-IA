@@ -138,6 +138,11 @@ Use apenas uma chave de desenvolvimento em `.env.local`.
 - Confirme que `campaign-plan-source` é `ai` quando a API responde no formato esperado.
 - Confirme que `campaign-plan-provider` corresponde a `openai` ou `gemini`.
 - Confirme que o texto continua em português do Brasil, simples, orientativo e sem promessa de venda ou resultado garantido.
+- Confirme que existem exatamente cinco próximos passos, todos com ações concretas, sem instruções vagas como aprender sobre anúncios ou revisar políticas.
+- Confirme que os três textos cumprem papéis diferentes: abordagem direta, benefício ou diferencial e convite leve para conversa.
+- Confirme que o passo a passo usa região, orçamento e poucos criativos, sem exigir configurações avançadas.
+- Confirme que o checklist é verificável e que o acompanhamento aparece na ordem 3, 7 e 14 dias.
+- Aos 14 dias, confirme que o plano propõe uma decisão baseada em custo e qualidade dos contatos, sem aumento automático de verba.
 - Confirme que `OPENAI_MAX_OUTPUT_TOKENS` está em um valor conservador antes de testar com tráfego real.
 
 Se a API falhar, o comportamento esperado é fallback mock com `campaign-plan-source` igual a `mock`.
