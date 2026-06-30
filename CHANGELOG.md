@@ -13,6 +13,14 @@ Todas as mudanças relevantes do projeto serão resumidas neste arquivo.
 
 ## Fase 2: Base De IA Real
 
+### Gemini Como Provedor Alternativo
+
+- Adicionada dependência oficial `@google/genai`.
+- Criado provedor Gemini com saída JSON estruturada e validação pelo contrato `CampaignPlanResult`.
+- Adicionada seleção por `AI_PROVIDER`, mantendo OpenAI e fallback mock.
+- Definido `mock` como padrão seguro para evitar chamadas acidentais.
+- Adicionado registro do provedor efetivo em `campaign-plan-provider`.
+
 ### OpenAI API Com Fallback Mock
 
 - Adicionada dependência oficial `openai`.

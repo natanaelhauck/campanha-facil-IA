@@ -158,6 +158,7 @@ export async function POST(request: Request) {
     success: true,
     data: result.data,
     source: result.source,
+    provider: result.provider,
     warning: result.warning,
     debug,
   });

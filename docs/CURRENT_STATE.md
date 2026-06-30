@@ -4,7 +4,7 @@
 
 O **Campanha Fácil IA** é um MVP web para ajudar pequenos negócios brasileiros e pessoas leigas em anúncios a organizar um plano inicial de campanha para Meta Ads, Instagram, Facebook e WhatsApp.
 
-A versão atual já tem a primeira base de IA real no backend do Next.js. Quando `OPENAI_API_KEY` não está configurada, o sistema usa fallback mock e mantém o fluxo funcionando.
+A versão atual já tem uma camada de IA real no backend do Next.js com OpenAI e Gemini. Sem provedor real configurado, o sistema usa fallback mock e mantém o fluxo funcionando.
 
 ## Direção Estratégica Atual
 
@@ -34,8 +34,9 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Formulário guiado em `/criar-campanha`, organizado por seções.
 - Salvamento dos dados do formulário no `localStorage` com a chave `campaign-form-data`.
 - Chamada para `POST /api/generate-campaign` ao enviar o formulário.
-- Geração com OpenAI Responses API quando há chave configurada.
-- Modelo configurável por `OPENAI_MODEL`, com fallback de desenvolvimento `gpt-4.1-mini`.
+- Seleção segura por `AI_PROVIDER`: `mock`, `openai` ou `gemini`, com padrão `mock`.
+- Geração com OpenAI Responses API ou Google Gemini API quando o provedor e a chave estão configurados.
+- Modelos configuráveis por `OPENAI_MODEL` e `GEMINI_MODEL`.
 - Limite conservador de saída por `OPENAI_MAX_OUTPUT_TOKENS`, com padrão 1800.
 - Validação de payload com campos obrigatórios, limites por campo e limite total de entrada.
 - Fallback mock automático quando não há chave, quando a IA está desabilitada ou quando a geração falha.
@@ -43,6 +44,7 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Chamadas OpenAI sem retries automáticos, evitando novas tentativas em erros como cota insuficiente.
 - Salvamento do plano gerado no `localStorage` com a chave `campaign-plan-result`.
 - Salvamento da origem do plano com a chave `campaign-plan-source`.
+- Salvamento do provedor efetivo com a chave `campaign-plan-provider`.
 - Carregamento dos dados salvos ao voltar de `/resultado` para ajustar informações.
 - Resultado em `/resultado` usando o plano salvo ou fallback local quando necessário.
 - Indicação discreta da origem do plano: IA ou demonstração.
@@ -69,7 +71,7 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 2. Clica em `Criar minha campanha` ou `Começar`.
 3. Preenche o formulário guiado em `/criar-campanha`.
 4. O formulário chama `POST /api/generate-campaign`.
-5. O endpoint gera o plano com IA quando possível ou retorna fallback mock.
+5. O endpoint seleciona o provedor configurado, gera o plano com IA quando possível ou retorna fallback mock.
 6. O client salva formulário, plano e origem no `localStorage`.
 7. O usuário é redirecionado para `/resultado`.
 8. `/resultado` lê o plano salvo e exibe o plano inicial personalizado.
@@ -79,6 +81,8 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 ## Principais Decisões
 
 - Adicionar IA real primeiro no backend, sem expor chave no frontend.
+- Manter OpenAI e Gemini atrás do mesmo contrato de resultado e validação.
+- Usar `mock` como provedor padrão para impedir chamadas acidentais.
 - Manter fallback mock para desenvolvimento, falhas e ausência de chave.
 - Usar `localStorage` no MVP para evitar backend e banco de dados cedo demais.
 - Não prometer venda, lucro, performance ou aprovação de anúncios.
@@ -106,7 +110,7 @@ npm run build
 git status --short --branch
 ```
 
-Para testar IA real localmente, copie `.env.example` para `.env.local` e configure `OPENAI_API_KEY`. Sem chave, o modo mock é esperado. Ajuste `OPENAI_MODEL` se sua conta não tiver acesso ao modelo padrão.
+Para testar IA real localmente, copie `.env.example` para `.env.local`, escolha `AI_PROVIDER` e configure somente a chave do provedor escolhido. Use `GEMINI_API_KEY` para Gemini. Sem configuração explícita, o modo mock é esperado.
 
 ## Estado Atual De Validação
 
@@ -119,8 +123,10 @@ Para testar IA real localmente, copie `.env.example` para `.env.local` e configu
 - Formulário guiado com preenchimento e persistência.
 - Resultado personalizado com dados do formulário e plano salvo.
 - Fallback mock sem `OPENAI_API_KEY`.
+- Fallback mock com Gemini sem chave ou indisponível.
 - Modo mock forçado com `AI_GENERATION_ENABLED=false`.
 - Tentativa real chegando à OpenAI e retornando `429 insufficient_quota`, com fallback seguro.
+- Geração real com `gemini-2.5-flash`, retornando `source: ai`, `provider: gemini` e plano validado.
 - Botões `Copiar texto`.
 - Botões `Ver próximos passos` e `Voltar ao topo`.
 - `npm run lint` passando.

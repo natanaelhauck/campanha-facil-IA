@@ -15,6 +15,7 @@ import type {
 const campaignStorageKey = "campaign-form-data";
 const campaignPlanStorageKey = "campaign-plan-result";
 const campaignPlanSourceStorageKey = "campaign-plan-source";
+const campaignPlanProviderStorageKey = "campaign-plan-provider";
 
 const initialForm: CampaignFormData = {
   businessName: "",
@@ -130,6 +131,10 @@ export default function CreateCampaignPage() {
       localStorage.setItem(campaignStorageKey, JSON.stringify(form));
       localStorage.setItem(campaignPlanStorageKey, JSON.stringify(result.data));
       localStorage.setItem(campaignPlanSourceStorageKey, result.source);
+      localStorage.setItem(
+        campaignPlanProviderStorageKey,
+        result.provider ?? (result.source === "ai" ? "openai" : "mock"),
+      );
       router.push("/resultado");
     } catch {
       setSubmitError(

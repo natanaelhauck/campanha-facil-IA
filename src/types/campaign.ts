@@ -13,10 +13,15 @@ export type CampaignFormData = {
 
 export type CampaignPlanSource = "ai" | "mock";
 
+export type CampaignAIProvider = "mock" | "openai" | "gemini";
+
 export type CampaignFallbackReason =
   | "missing_key"
   | "disabled"
+  | "invalid_provider"
   | "quota_exceeded"
+  | "authentication_error"
+  | "model_not_available"
   | "api_error"
   | "incomplete_response"
   | "refusal"
@@ -57,9 +62,11 @@ export type CampaignGenerationResponse = {
   success: boolean;
   data?: CampaignPlanResult;
   source?: CampaignPlanSource;
+  provider?: CampaignAIProvider;
   warning?: string;
   error?: string;
   debug?: {
+    provider: CampaignAIProvider;
     fallbackReason?: CampaignFallbackReason;
     model: string;
     generationEnabled: boolean;

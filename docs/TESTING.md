@@ -12,24 +12,35 @@ git status --short --branch
 
 ## Configuração De Ambiente
 
-Para o teste padrão de desenvolvimento, não é necessário ter `OPENAI_API_KEY`. Sem chave, o endpoint retorna um plano mockado compatível.
+Para o teste padrão de desenvolvimento, não é necessário ter chave de API. Com `AI_PROVIDER=mock`, o endpoint retorna um plano mockado compatível.
 
 Para testar geração real, crie um `.env.local` local, nunca commitado:
 
 ```bash
+AI_PROVIDER=mock
 OPENAI_API_KEY=sua-chave-local
 OPENAI_MODEL=gpt-4.1-mini
 OPENAI_MAX_OUTPUT_TOKENS=1800
+GEMINI_API_KEY=sua-chave-local
+GEMINI_MODEL=gemini-2.5-flash
 AI_GENERATION_ENABLED=true
 ```
 
-Para forçar o modo mock mesmo com chave configurada:
+Escolha apenas o provedor que deseja testar:
+
+```bash
+AI_PROVIDER=mock
+AI_PROVIDER=openai
+AI_PROVIDER=gemini
+```
+
+Para desabilitar geração real mesmo com um provedor e uma chave configurados:
 
 ```bash
 AI_GENERATION_ENABLED=false
 ```
 
-Se sua conta não tiver acesso ao modelo configurado, ajuste `OPENAI_MODEL` para um modelo disponível. O build e o fluxo mock não dependem de modelo válido.
+O padrão é `mock`. A variável correta da chave Gemini é `GEMINI_API_KEY`. O build e o fluxo mock não dependem de chave ou modelo válido.
 
 ## Checklist Manual Do Fluxo Principal
 
@@ -47,10 +58,11 @@ Se sua conta não tiver acesso ao modelo configurado, ajuste `OPENAI_MODEL` para
 7. Confirme que `/resultado` abre sem erro.
 8. Confirme que o resultado mostra dados personalizados do formulário.
 9. Confirme que o plano salvo aparece no `localStorage` com as chaves `campaign-plan-result` e `campaign-plan-source`.
-10. Em modo sem chave, confirme que `campaign-plan-source` é `mock`.
-11. Clique em `Ajustar informações` e confirme que volta para `/criar-campanha`.
-12. Confirme que os dados anteriores aparecem preenchidos.
-13. Edite uma informação, gere o plano novamente e confirme que `/resultado` reflete a alteração.
+10. Confirme que `campaign-plan-provider` contém o provedor efetivo.
+11. Em modo mock, confirme que `campaign-plan-source` e `campaign-plan-provider` são `mock`.
+12. Clique em `Ajustar informações` e confirme que volta para `/criar-campanha`.
+13. Confirme que os dados anteriores aparecem preenchidos.
+14. Edite uma informação, gere o plano novamente e confirme que `/resultado` reflete a alteração.
 
 ## Como Testar A Home
 
@@ -72,7 +84,7 @@ Se sua conta não tiver acesso ao modelo configurado, ajuste `OPENAI_MODEL` para
 - Envie o formulário.
 - Confirme que a chave `campaign-form-data` foi salva no `localStorage`.
 - Confirme que a rota `POST /api/generate-campaign` respondeu com sucesso.
-- Sem `OPENAI_API_KEY`, confirme que o fluxo usa fallback mock e continua sem erro.
+- Com `AI_PROVIDER=mock`, confirme que o fluxo usa o plano de demonstração e continua sem erro.
 - Confirme que payloads muito longos recebem erro amigável e não geram plano.
 - Depois de gerar o resultado, clique em `Ajustar informações`.
 - Confirme que `/criar-campanha` abre com os dados anteriores preenchidos.
@@ -103,6 +115,7 @@ No navegador, limpe o storage do site ou execute no console:
 localStorage.removeItem("campaign-form-data");
 localStorage.removeItem("campaign-plan-result");
 localStorage.removeItem("campaign-plan-source");
+localStorage.removeItem("campaign-plan-provider");
 ```
 
 Depois acesse `http://localhost:3000/resultado`.
@@ -117,16 +130,19 @@ Resultado esperado:
 
 Use apenas uma chave de desenvolvimento em `.env.local`.
 
-- Configure `OPENAI_API_KEY`.
+- Escolha `AI_PROVIDER=openai` e configure `OPENAI_API_KEY`, ou escolha `AI_PROVIDER=gemini` e configure `GEMINI_API_KEY`.
 - Rode `npm run dev`.
 - Preencha `/criar-campanha` com dados realistas.
 - Envie o formulário.
 - Confirme que `/resultado` abre sem erro.
 - Confirme que `campaign-plan-source` é `ai` quando a API responde no formato esperado.
+- Confirme que `campaign-plan-provider` corresponde a `openai` ou `gemini`.
 - Confirme que o texto continua em português do Brasil, simples, orientativo e sem promessa de venda ou resultado garantido.
 - Confirme que `OPENAI_MAX_OUTPUT_TOKENS` está em um valor conservador antes de testar com tráfego real.
 
 Se a API falhar, o comportamento esperado é fallback mock com `campaign-plan-source` igual a `mock`.
+
+Para Gemini, faça no máximo uma geração real por rodada de validação. Confira previamente no Google AI Studio a disponibilidade do modelo e os limites do projeto; cotas gratuitas podem mudar.
 
 Em desenvolvimento, inspecione o campo `debug` da resposta de `POST /api/generate-campaign` ou o log `[campaign-ai]`. O diagnóstico mostra apenas metadados seguros. Não deve registrar chave, headers, payload, resposta completa ou stack trace.
 

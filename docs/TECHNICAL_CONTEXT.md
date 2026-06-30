@@ -45,8 +45,8 @@ src/
 4. Em `/criar-campanha`, preenche um formulário guiado por seções: negócio, oferta, público/região e configuração inicial.
 5. Ao enviar, o formulário chama `POST /api/generate-campaign`.
 6. A rota valida os campos obrigatórios e chama o serviço de geração.
-7. Se `OPENAI_API_KEY` estiver configurada e `AI_GENERATION_ENABLED` não for `false`, o serviço tenta gerar o plano com OpenAI Responses API, saída estruturada e limite conservador de saída.
-8. Se a chave estiver ausente, a geração estiver desabilitada ou ocorrer erro/formato inesperado, o serviço retorna fallback mock compatível.
+7. O serviço lê `AI_PROVIDER` e seleciona `mock`, `openai` ou `gemini`.
+8. Com um provedor real selecionado e `AI_GENERATION_ENABLED` diferente de `false`, o serviço tenta gerar um plano estruturado. Chave ausente, geração desabilitada ou erro retornam fallback mock compatível.
 9. O client salva os dados do formulário, o plano gerado e a origem do plano no `localStorage`.
 10. O usuário é redirecionado para `/resultado`.
 11. A página de resultado lê o plano salvo no client. Se não houver plano salvo, mantém fallback local com base nos dados do formulário.
@@ -59,6 +59,7 @@ As chaves atuais são:
 - `campaign-form-data`: dados preenchidos no formulário.
 - `campaign-plan-result`: plano retornado pelo endpoint ou fallback mock.
 - `campaign-plan-source`: origem do plano, `ai` ou `mock`.
+- `campaign-plan-provider`: provedor efetivo do plano, `openai`, `gemini` ou `mock`.
 
 O `localStorage` é usado apenas como persistência temporária do MVP. Ele não substitui banco de dados e não deve ser usado para dados sensíveis.
 
@@ -68,31 +69,39 @@ Em `/resultado`, a leitura também acontece no client, com `useEffect`, `try/cat
 
 ## Geração Com OpenAI
 
-A primeira base de IA real fica em `src/lib/ai/` e `src/app/api/generate-campaign/route.ts`.
+A camada de provedores fica em `src/lib/ai/` e `src/app/api/generate-campaign/route.ts`.
 
 - `buildCampaignPrompt.ts` monta instruções em português do Brasil com foco em pequenos negócios, linguagem simples, WhatsApp/Instagram quando fizer sentido e nenhuma promessa de resultado.
 - `campaignPlanSchema.ts` define o formato estruturado esperado do plano.
-- `generateCampaignPlan.ts` decide entre OpenAI e fallback mock, define modelo e limite de tokens, valida o JSON retornado e classifica falhas sem registrar chave, payload, resposta bruta ou stack trace.
-- A rota `POST /api/generate-campaign` aceita dados do formulário, limita tamanho do payload, valida campos obrigatórios, normaliza textos e retorna `{ success, data, source, warning }`.
-- Em `development`, a rota também retorna `debug` com metadados não sensíveis, como modelo, geração habilitada, status da API e motivo do fallback. Esse bloco não é retornado em produção.
+- `generateCampaignPlan.ts` seleciona `mock`, OpenAI ou Gemini e centraliza o fallback.
+- `generateCampaignPlanWithOpenAI.ts` usa OpenAI Responses API com Structured Outputs.
+- `generateCampaignPlanWithGemini.ts` usa `@google/genai`, `generateContent`, JSON Schema e validação local.
+- `campaignPlanProvider.ts` contém o contrato comum, modelos padrão e parse seguro do plano.
+- A rota `POST /api/generate-campaign` aceita dados do formulário, limita tamanho do payload, valida campos obrigatórios, normaliza textos e retorna `{ success, data, source, provider, warning }`.
+- Em `development`, a rota também retorna `debug` com provedor tentado, modelo, geração habilitada, status da API e motivo do fallback. Esse bloco não é retornado em produção.
 - O cliente OpenAI usa `maxRetries: 0`. Assim, erros de cota, autenticação ou configuração caem imediatamente no fallback e não geram tentativas reais adicionais automáticas.
 
 Variáveis esperadas:
 
 ```bash
+AI_PROVIDER=mock
 OPENAI_API_KEY=
 OPENAI_MODEL=gpt-4.1-mini
 OPENAI_MAX_OUTPUT_TOKENS=1800
+GEMINI_API_KEY=
+GEMINI_MODEL=gemini-2.5-flash
 AI_GENERATION_ENABLED=true
 ```
 
-`.env.local` deve ficar local e ignorado pelo Git. Sem chave real, o modo mock continua funcionando.
+`.env.local` deve ficar local e ignorado pelo Git. A variável correta é `GEMINI_API_KEY`; `GEMINI_API_LEY` não é reconhecida. Sem chave real, o modo mock continua funcionando.
 
-`OPENAI_MODEL` é configurável porque a disponibilidade de modelos depende da conta e do momento. O fallback atual de desenvolvimento é `gpt-4.1-mini`; ajuste quando necessário.
+`AI_PROVIDER` aceita `mock`, `openai` ou `gemini`. O valor padrão é `mock`, inclusive quando a variável não existe. Os modelos padrão são `gpt-4.1-mini` e `gemini-2.5-flash`, mas a disponibilidade depende de cada conta e projeto.
 
 `OPENAI_MAX_OUTPUT_TOKENS` controla o tamanho máximo da resposta. O serviço aplica um intervalo defensivo entre 800 e 4000 tokens, com padrão 1800.
 
-Os motivos de fallback distinguem chave ausente, geração desabilitada, cota insuficiente, erro de API, resposta incompleta, recusa, resposta vazia, JSON inválido e falha de validação. Um `429` com `apiCode: "insufficient_quota"` é classificado como `quota_exceeded`.
+O Gemini usa limite conservador de 1800 tokens e desabilita thinking nos modelos `gemini-2.5-flash*` para este caso simples. Limites gratuitos variam por projeto e modelo e devem ser conferidos no Google AI Studio.
+
+Os motivos de fallback distinguem provedor inválido, chave ausente, geração desabilitada, cota insuficiente, autenticação, modelo indisponível, erro de API, resposta incompleta, recusa, resposta vazia, JSON inválido e falha de validação.
 
 ## Comportamentos Client-Side Atuais
 
