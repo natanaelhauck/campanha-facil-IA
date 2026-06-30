@@ -12,6 +12,10 @@ export const campaignPlanSchema = {
     "prePublishChecklist",
     "followUpPlan",
     "nextSteps",
+    "campaignSetupGuide",
+    "creativePack",
+    "whatsappScript",
+    "simpleMetricsGuide",
     "disclaimer",
   ],
   properties: {
@@ -136,6 +140,231 @@ export const campaignPlanSchema = {
         },
       },
     },
+    campaignSetupGuide: {
+      type: "object",
+      additionalProperties: false,
+      required: [
+        "objective",
+        "channel",
+        "initialBudget",
+        "location",
+        "audience",
+        "durationSuggestion",
+        "whatNotToChangeEarly",
+      ],
+      description:
+        "Configuração inicial pronta para consulta, específica para os dados informados e sem opções avançadas.",
+      properties: {
+        objective: {
+          type: "string",
+          maxLength: 180,
+          description: "Objetivo recomendado explicado em linguagem simples.",
+        },
+        channel: {
+          type: "string",
+          maxLength: 120,
+          description: "Canal principal e destino esperado do contato.",
+        },
+        initialBudget: {
+          type: "string",
+          maxLength: 180,
+          description:
+            "Orçamento inicial conservador, usando o valor informado.",
+        },
+        location: {
+          type: "string",
+          maxLength: 160,
+          description: "Localização ou região a configurar.",
+        },
+        audience: {
+          type: "string",
+          maxLength: 220,
+          description:
+            "Público inicial simples, sem segmentação estreita ou técnica.",
+        },
+        durationSuggestion: {
+          type: "string",
+          maxLength: 180,
+          description:
+            "Tempo mínimo sugerido para observar sinais antes de concluir.",
+        },
+        whatNotToChangeEarly: {
+          type: "string",
+          maxLength: 220,
+          description:
+            "Elementos que devem permanecer estáveis nos primeiros dias para permitir comparação.",
+        },
+      },
+    },
+    creativePack: {
+      type: "array",
+      minItems: 3,
+      maxItems: 3,
+      description:
+        "Três briefings de criativos executáveis. São orientações para produção, não imagens geradas.",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: [
+          "title",
+          "format",
+          "visualIdea",
+          "textOnCreative",
+          "caption",
+          "callToAction",
+          "aiImagePrompt",
+          "productionTip",
+        ],
+        properties: {
+          title: {
+            type: "string",
+            maxLength: 60,
+            description: "Nome curto que diferencia o criativo.",
+          },
+          format: {
+            type: "string",
+            maxLength: 60,
+            description:
+              "Formato fácil de reconhecer, como Story/Reels vertical, Feed quadrado ou Vídeo curto.",
+          },
+          visualIdea: {
+            type: "string",
+            maxLength: 220,
+            description:
+              "Cena específica que a pessoa pode fotografar, gravar ou montar.",
+          },
+          textOnCreative: {
+            type: "string",
+            maxLength: 100,
+            description: "Texto curto que aparece sobre a imagem ou vídeo.",
+          },
+          caption: {
+            type: "string",
+            maxLength: 300,
+            description:
+              "Legenda pronta, adaptada à oferta, com CTA leve e sem promessa.",
+          },
+          callToAction: {
+            type: "string",
+            maxLength: 80,
+            description: "Chamada curta para o canal principal.",
+          },
+          aiImagePrompt: {
+            type: "string",
+            maxLength: 300,
+            description:
+              "Briefing visual em português para Canva, designer ou futura IA de imagem; não afirmar que a imagem foi gerada.",
+          },
+          productionTip: {
+            type: "string",
+            maxLength: 220,
+            description:
+              "Dica prática para produzir o criativo com celular e recursos simples.",
+          },
+        },
+      },
+    },
+    whatsappScript: {
+      type: "object",
+      additionalProperties: false,
+      required: [
+        "firstReply",
+        "priceReply",
+        "objectionReply",
+        "closingReply",
+        "followUpReply",
+      ],
+      description:
+        "Respostas curtas e realistas para adaptar no atendimento por WhatsApp, sem pressão enganosa.",
+      properties: {
+        firstReply: {
+          type: "string",
+          maxLength: 240,
+          description:
+            "Primeira resposta: acolher, citar a oferta e fazer uma pergunta simples.",
+        },
+        priceReply: {
+          type: "string",
+          maxLength: 240,
+          description:
+            "Resposta sobre preço sem inventar valores ausentes nem esconder condições.",
+        },
+        objectionReply: {
+          type: "string",
+          maxLength: 240,
+          description:
+            "Resposta respeitosa para dúvida, comparação ou hesitação.",
+        },
+        closingReply: {
+          type: "string",
+          maxLength: 240,
+          description:
+            "Convite leve para o próximo passo, sem criar urgência falsa.",
+        },
+        followUpReply: {
+          type: "string",
+          maxLength: 240,
+          description:
+            "Retorno educado para contato que não respondeu, sem insistência.",
+        },
+      },
+    },
+    simpleMetricsGuide: {
+      type: "object",
+      additionalProperties: false,
+      required: [
+        "metricsToWatch",
+        "goodSigns",
+        "warningSigns",
+        "whenToWait",
+        "whenToAdjust",
+      ],
+      description:
+        "Guia de leitura simples dos primeiros sinais, sem diagnóstico definitivo ou aumento automático de verba.",
+      properties: {
+        metricsToWatch: {
+          type: "array",
+          minItems: 3,
+          maxItems: 5,
+          items: {
+            type: "string",
+            maxLength: 180,
+          },
+          description:
+            "Métricas explicadas sem jargão, como impressões, cliques, conversas, custo e qualidade dos contatos.",
+        },
+        goodSigns: {
+          type: "array",
+          minItems: 2,
+          maxItems: 4,
+          items: {
+            type: "string",
+            maxLength: 180,
+          },
+        },
+        warningSigns: {
+          type: "array",
+          minItems: 2,
+          maxItems: 4,
+          items: {
+            type: "string",
+            maxLength: 180,
+          },
+        },
+        whenToWait: {
+          type: "string",
+          maxLength: 220,
+          description:
+            "Situação em que ainda é cedo para alterar a campanha.",
+        },
+        whenToAdjust: {
+          type: "string",
+          maxLength: 220,
+          description:
+            "Situação em que faz sentido revisar oferta, atendimento ou criativo antes da verba.",
+        },
+      },
+    },
     disclaimer: {
       type: "string",
       description:
@@ -148,7 +377,7 @@ export const campaignPlanResponseFormat = {
   type: "json_schema" as const,
   name: "campaign_plan_result",
   description:
-    "Plano inicial de campanha para pequenos negócios brasileiros, com linguagem simples e sem promessa de resultado garantido.",
+    "Pacote inicial de execução de campanha para pequenos negócios brasileiros, com configuração, criativos, atendimento, métricas e nenhuma promessa de resultado.",
   strict: true,
   schema: campaignPlanSchema,
 };

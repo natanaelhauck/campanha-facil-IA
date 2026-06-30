@@ -8,7 +8,7 @@
 - ESLint.
 - React Client Components para páginas que acessam `localStorage`.
 - Rota backend no App Router para geração de plano.
-- OpenAI SDK usado apenas no servidor.
+- SDKs de OpenAI e Gemini usados apenas no servidor.
 
 ## Estrutura De Pastas Atual
 
@@ -46,7 +46,7 @@ src/
 5. Ao enviar, o formulário chama `POST /api/generate-campaign`.
 6. A rota valida os campos obrigatórios e chama o serviço de geração.
 7. O serviço lê `AI_PROVIDER` e seleciona `mock`, `openai` ou `gemini`.
-8. Com um provedor real selecionado e `AI_GENERATION_ENABLED` diferente de `false`, o serviço tenta gerar um plano estruturado. Chave ausente, geração desabilitada ou erro retornam fallback mock compatível.
+8. Com um provedor real selecionado e `AI_GENERATION_ENABLED` diferente de `false`, o serviço tenta gerar um pacote estruturado. Chave ausente, geração desabilitada, resposta incompleta ou erro retornam fallback mock compatível.
 9. O client salva os dados do formulário, o plano gerado e a origem do plano no `localStorage`.
 10. O usuário é redirecionado para `/resultado`.
 11. A página de resultado lê o plano salvo no client. Se não houver plano salvo, mantém fallback local com base nos dados do formulário.
@@ -65,19 +65,19 @@ O `localStorage` é usado apenas como persistência temporária do MVP. Ele não
 
 Em `/criar-campanha`, a leitura acontece no client com `useEffect`, parse seguro e preenchimento do formulário quando há dados válidos. Isso permite editar informações anteriores ao voltar de `/resultado`.
 
-Em `/resultado`, a leitura também acontece no client, com `useEffect`, `try/catch` no `JSON.parse` e estado amigável quando os dados não existem ou são inválidos. A página prioriza `campaign-plan-result` quando ele existe.
+Em `/resultado`, a leitura também acontece no client, com `useEffect`, `try/catch` no `JSON.parse` e estado amigável quando os dados não existem ou são inválidos. A página prioriza `campaign-plan-result` quando ele existe. Planos antigos sem o pacote de execução continuam válidos; as novas seções são opcionais na leitura e não são renderizadas quando ausentes.
 
-## Geração Com OpenAI
+## Geração Com IA
 
 A camada de provedores fica em `src/lib/ai/` e `src/app/api/generate-campaign/route.ts`.
 
-- `buildCampaignPrompt.ts` monta instruções em português do Brasil com foco em ações executáveis, adaptação à oferta e ao canal, orçamento conservador e nenhuma promessa de resultado.
-- `campaignPlanSchema.ts` exige três textos de anúncio com papéis distintos, cinco próximos passos e acompanhamento em 3, 7 e 14 dias.
+- `buildCampaignPrompt.ts` monta instruções em português do Brasil para um pacote com configuração, três briefings criativos, roteiro de atendimento, métricas simples, orçamento conservador e nenhuma promessa de resultado.
+- `campaignPlanSchema.ts` exige três textos de anúncio, cinco próximos passos, acompanhamento em 3, 7 e 14 dias e as quatro seções do pacote de execução.
 - `generateCampaignPlan.ts` seleciona `mock`, OpenAI ou Gemini e centraliza o fallback.
 - `generateCampaignPlanWithOpenAI.ts` usa OpenAI Responses API com Structured Outputs.
 - `generateCampaignPlanWithGemini.ts` usa `@google/genai`, `generateContent`, JSON Schema e validação local.
 - `campaignPlanProvider.ts` contém o contrato comum, modelos padrão e parse seguro do plano.
-- `campaignPlanValidation.ts` valida quantidades, ordem do acompanhamento, tamanho dos textos e rejeita promessas claras ou próximos passos vagos antes de aceitar a resposta de IA.
+- `campaignPlanValidation.ts` aceita planos legados sem as novas seções para leitura do `localStorage`, mas exige o pacote completo nas respostas novas dos providers. Também valida quantidades, limites e promessas claras.
 - A rota `POST /api/generate-campaign` aceita dados do formulário, limita tamanho do payload, valida campos obrigatórios, normaliza textos e retorna `{ success, data, source, provider, warning }`.
 - Em `development`, a rota também retorna `debug` com provedor tentado, modelo, geração habilitada, status da API e motivo do fallback. Esse bloco não é retornado em produção.
 - O cliente OpenAI usa `maxRetries: 0`. Assim, erros de cota, autenticação ou configuração caem imediatamente no fallback e não geram tentativas reais adicionais automáticas.
@@ -88,7 +88,7 @@ Variáveis esperadas:
 AI_PROVIDER=mock
 OPENAI_API_KEY=
 OPENAI_MODEL=gpt-4.1-mini
-OPENAI_MAX_OUTPUT_TOKENS=1800
+OPENAI_MAX_OUTPUT_TOKENS=4200
 GEMINI_API_KEY=
 GEMINI_MODEL=gemini-2.5-flash
 AI_GENERATION_ENABLED=true
@@ -98,16 +98,16 @@ AI_GENERATION_ENABLED=true
 
 `AI_PROVIDER` aceita `mock`, `openai` ou `gemini`. O valor padrão é `mock`, inclusive quando a variável não existe. Os modelos padrão são `gpt-4.1-mini` e `gemini-2.5-flash`, mas a disponibilidade depende de cada conta e projeto.
 
-`OPENAI_MAX_OUTPUT_TOKENS` controla o tamanho máximo da resposta. O serviço aplica um intervalo defensivo entre 800 e 4000 tokens, com padrão 1800.
+`OPENAI_MAX_OUTPUT_TOKENS` controla o tamanho máximo da resposta. O serviço aplica um intervalo defensivo entre 3000 e 6000 tokens, com padrão 4200.
 
-O Gemini usa limite conservador de 1800 tokens e desabilita thinking nos modelos `gemini-2.5-flash*` para este caso simples. Limites gratuitos variam por projeto e modelo e devem ser conferidos no Google AI Studio.
+O Gemini usa limite de 4200 tokens para comportar o pacote estruturado e desabilita thinking nos modelos `gemini-2.5-flash*`. Limites gratuitos variam por projeto e modelo e devem ser conferidos no Google AI Studio.
 
 Os motivos de fallback distinguem provedor inválido, chave ausente, geração desabilitada, cota insuficiente, autenticação, modelo indisponível, erro de API, resposta incompleta, recusa, resposta vazia, JSON inválido e falha de validação.
 
 ## Comportamentos Client-Side Atuais
 
 - O componente `Button` trata links internos com hash usando `scrollIntoView({ behavior: "smooth" })`, para que botões como `Ver como funciona`, `Ver próximos passos` e `Voltar ao topo` funcionem repetidamente.
-- A página `/resultado` usa `navigator.clipboard.writeText` para copiar textos de anúncio, com feedback simples de sucesso ou erro.
+- A página `/resultado` usa `navigator.clipboard.writeText` para copiar textos de anúncio, legendas, prompts visuais e respostas do WhatsApp, com feedback simples de sucesso ou erro.
 - O formulário em `/criar-campanha` usa validação HTML simples com campos obrigatórios.
 - O envio do formulário mantém a chave `campaign-form-data` compatível com `/resultado` e adiciona o plano salvo quando a API responde.
 
@@ -120,6 +120,7 @@ Os motivos de fallback distinguem provedor inválido, chave ausente, geração d
 - Não há exportação para PDF.
 - Não há publicação automática de campanhas.
 - Não há integração com Meta Ads API.
+- Não há geração real de imagens; `aiImagePrompt` é apenas um briefing textual.
 - Não há cobrança, planos pagos ou painel SaaS completo.
 
 ## Limites Da Base Atual De IA

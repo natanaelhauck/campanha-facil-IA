@@ -11,7 +11,7 @@ import {
 } from "./campaignPlanProvider";
 import { campaignPlanSchema } from "./campaignPlanSchema";
 
-const maxOutputTokens = 1800;
+const maxOutputTokens = 4200;
 const refusalReasons = new Set([
   "SAFETY",
   "RECITATION",

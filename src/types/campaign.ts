@@ -44,6 +44,43 @@ export type CampaignFollowUpPeriod = {
   actions: string[];
 };
 
+export type CampaignSetupGuide = {
+  objective: string;
+  channel: string;
+  initialBudget: string;
+  location: string;
+  audience: string;
+  durationSuggestion: string;
+  whatNotToChangeEarly: string;
+};
+
+export type CampaignCreative = {
+  title: string;
+  format: string;
+  visualIdea: string;
+  textOnCreative: string;
+  caption: string;
+  callToAction: string;
+  aiImagePrompt: string;
+  productionTip: string;
+};
+
+export type CampaignWhatsappScript = {
+  firstReply: string;
+  priceReply: string;
+  objectionReply: string;
+  closingReply: string;
+  followUpReply: string;
+};
+
+export type CampaignSimpleMetricsGuide = {
+  metricsToWatch: string[];
+  goodSigns: string[];
+  warningSigns: string[];
+  whenToWait: string;
+  whenToAdjust: string;
+};
+
 export type CampaignPlanResult = {
   summary: string;
   recommendedObjective: string;
@@ -56,6 +93,10 @@ export type CampaignPlanResult = {
   followUpPlan: CampaignFollowUpPeriod[];
   nextSteps: CampaignPlanAction[];
   disclaimer: string;
+  campaignSetupGuide?: CampaignSetupGuide;
+  creativePack?: CampaignCreative[];
+  whatsappScript?: CampaignWhatsappScript;
+  simpleMetricsGuide?: CampaignSimpleMetricsGuide;
 };
 
 export type CampaignGenerationResponse = {

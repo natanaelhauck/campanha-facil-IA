@@ -46,7 +46,7 @@ Status: concluída como primeira versão visual funcional. Deve continuar recebe
 
 ## Fase 2: IA Real Com OpenAI API
 
-Status: iniciada. A base técnica de geração foi adicionada de forma incremental, com endpoint backend, schema estruturado e fallback mock. Ainda faltam testes com chave real, calibração de resposta e limites de uso antes de considerar a fase concluída.
+Status: em evolução. A base técnica funciona com OpenAI, Gemini e fallback mock, e o resultado avançou de plano inicial para pacote de execução. Ainda faltam calibração com mais segmentos e limites de uso antes de considerar a fase concluída.
 
 ### Entregas Concluídas Nesta Base Inicial
 
@@ -57,11 +57,15 @@ Status: iniciada. A base técnica de geração foi adicionada de forma increment
 - Avisos claros sobre orientação e ausência de garantia.
 - Modo de fallback quando a chave está ausente, a geração está desabilitada ou a IA falha.
 - Chave da OpenAI restrita ao servidor.
+- Configuração sugerida da campanha em formato consultável.
+- Três briefings de criativos com legenda, CTA, prompt visual e dica de produção.
+- Roteiro de atendimento no WhatsApp com respostas copiáveis.
+- Guia simples de métricas e sinais para esperar ou ajustar.
+- Leitura compatível de planos antigos salvos sem as novas seções.
 
 ### Entregas Pendentes
 
-- Testar geração real com chave de desenvolvimento.
-- Ajustar prompt e schema a partir de respostas reais.
+- Calibrar prompt e schema com diferentes tipos de negócio.
 - Definir limites simples de uso para controlar custo.
 - Melhorar validação e observabilidade sem registrar dados sensíveis.
 - Definir política de erro para indisponibilidade prolongada da API.
@@ -87,6 +91,20 @@ Status: iniciada. A base técnica de geração foi adicionada de forma increment
 - Resposta validada antes de exibir na UI.
 - Fallback funcionando quando a IA falhar.
 - Lint, build e teste manual passam.
+
+## Fase Futura: Geração Assistida De Imagens
+
+### Entregas Planejadas
+
+- Transformar briefings visuais aprovados em imagens, sem assumir publicação automática.
+- Permitir revisão do prompt, do resultado e da marca antes de usar o criativo.
+- Controlar custo, quantidade de variações e armazenamento dos arquivos.
+
+### Limites Atuais
+
+- O campo `aiImagePrompt` é somente texto para Canva, designer ou futura IA de imagem.
+- Nenhuma imagem é criada, enviada ou publicada pela versão atual.
+- A integração só deve avançar depois de validar utilidade, custo e revisão humana.
 
 ## Fase 3: Diagnóstico Manual Por Métricas Informadas
 

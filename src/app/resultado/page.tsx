@@ -6,6 +6,7 @@ import { Header } from "@/components/Header";
 import { createMockCampaignPlan } from "@/data/mockCampaignResult";
 import { isCampaignPlanResult } from "@/lib/campaignPlanValidation";
 import type {
+  CampaignCreative,
   CampaignFormData,
   CampaignPlanResult,
   CampaignPlanSource,
@@ -88,7 +89,13 @@ function ResultSection({
   );
 }
 
-function CopyableAdText({ index, text }: { index: number; text: string }) {
+function CopyButton({
+  text,
+  idleLabel,
+}: {
+  text: string;
+  idleLabel: string;
+}) {
   const [status, setStatus] = useState<CopyStatus>("idle");
 
   async function copyText() {
@@ -107,8 +114,28 @@ function CopyableAdText({ index, text }: { index: number; text: string }) {
       ? "Copiado"
       : status === "error"
         ? "Não copiado"
-        : "Copiar texto";
+        : idleLabel;
 
+  return (
+    <div className="shrink-0">
+      <button
+        type="button"
+        onClick={copyText}
+        aria-live="polite"
+        className="inline-flex min-h-9 items-center justify-center rounded-md border border-stone-300 bg-white px-3 py-2 text-xs font-semibold text-stone-900 transition hover:border-emerald-700 hover:bg-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:ring-offset-2"
+      >
+        {buttonText}
+      </button>
+      {status === "error" ? (
+        <p className="mt-2 max-w-48 text-xs leading-5 text-amber-800">
+          Selecione e copie manualmente.
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+function CopyableAdText({ index, text }: { index: number; text: string }) {
   return (
     <article className="rounded-lg border border-stone-200 bg-stone-50 p-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -118,20 +145,87 @@ function CopyableAdText({ index, text }: { index: number; text: string }) {
           </p>
           <p className="mt-2 text-sm leading-6 text-stone-800">{text}</p>
         </div>
-        <button
-          type="button"
-          onClick={copyText}
-          className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-md border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-stone-900 transition hover:bg-stone-100 focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:ring-offset-2"
-        >
-          {buttonText}
-        </button>
+        <CopyButton text={text} idleLabel="Copiar texto" />
       </div>
-      {status === "error" ? (
-        <p className="mt-3 text-xs text-amber-800">
-          Não foi possível copiar automaticamente. Selecione o texto e copie
-          manualmente.
+    </article>
+  );
+}
+
+function CreativePackCard({
+  creative,
+  index,
+}: {
+  creative: CampaignCreative;
+  index: number;
+}) {
+  return (
+    <article className="overflow-hidden rounded-xl border border-stone-200 bg-stone-50">
+      <div className="border-b border-stone-200 bg-stone-900 p-4 text-white">
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-200">
+            Criativo {index}
+          </p>
+          <span className="rounded-full border border-white/20 px-3 py-1 text-xs text-stone-200">
+            {creative.format}
+          </span>
+        </div>
+        <h3 className="mt-2 text-lg font-bold">{creative.title}</h3>
+      </div>
+
+      <div className="grid gap-4 p-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+            Cena principal
+          </p>
+          <p className="mt-1 text-sm leading-6 text-stone-800">
+            {creative.visualIdea}
+          </p>
+        </div>
+
+        <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-emerald-900">
+            Texto na peça
+          </p>
+          <p className="mt-1 font-bold text-stone-950">
+            “{creative.textOnCreative}”
+          </p>
+        </div>
+
+        <div className="rounded-lg border border-stone-200 bg-white p-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+            Legenda pronta
+          </p>
+          <p className="mt-2 text-sm leading-6 text-stone-800">
+            {creative.caption}
+          </p>
+          <div className="mt-3 flex items-center justify-between gap-3">
+            <p className="text-xs font-semibold text-emerald-800">
+              CTA: {creative.callToAction}
+            </p>
+            <CopyButton text={creative.caption} idleLabel="Copiar legenda" />
+          </div>
+        </div>
+
+        <div className="rounded-lg border border-dashed border-stone-300 bg-white p-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+            Prompt visual
+          </p>
+          <p className="mt-2 text-xs leading-5 text-stone-700">
+            {creative.aiImagePrompt}
+          </p>
+          <div className="mt-3 flex justify-end">
+            <CopyButton
+              text={creative.aiImagePrompt}
+              idleLabel="Copiar prompt"
+            />
+          </div>
+        </div>
+
+        <p className="border-l-2 border-amber-500 pl-3 text-xs leading-5 text-stone-600">
+          <strong className="text-stone-900">Dica de produção:</strong>{" "}
+          {creative.productionTip}
         </p>
-      ) : null}
+      </div>
     </article>
   );
 }
@@ -235,6 +329,25 @@ export default function ResultPage() {
       description: plan.budgetGuidance,
     },
   ];
+  const setupGuideItems = plan.campaignSetupGuide
+    ? [
+        ["Objetivo", plan.campaignSetupGuide.objective],
+        ["Canal", plan.campaignSetupGuide.channel],
+        ["Orçamento inicial", plan.campaignSetupGuide.initialBudget],
+        ["Localização", plan.campaignSetupGuide.location],
+        ["Público", plan.campaignSetupGuide.audience],
+        ["Duração sugerida", plan.campaignSetupGuide.durationSuggestion],
+      ]
+    : [];
+  const whatsappReplies = plan.whatsappScript
+    ? [
+        ["Primeira resposta", plan.whatsappScript.firstReply],
+        ["Quando perguntarem o preço", plan.whatsappScript.priceReply],
+        ["Quando houver dúvida", plan.whatsappScript.objectionReply],
+        ["Para encaminhar o pedido", plan.whatsappScript.closingReply],
+        ["Follow-up sem insistência", plan.whatsappScript.followUpReply],
+      ]
+    : [];
 
   return (
     <main id="topo" className="min-h-screen bg-[#f7f8f5]">
@@ -250,9 +363,9 @@ export default function ResultPage() {
                 Resultado para {businessName}
               </h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-stone-700">
-                Um roteiro simples para organizar a primeira campanha, revisar
-                a oferta e acompanhar os primeiros contatos sem prometer
-                resultado garantido.
+                Um pacote simples para configurar a campanha, preparar
+                criativos, responder contatos e acompanhar os primeiros sinais
+                sem prometer resultado garantido.
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row md:flex-col">
@@ -358,6 +471,59 @@ export default function ResultPage() {
             ))}
           </div>
 
+          {plan.campaignSetupGuide ? (
+            <ResultSection
+              title="Configuração sugerida da campanha"
+              eyebrow="Ficha pronta para consultar"
+            >
+              <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+                {setupGuideItems.map(([label, value]) => (
+                  <div
+                    key={label}
+                    className="rounded-lg border border-stone-200 bg-stone-50 p-4"
+                  >
+                    <p className="text-xs font-semibold uppercase tracking-wide text-emerald-800">
+                      {label}
+                    </p>
+                    <p className="mt-2 text-sm leading-6 text-stone-800">
+                      {value}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-amber-900">
+                  Evite mudar cedo
+                </p>
+                <p className="mt-2 text-sm leading-6 text-amber-950">
+                  {plan.campaignSetupGuide.whatNotToChangeEarly}
+                </p>
+              </div>
+            </ResultSection>
+          ) : null}
+
+          {plan.creativePack ? (
+            <ResultSection
+              title="Pacote de criativos"
+              eyebrow="Briefings para produzir — nenhuma imagem foi gerada"
+            >
+              <p className="mb-4 max-w-3xl text-sm leading-6 text-stone-600">
+                Use as ideias com fotos reais, no Canva, com um designer ou em
+                uma futura ferramenta de imagem. Revise textos e detalhes antes
+                de publicar.
+              </p>
+              <div className="grid gap-4 lg:grid-cols-3">
+                {plan.creativePack.map((creative, index) => (
+                  <CreativePackCard
+                    key={`${creative.title}-${creative.format}`}
+                    creative={creative}
+                    index={index + 1}
+                  />
+                ))}
+              </div>
+            </ResultSection>
+          ) : null}
+
           <ResultSection
             title="Textos de anúncio"
             eyebrow="Use como ponto de partida"
@@ -372,6 +538,38 @@ export default function ResultPage() {
               ))}
             </div>
           </ResultSection>
+
+          {plan.whatsappScript ? (
+            <ResultSection
+              title="Roteiro de atendimento no WhatsApp"
+              eyebrow="Respostas para adaptar antes de enviar"
+            >
+              <div className="grid gap-3 md:grid-cols-2">
+                {whatsappReplies.map(([label, reply], index) => (
+                  <article
+                    key={label}
+                    className={`rounded-lg border border-stone-200 bg-stone-50 p-4 ${
+                      index === whatsappReplies.length - 1
+                        ? "md:col-span-2"
+                        : ""
+                    }`}
+                  >
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-wide text-emerald-800">
+                          {label}
+                        </p>
+                        <p className="mt-2 text-sm leading-6 text-stone-800">
+                          {reply}
+                        </p>
+                      </div>
+                      <CopyButton text={reply} idleLabel="Copiar resposta" />
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </ResultSection>
+          ) : null}
 
           <ResultSection title="Ideias de criativos">
             <div className="grid gap-3 md:grid-cols-2">
@@ -414,6 +612,71 @@ export default function ResultPage() {
               ))}
             </ul>
           </ResultSection>
+
+          {plan.simpleMetricsGuide ? (
+            <ResultSection
+              title="Métricas simples para acompanhar"
+              eyebrow="Leia os sinais antes de mexer na verba"
+            >
+              <div className="grid gap-4 lg:grid-cols-3">
+                <div className="rounded-lg border border-stone-200 bg-stone-50 p-4">
+                  <h3 className="font-bold text-stone-950">O que observar</h3>
+                  <ul className="mt-3 grid gap-2">
+                    {plan.simpleMetricsGuide.metricsToWatch.map((metric) => (
+                      <li
+                        key={metric}
+                        className="border-l-2 border-stone-400 pl-3"
+                      >
+                        {metric}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+                  <h3 className="font-bold text-emerald-950">Bons sinais</h3>
+                  <ul className="mt-3 grid gap-2">
+                    {plan.simpleMetricsGuide.goodSigns.map((sign) => (
+                      <li key={sign} className="flex gap-2 text-emerald-950">
+                        <span aria-hidden="true">+</span>
+                        <span>{sign}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
+                  <h3 className="font-bold text-amber-950">
+                    Sinais de atenção
+                  </h3>
+                  <ul className="mt-3 grid gap-2">
+                    {plan.simpleMetricsGuide.warningSigns.map((sign) => (
+                      <li key={sign} className="flex gap-2 text-amber-950">
+                        <span aria-hidden="true">!</span>
+                        <span>{sign}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+              <div className="mt-4 grid gap-3 md:grid-cols-2">
+                <div className="rounded-lg border border-stone-200 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+                    Quando esperar
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-stone-800">
+                    {plan.simpleMetricsGuide.whenToWait}
+                  </p>
+                </div>
+                <div className="rounded-lg border border-stone-200 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+                    Quando ajustar
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-stone-800">
+                    {plan.simpleMetricsGuide.whenToAdjust}
+                  </p>
+                </div>
+              </div>
+            </ResultSection>
+          ) : null}
 
           <ResultSection title="Acompanhamento em 3, 7 e 14 dias">
             <div className="grid gap-4 md:grid-cols-3">

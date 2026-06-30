@@ -2,9 +2,9 @@
 
 ## Visão
 
-O **Campanha Fácil IA** é uma aplicação web para ajudar pequenos negócios brasileiros a organizar um plano inicial de campanha para Meta Ads, Instagram, Facebook e WhatsApp.
+O **Campanha Fácil IA** é uma aplicação web para ajudar pequenos negócios brasileiros a transformar respostas simples em um pacote inicial de execução para Meta Ads, Instagram, Facebook e WhatsApp.
 
-A visão é reduzir a barreira de entrada para quem quer anunciar, mas não sabe por onde começar, quais informações precisa definir ou como transformar uma oferta em uma campanha minimamente estruturada.
+A visão é reduzir a barreira de entrada para quem quer anunciar, mas não sabe por onde começar, como configurar o básico, que criativos produzir, como responder contatos ou quais sinais acompanhar.
 
 ## Público-Alvo
 
@@ -20,9 +20,11 @@ Muitos pequenos negócios querem anunciar, mas travam em decisões básicas: obj
 
 ## Proposta De Valor
 
-Gerar um plano de campanha inicial, claro e acionável, a partir de perguntas simples sobre o negócio, a oferta, o público, o orçamento e o canal principal.
+Gerar um pacote de execução claro e acionável a partir de perguntas simples sobre o negócio, a oferta, o público, o orçamento e o canal principal.
 
-Na versão atual, a geração real com OpenAI API já existe no backend de forma inicial e segura. Quando a chave não está configurada, o produto usa fallback mock para manter o fluxo funcionando.
+Na versão atual, OpenAI e Gemini podem gerar configuração sugerida, textos, três briefings de criativos, respostas de WhatsApp e um guia de métricas. Quando um provider não está configurado ou falha, o produto usa fallback mock.
+
+Os criativos ainda são instruções textuais. O produto não gera imagens reais nesta fase; os prompts podem ser levados ao Canva, a um designer ou a uma futura integração de imagem.
 
 ## Posicionamento Inicial
 
@@ -64,4 +66,8 @@ Em fases futuras, uma integração com Meta Ads poderá apoiar diagnóstico, lei
 - Geração de textos e ideias de criativos com IA.
 - Histórico de campanhas por usuário.
 - Checklists e rotina de acompanhamento.
+- Pacote de execução com conteúdo copiável para reduzir o trabalho entre planejar e começar.
+- Briefings de criativos que podem ser produzidos com celular e ferramentas simples.
+- Roteiro de WhatsApp adaptado à oferta.
+- Explicação de métricas sem exigir conhecimento técnico.
 - Possíveis integrações futuras com Meta Ads para análise e criação assistida.

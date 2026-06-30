@@ -1,4 +1,4 @@
-import { isCampaignPlanResult } from "@/lib/campaignPlanValidation";
+import { isCurrentCampaignPlanResult } from "@/lib/campaignPlanValidation";
 import type {
   CampaignAIProvider,
   CampaignFallbackReason,
@@ -64,7 +64,7 @@ export function parseCampaignPlanJson(value: string): PlanParseResult {
     };
   }
 
-  if (!isCampaignPlanResult(parsed)) {
+  if (!isCurrentCampaignPlanResult(parsed)) {
     return {
       ok: false,
       reason: "validation_failed",

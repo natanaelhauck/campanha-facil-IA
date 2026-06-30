@@ -20,7 +20,7 @@ Para testar geração real, crie um `.env.local` local, nunca commitado:
 AI_PROVIDER=mock
 OPENAI_API_KEY=sua-chave-local
 OPENAI_MODEL=gpt-4.1-mini
-OPENAI_MAX_OUTPUT_TOKENS=1800
+OPENAI_MAX_OUTPUT_TOKENS=4200
 GEMINI_API_KEY=sua-chave-local
 GEMINI_MODEL=gemini-2.5-flash
 AI_GENERATION_ENABLED=true
@@ -104,8 +104,26 @@ Após enviar o formulário:
 - Clique em `Ver próximos passos`, volte manualmente o scroll e clique novamente.
 - Confirme que a rolagem funciona repetidamente.
 - Clique em pelo menos um botão `Copiar texto` e confirme o feedback `Copiado` ou o erro amigável.
+- Confirme que as seções `Configuração sugerida da campanha`, `Pacote de criativos`, `Roteiro de atendimento no WhatsApp` e `Métricas simples para acompanhar` aparecem no plano novo.
+- Confirme que o pacote contém exatamente três criativos e informa que nenhuma imagem foi gerada.
+- Copie uma legenda, um prompt visual e uma resposta do WhatsApp; confirme o feedback `Copiado`.
+- Confirme que não há recomendação automática para aumentar verba.
 - Clique em `Voltar ao topo`, role manualmente para baixo e clique novamente.
 - Confirme que a rolagem para o topo funciona repetidamente.
+
+## Como Testar Compatibilidade Com Plano Antigo
+
+1. Gere um plano mock novo e copie o valor de `campaign-plan-result`.
+2. Em uma cópia do objeto, remova `campaignSetupGuide`, `creativePack`, `whatsappScript` e `simpleMetricsGuide`.
+3. Salve o objeto antigo novamente em `campaign-plan-result`.
+4. Recarregue `/resultado`.
+
+Resultado esperado:
+
+- As seções antigas continuam renderizando.
+- As quatro seções novas ficam ocultas.
+- A página não usa fallback por ausência exclusiva desses campos e não apresenta erro.
+- `Ajustar informações`, `Ver próximos passos`, cópia de textos e `Voltar ao topo` continuam funcionando.
 
 ## Como Testar /resultado Sem localStorage
 
@@ -140,10 +158,14 @@ Use apenas uma chave de desenvolvimento em `.env.local`.
 - Confirme que o texto continua em português do Brasil, simples, orientativo e sem promessa de venda ou resultado garantido.
 - Confirme que existem exatamente cinco próximos passos, todos com ações concretas, sem instruções vagas como aprender sobre anúncios ou revisar políticas.
 - Confirme que os três textos cumprem papéis diferentes: abordagem direta, benefício ou diferencial e convite leve para conversa.
+- Confirme que as quatro novas seções vieram preenchidas e que `creativePack` contém exatamente três itens.
+- Confirme que os prompts visuais são briefings, sem afirmar que imagens foram geradas.
+- Confirme que as respostas de WhatsApp não inventam preço, desconto ou urgência.
+- Confirme que as métricas são explicadas em linguagem simples.
 - Confirme que o passo a passo usa região, orçamento e poucos criativos, sem exigir configurações avançadas.
 - Confirme que o checklist é verificável e que o acompanhamento aparece na ordem 3, 7 e 14 dias.
 - Aos 14 dias, confirme que o plano propõe uma decisão baseada em custo e qualidade dos contatos, sem aumento automático de verba.
-- Confirme que `OPENAI_MAX_OUTPUT_TOKENS` está em um valor conservador antes de testar com tráfego real.
+- Confirme que `OPENAI_MAX_OUTPUT_TOKENS` comporta o pacote estruturado antes de testar com tráfego real.
 
 Se a API falhar, o comportamento esperado é fallback mock com `campaign-plan-source` igual a `mock`.
 

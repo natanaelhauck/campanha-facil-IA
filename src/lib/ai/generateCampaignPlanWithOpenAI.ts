@@ -11,9 +11,9 @@ import {
 } from "./campaignPlanProvider";
 import { campaignPlanResponseFormat } from "./campaignPlanSchema";
 
-const defaultMaxOutputTokens = 1800;
-const minMaxOutputTokens = 800;
-const maxMaxOutputTokens = 4000;
+const defaultMaxOutputTokens = 4200;
+const minMaxOutputTokens = 3000;
+const maxMaxOutputTokens = 6000;
 
 function getMaxOutputTokens() {
   const rawValue = Number.parseInt(

@@ -2,9 +2,9 @@
 
 ## Visão Atual
 
-O **Campanha Fácil IA** é um MVP web para ajudar pequenos negócios brasileiros e pessoas leigas em anúncios a organizar um plano inicial de campanha para Meta Ads, Instagram, Facebook e WhatsApp.
+O **Campanha Fácil IA** é um MVP web para ajudar pequenos negócios brasileiros e pessoas leigas em anúncios a montar um pacote inicial de execução para Meta Ads, Instagram, Facebook e WhatsApp.
 
-A versão atual já tem uma camada de IA real no backend do Next.js com OpenAI e Gemini. Sem provedor real configurado, o sistema usa fallback mock e mantém o fluxo funcionando.
+A versão atual já tem uma camada de IA real no backend do Next.js com OpenAI e Gemini. O resultado inclui configuração sugerida, briefings de criativos, roteiro de WhatsApp e métricas simples. Sem provedor real configurado, o sistema usa fallback mock e mantém o fluxo funcionando.
 
 ## Direção Estratégica Atual
 
@@ -37,7 +37,7 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Seleção segura por `AI_PROVIDER`: `mock`, `openai` ou `gemini`, com padrão `mock`.
 - Geração com OpenAI Responses API ou Google Gemini API quando o provedor e a chave estão configurados.
 - Modelos configuráveis por `OPENAI_MODEL` e `GEMINI_MODEL`.
-- Limite conservador de saída por `OPENAI_MAX_OUTPUT_TOKENS`, com padrão 1800.
+- Limite de saída por `OPENAI_MAX_OUTPUT_TOKENS`, com padrão 4200 para comportar o pacote estruturado.
 - Validação de payload com campos obrigatórios, limites por campo e limite total de entrada.
 - Validação do plano com três textos de anúncio, cinco próximos passos concretos, acompanhamento ordenado em 3, 7 e 14 dias e rejeição de promessas ou orientações vagas.
 - Fallback mock automático quando não há chave, quando a IA está desabilitada ou quando a geração falha.
@@ -52,6 +52,11 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Estado vazio amigável em `/resultado` quando não há dados salvos.
 - Textos de anúncio com botão para copiar.
 - Próximos passos, checklist, ideias de criativos e acompanhamento em 3, 7 e 14 dias.
+- Configuração sugerida da campanha com objetivo, canal, verba, região, público e duração do primeiro teste.
+- Pacote com três briefings de criativos, incluindo legenda, prompt visual e dica de produção.
+- Roteiro de atendimento no WhatsApp com respostas copiáveis.
+- Guia simples de métricas, bons sinais, alertas e momento de esperar ou ajustar.
+- Compatibilidade com planos antigos no `localStorage`: as novas seções são opcionais na leitura e ocultadas quando ausentes.
 - Botões de rolagem por âncora com `scrollIntoView`, funcionando repetidamente.
 - Layout responsivo validado manualmente em largura mobile.
 
@@ -64,6 +69,7 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Exportação para PDF.
 - Publicação automática de campanhas.
 - Integração com Meta Ads API.
+- Geração real de imagens; os criativos atuais são briefings e prompts para produção futura.
 - Cobrança, planos pagos ou painel SaaS completo.
 
 ## Fluxo Principal
@@ -75,8 +81,8 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 5. O endpoint seleciona o provedor configurado, gera o plano com IA quando possível ou retorna fallback mock.
 6. O client salva formulário, plano e origem no `localStorage`.
 7. O usuário é redirecionado para `/resultado`.
-8. `/resultado` lê o plano salvo e exibe o plano inicial personalizado.
-9. O usuário pode copiar textos de anúncio, revisar próximos passos e acompanhar checklist.
+8. `/resultado` lê o plano salvo e exibe o pacote de execução personalizado.
+9. O usuário pode copiar textos, legendas, prompts visuais e respostas de atendimento, além de revisar configuração, checklist e métricas.
 10. O usuário pode clicar em `Ajustar informações` para voltar ao formulário com os dados preenchidos.
 
 ## Principais Decisões
@@ -87,7 +93,7 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Manter fallback mock para desenvolvimento, falhas e ausência de chave.
 - Usar `localStorage` no MVP para evitar backend e banco de dados cedo demais.
 - Não prometer venda, lucro, performance ou aprovação de anúncios.
-- Tratar o plano gerado como orientação inicial.
+- Tratar o pacote gerado como orientação inicial que precisa de revisão humana.
 - Evoluir em commits pequenos e focados.
 - Validar lint, build e fluxo manual antes de commitar.
 
@@ -100,6 +106,7 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Implementar limite por usuário/IP em fase futura.
 - Melhorar observabilidade sem registrar dados sensíveis.
 - Criar testes automatizados específicos para regras de qualidade do plano.
+- Avaliar geração real de imagens somente em fase futura, com custo e revisão explícitos.
 
 ## Comandos Úteis
 
@@ -129,6 +136,10 @@ Para testar IA real localmente, copie `.env.example` para `.env.local`, escolha 
 - Tentativa real chegando à OpenAI e retornando `429 insufficient_quota`, com fallback seguro.
 - Geração real com `gemini-2.5-flash`, retornando `source: ai`, `provider: gemini` e plano validado.
 - Botões `Copiar texto`.
+- Pacote de execução mock com três criativos, roteiro de WhatsApp e métricas simples.
+- Cópia de legenda, prompt visual e resposta do WhatsApp.
+- Plano antigo sem as quatro novas seções renderizando sem erro.
+- Resultado responsivo sem overflow horizontal em largura de 390px.
 - Botões `Ver próximos passos` e `Voltar ao topo`.
 - `npm run lint` passando.
 - `npm run build` passando.

@@ -13,6 +13,14 @@ Todas as mudanças relevantes do projeto serão resumidas neste arquivo.
 
 ## Fase 2: Base De IA Real
 
+### Pacote De Execução Da Campanha
+
+- O resultado evoluiu de plano inicial para pacote com configuração sugerida, três briefings de criativos, roteiro de WhatsApp e guia simples de métricas.
+- Legendas, prompts visuais e respostas de atendimento passaram a ter ações de cópia.
+- Os prompts de imagem são apenas briefings; nenhuma imagem real é gerada nesta fase.
+- Planos antigos no `localStorage` continuam renderizando sem as novas seções.
+- OpenAI e Gemini passaram a exigir o pacote completo, mantendo fallback mock para respostas incompletas.
+
 ### Qualidade Dos Planos Gerados
 
 - Refinado o prompt compartilhado por OpenAI e Gemini para gerar orientações mais práticas, específicas e adequadas a pessoas leigas.

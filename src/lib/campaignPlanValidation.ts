@@ -1,13 +1,27 @@
 import type { CampaignPlanResult } from "@/types/campaign";
 
 type UnknownRecord = Record<string, unknown>;
+type CurrentCampaignPlanResult = CampaignPlanResult &
+  Required<
+    Pick<
+      CampaignPlanResult,
+      | "campaignSetupGuide"
+      | "creativePack"
+      | "whatsappScript"
+      | "simpleMetricsGuide"
+    >
+  >;
 
 function isRecord(value: unknown): value is UnknownRecord {
-  return Boolean(value) && typeof value === "object";
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
 function isString(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
+}
+
+function isBoundedString(value: unknown, maxLength: number) {
+  return isString(value) && value.length <= maxLength;
 }
 
 function normalizeText(value: string) {
@@ -17,7 +31,11 @@ function normalizeText(value: string) {
     .toLowerCase();
 }
 
-function isStringArray(value: unknown, minItems: number, maxItems?: number) {
+function isStringArray(
+  value: unknown,
+  minItems: number,
+  maxItems?: number,
+): value is string[] {
   return (
     Array.isArray(value) &&
     value.length >= minItems &&
@@ -44,7 +62,8 @@ function isAdTextArray(value: unknown) {
 function isNextStepArray(value: unknown) {
   return (
     Array.isArray(value) &&
-    value.length === 5 &&
+    value.length >= 3 &&
+    value.length <= 5 &&
     value.every(
       (item) =>
         isRecord(item) &&
@@ -71,11 +90,76 @@ function isFollowUpPlan(value: unknown) {
   );
 }
 
+function isCampaignSetupGuide(value: unknown) {
+  return (
+    isRecord(value) &&
+    isBoundedString(value.objective, 180) &&
+    isBoundedString(value.channel, 120) &&
+    isBoundedString(value.initialBudget, 180) &&
+    isBoundedString(value.location, 160) &&
+    isBoundedString(value.audience, 220) &&
+    isBoundedString(value.durationSuggestion, 180) &&
+    isBoundedString(value.whatNotToChangeEarly, 220)
+  );
+}
+
+function isCreativePack(value: unknown) {
+  return (
+    Array.isArray(value) &&
+    value.length === 3 &&
+    value.every(
+      (item) =>
+        isRecord(item) &&
+        isBoundedString(item.title, 60) &&
+        isBoundedString(item.format, 60) &&
+        isBoundedString(item.visualIdea, 220) &&
+        isBoundedString(item.textOnCreative, 100) &&
+        isBoundedString(item.caption, 300) &&
+        isBoundedString(item.callToAction, 80) &&
+        isBoundedString(item.aiImagePrompt, 300) &&
+        isBoundedString(item.productionTip, 220),
+    )
+  );
+}
+
+function isWhatsappScript(value: unknown) {
+  return (
+    isRecord(value) &&
+    isBoundedString(value.firstReply, 240) &&
+    isBoundedString(value.priceReply, 240) &&
+    isBoundedString(value.objectionReply, 240) &&
+    isBoundedString(value.closingReply, 240) &&
+    isBoundedString(value.followUpReply, 240)
+  );
+}
+
+function isSimpleMetricsGuide(value: unknown) {
+  return (
+    isRecord(value) &&
+    isStringArray(value.metricsToWatch, 3, 5) &&
+    value.metricsToWatch.every((item) => item.length <= 180) &&
+    isStringArray(value.goodSigns, 2, 4) &&
+    value.goodSigns.every((item) => item.length <= 180) &&
+    isStringArray(value.warningSigns, 2, 4) &&
+    value.warningSigns.every((item) => item.length <= 180) &&
+    isBoundedString(value.whenToWait, 220) &&
+    isBoundedString(value.whenToAdjust, 220)
+  );
+}
+
+function isOptionalSection(
+  value: unknown,
+  validator: (section: unknown) => boolean,
+) {
+  return value === undefined || validator(value);
+}
+
 function hasUnsafePromise(value: string) {
   const normalized = normalizeText(value);
   const unsafePatterns = [
     /\bgaranta\b/,
     /\bgarantimos\b/,
+    /\bgarantir\s+(?:vendas?|clientes?|lucro|resultados?|performance)\b/,
     /\b(?:venda|vendas|cliente|clientes|lucro|lucros|resultado|resultados|performance)\s+garantid[oa]s?\b/,
     /\bresultado\s+certo\b/,
   ];
@@ -104,35 +188,26 @@ function hasVagueNextStep(value: unknown) {
   });
 }
 
-function hasUnsafeContent(value: UnknownRecord) {
-  const content = [
-    value.summary,
-    value.recommendedObjective,
-    value.suggestedAudience,
-    value.budgetGuidance,
-    ...(Array.isArray(value.adTexts)
-      ? value.adTexts.flatMap((item) =>
-          isRecord(item) ? [item.title, item.text] : [],
-        )
-      : []),
-    ...(Array.isArray(value.creativeIdeas) ? value.creativeIdeas : []),
-    ...(Array.isArray(value.setupSteps) ? value.setupSteps : []),
-    ...(Array.isArray(value.prePublishChecklist)
-      ? value.prePublishChecklist
-      : []),
-    ...(Array.isArray(value.followUpPlan)
-      ? value.followUpPlan.flatMap((item) =>
-          isRecord(item) && Array.isArray(item.actions) ? item.actions : [],
-        )
-      : []),
-    ...(Array.isArray(value.nextSteps)
-      ? value.nextSteps.flatMap((item) =>
-          isRecord(item) ? [item.title, item.description] : [],
-        )
-      : []),
-  ];
+function collectPlanStrings(value: unknown): string[] {
+  if (typeof value === "string") {
+    return [value];
+  }
 
-  return content.some((item) => typeof item === "string" && hasUnsafePromise(item));
+  if (Array.isArray(value)) {
+    return value.flatMap(collectPlanStrings);
+  }
+
+  if (!isRecord(value)) {
+    return [];
+  }
+
+  return Object.entries(value).flatMap(([key, item]) =>
+    key === "disclaimer" ? [] : collectPlanStrings(item),
+  );
+}
+
+function hasUnsafeContent(value: UnknownRecord) {
+  return collectPlanStrings(value).some(hasUnsafePromise);
 }
 
 export function isCampaignPlanResult(
@@ -151,7 +226,24 @@ export function isCampaignPlanResult(
     isFollowUpPlan(value.followUpPlan) &&
     isNextStepArray(value.nextSteps) &&
     isString(value.disclaimer) &&
+    isOptionalSection(value.campaignSetupGuide, isCampaignSetupGuide) &&
+    isOptionalSection(value.creativePack, isCreativePack) &&
+    isOptionalSection(value.whatsappScript, isWhatsappScript) &&
+    isOptionalSection(value.simpleMetricsGuide, isSimpleMetricsGuide) &&
     !hasVagueNextStep(value.nextSteps) &&
     !hasUnsafeContent(value)
+  );
+}
+
+export function isCurrentCampaignPlanResult(
+  value: unknown,
+): value is CurrentCampaignPlanResult {
+  return (
+    isCampaignPlanResult(value) &&
+    value.nextSteps.length === 5 &&
+    isCampaignSetupGuide(value.campaignSetupGuide) &&
+    isCreativePack(value.creativePack) &&
+    isWhatsappScript(value.whatsappScript) &&
+    isSimpleMetricsGuide(value.simpleMetricsGuide)
   );
 }
