@@ -21,6 +21,7 @@ function normalizePdfLine(value: string) {
     .normalize("NFC")
     .replace(/[\u00ad\u200b-\u200d\u2060\ufeff]/g, "")
     .replace(/[ \t]+/g, " ")
+    .replace(/\[\s*\](?=\S)/g, "[ ] ")
     .trim();
 }
 

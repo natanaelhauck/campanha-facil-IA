@@ -4,7 +4,7 @@ Este repositório contém o MVP do **Campanha Fácil IA**, uma aplicação web p
 
 ## Objetivo Do Produto
 
-O produto deve guiar o usuário por perguntas simples e transformar as respostas em um plano inicial de campanha. A versão atual gera um resultado simulado e personalizado localmente, sem IA real, backend, banco de dados ou integrações externas.
+O produto deve guiar o usuário por perguntas simples e transformar as respostas em um plano inicial de campanha. A versão atual pode gerar o plano com um resultado simulado local ou com IA real no backend do Next.js, usando OpenAI ou Gemini. Ainda não há banco de dados, autenticação, cobrança nem integração com contas reais de anúncios.
 
 ## Stack Atual
 
@@ -13,7 +13,18 @@ O produto deve guiar o usuário por perguntas simples e transformar as respostas
 - App Router
 - Tailwind CSS
 - ESLint
+- OpenAI SDK no backend do Next.js
+- Google GenAI SDK no backend do Next.js
 - Armazenamento temporário no navegador com `localStorage`
+
+## Provedores De IA
+
+- `AI_PROVIDER=mock` usa o resultado simulado local e deve ser o padrão em desenvolvimento, testes automatizados e validações que não exigem IA real.
+- `AI_PROVIDER=openai` usa a OpenAI quando `OPENAI_API_KEY` está configurada no servidor.
+- `AI_PROVIDER=gemini` usa o Gemini quando `GEMINI_API_KEY` está configurada no servidor.
+- A seleção e o fallback dos provedores ficam no backend. Nunca exponha chaves ou chamadas autenticadas no cliente.
+- Não faça chamadas reais de IA sem necessidade explícita, pois elas podem consumir cota e gerar custo.
+- `.env.local` é local e não deve ser lido, impresso, exposto ou commitado. Use `.env.example` apenas como referência de nomes de variáveis.
 
 ## Regras De Trabalho
 
@@ -27,6 +38,7 @@ O produto deve guiar o usuário por perguntas simples e transformar as respostas
 - Não transforme o produto em uma ferramenta técnica para gestores avançados de tráfego.
 - Preserve o foco em pequenos negócios brasileiros e pessoas leigas em anúncios.
 - Não antecipe integração com Meta Ads, MCPs ou APIs sem planejamento explícito.
+- Preserve os provedores `mock`, `openai` e `gemini`, o fallback seguro e o contrato atual do plano ao alterar a camada de IA.
 - Não implemente ações automáticas que possam gastar dinheiro, publicar anúncios ou alterar campanhas reais sem confirmação humana explícita.
 - Trate futuras integrações com Meta Ads como infraestrutura de apoio, não como o coração inicial do produto.
 
@@ -58,7 +70,6 @@ Corrija qualquer erro de lint ou build antes de commitar.
 
 ## Ainda Não Fazer
 
-- Não implementar OpenAI API.
 - Não implementar Supabase.
 - Não implementar login.
 - Não criar banco de dados.
@@ -69,7 +80,9 @@ Corrija qualquer erro de lint ou build antes de commitar.
 ## Segurança, Custos E Promessas
 
 - Não exponha chaves de API no cliente.
-- Planeje futuras integrações de IA considerando custo por requisição, limites de uso e logs mínimos.
+- Não versione `.env.local` nem qualquer chave real.
+- Use `AI_PROVIDER=mock` por padrão para desenvolvimento e testes, salvo quando um teste real for solicitado explicitamente.
+- Evolua as integrações de IA considerando custo por requisição, limites de uso e logs mínimos sem dados sensíveis.
 - Evite promessas de resultado garantido em anúncios.
 - Trate o plano gerado como orientação inicial, não como garantia de venda, lucro ou performance.
 - Futuras integrações com Meta Ads devem respeitar permissões, políticas da plataforma e consentimento do usuário.
@@ -78,4 +91,4 @@ Corrija qualquer erro de lint ou build antes de commitar.
 
 ## Orientação De Escopo
 
-O projeto deve evoluir por etapas pequenas: MVP simples, IA real, persistência/autenticação, SaaS inicial e integrações. Cada etapa deve ter critérios de conclusão claros e validação manual do fluxo principal.
+O projeto deve evoluir por etapas pequenas: consolidar a IA real, adicionar limites e observabilidade, avaliar persistência/autenticação, evoluir para um SaaS inicial e somente depois considerar integrações. Cada etapa deve ter critérios de conclusão claros e validação do fluxo principal em modo mock.

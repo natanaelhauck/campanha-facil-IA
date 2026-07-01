@@ -30,6 +30,7 @@ function normalizeTextLine(value: string) {
     .normalize("NFC")
     .replace(/[\u00ad\u200b-\u200d\u2060\ufeff]/g, "")
     .replace(/[ \t]+/g, " ")
+    .replace(/\[\s*\](?=\S)/g, "[ ] ")
     .replace(/[ \t]+([,.;:!?])/g, "$1")
     .replace(
       /([A-Za-zÀ-ÖØ-öø-ÿ]):(?=[A-Za-zÀ-ÖØ-öø-ÿ0-9])/g,
