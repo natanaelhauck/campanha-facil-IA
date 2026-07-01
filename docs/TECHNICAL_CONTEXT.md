@@ -6,6 +6,7 @@
 - TypeScript.
 - Tailwind CSS.
 - ESLint.
+- jsPDF para geração client-side do documento exportável.
 - React Client Components para páginas que acessam `localStorage`.
 - Rota backend no App Router para geração de plano.
 - SDKs de OpenAI e Gemini usados apenas no servidor.
@@ -30,6 +31,7 @@ src/
     Select.tsx
     Textarea.tsx
   data/mockCampaignResult.ts
+  lib/downloadCampaignPlanPdf.ts
   lib/formatCampaignPlanText.ts
   lib/ai/
     buildCampaignPrompt.ts
@@ -110,6 +112,8 @@ Os motivos de fallback distinguem provedor inválido, chave ausente, geração d
 - O componente `Button` trata links internos com hash usando `scrollIntoView({ behavior: "smooth" })`, para que botões como `Ver como funciona`, `Ver próximos passos` e `Voltar ao topo` funcionem repetidamente.
 - A página `/resultado` usa `navigator.clipboard.writeText` para copiar o plano completo, textos de anúncio, legendas, prompts visuais e respostas do WhatsApp, com feedback simples de sucesso ou erro.
 - `formatCampaignPlanText.ts` transforma formulário e `CampaignPlanResult` em texto simples organizado. Seções opcionais ausentes são omitidas, sem JSON ou identificação técnica de provider/source.
+- `downloadCampaignPlanPdf.ts` recebe o texto já formatado, cria um PDF A4 com quebra de linhas, múltiplas páginas, títulos e rodapés e inicia o download no navegador.
+- O módulo de PDF e o `jsPDF` são carregados por import dinâmico somente quando o usuário solicita o download, evitando custo no carregamento inicial da página.
 - A navegação rápida de `/resultado` aponta para IDs estáveis e inclui somente seções presentes no plano. Os destinos usam o mesmo comportamento repetível de rolagem suave do componente `Button`.
 - O formulário em `/criar-campanha` usa validação HTML simples com campos obrigatórios.
 - O envio do formulário mantém a chave `campaign-form-data` compatível com `/resultado` e adiciona o plano salvo quando a API responde.
@@ -120,7 +124,6 @@ Os motivos de fallback distinguem provedor inválido, chave ausente, geração d
 - Não há login.
 - Não há banco de dados.
 - Não há histórico de campanhas.
-- Não há exportação para PDF.
 - Não há publicação automática de campanhas.
 - Não há integração com Meta Ads API.
 - Não há geração real de imagens; `aiImagePrompt` é apenas um briefing textual.

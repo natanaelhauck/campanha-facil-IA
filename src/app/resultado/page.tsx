@@ -17,6 +17,7 @@ const campaignStorageKey = "campaign-form-data";
 const campaignPlanStorageKey = "campaign-plan-result";
 const campaignPlanSourceStorageKey = "campaign-plan-source";
 type CopyStatus = "idle" | "copied" | "error";
+type PdfStatus = "idle" | "generating" | "downloaded" | "error";
 
 function parseCampaignForm(value: string | null): CampaignFormData | null {
   if (!value) {
@@ -143,6 +144,59 @@ function CopyButton({
       {status === "error" ? (
         <p className="mt-2 max-w-48 text-xs leading-5 text-amber-800">
           Selecione e copie manualmente.
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+function PdfDownloadButton({
+  text,
+  businessName,
+}: {
+  text: string;
+  businessName: string;
+}) {
+  const [status, setStatus] = useState<PdfStatus>("idle");
+
+  async function downloadPdf() {
+    try {
+      setStatus("generating");
+      const { downloadCampaignPlanPdf } = await import(
+        "@/lib/downloadCampaignPlanPdf"
+      );
+      await downloadCampaignPlanPdf(text, businessName);
+      setStatus("downloaded");
+      window.setTimeout(() => setStatus("idle"), 2500);
+    } catch {
+      setStatus("error");
+      window.setTimeout(() => setStatus("idle"), 3000);
+    }
+  }
+
+  const buttonText =
+    status === "generating"
+      ? "Preparando PDF..."
+      : status === "downloaded"
+        ? "PDF baixado"
+        : status === "error"
+          ? "Não foi possível baixar"
+          : "Baixar PDF";
+
+  return (
+    <div className="w-full shrink-0">
+      <button
+        type="button"
+        onClick={downloadPdf}
+        disabled={status === "generating"}
+        aria-live="polite"
+        className="inline-flex min-h-11 w-full items-center justify-center rounded-md border border-emerald-700 bg-white px-5 py-3 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:ring-offset-2 disabled:cursor-wait disabled:opacity-70"
+      >
+        {buttonText}
+      </button>
+      {status === "error" ? (
+        <p className="mt-2 max-w-52 text-xs leading-5 text-amber-800">
+          Tente novamente ou copie o plano em texto.
         </p>
       ) : null}
     </div>
@@ -402,6 +456,10 @@ export default function ResultPage() {
                 idleLabel="Copiar plano completo"
                 copiedLabel="Plano copiado"
                 prominent
+              />
+              <PdfDownloadButton
+                text={fullPlanText}
+                businessName={businessName}
               />
               <Button href="/criar-campanha" variant="secondary">
                 Ajustar informações

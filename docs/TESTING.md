@@ -106,6 +106,9 @@ Após enviar o formulário:
 - Clique em `Copiar plano completo` e confirme o feedback `Plano copiado`.
 - Cole o conteúdo em um editor de texto e confirme nome do negócio, aviso orientativo, resumo, configuração, próximos passos, textos, criativos, prompts, WhatsApp, checklist, métricas e acompanhamento.
 - Confirme que o texto copiado não contém JSON nem informações técnicas de provider/source.
+- Clique em `Baixar PDF`, aguarde o feedback `PDF baixado` e confirme que o arquivo foi salvo com o nome do negócio.
+- Abra o PDF e confira título, aviso orientativo, seções separadas, quebras de linha, acentos, múltiplas páginas e rodapés.
+- Confirme que o PDF contém as mesmas seções principais do texto completo, sem JSON, provider/source ou promessa de resultado.
 - Use a navegação rápida para `Configuração`, `Criativos`, `WhatsApp`, `Métricas` e `Checklist`.
 - Volte manualmente e clique novamente em cada destino para confirmar que a rolagem funciona mesmo com o mesmo hash na URL.
 - Clique em pelo menos um botão `Copiar texto` e confirme o feedback `Copiado` ou o erro amigável.
@@ -129,6 +132,7 @@ Resultado esperado:
 - As quatro seções novas ficam ocultas.
 - A navegação rápida omite configuração, WhatsApp e métricas ausentes, mantendo os destinos de criativos e checklist.
 - `Copiar plano completo` continua funcionando e omite os blocos opcionais ausentes.
+- `Baixar PDF` continua funcionando e gera o documento sem os blocos opcionais ausentes.
 - A página não usa fallback por ausência exclusiva desses campos e não apresenta erro.
 - `Ajustar informações`, `Ver próximos passos`, cópia de textos e `Voltar ao topo` continuam funcionando.
 
@@ -188,7 +192,7 @@ Se o debug mostrar `fallbackReason: "quota_exceeded"`, `apiStatus: 429` e `apiCo
 - Verifique `/`, `/criar-campanha` e `/resultado`.
 - Confirme que não há overflow horizontal.
 - Confirme que botões, cards, inputs, selects e textareas continuam legíveis.
-- Em `/resultado`, confirme que a navegação rápida quebra em duas colunas e que `Copiar plano completo` ocupa a largura disponível sem causar overflow.
+- Em `/resultado`, confirme que a navegação rápida quebra em duas colunas e que `Copiar plano completo` e `Baixar PDF` ocupam a largura disponível sem causar overflow.
 - Confirme que os CTAs principais continuam acessíveis.
 
 ## Cuidados Antes De Commit E Push

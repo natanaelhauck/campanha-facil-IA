@@ -16,6 +16,8 @@ Todas as mudanças relevantes do projeto serão resumidas neste arquivo.
 ### Usabilidade Do Pacote De Execução
 
 - Adicionada ação para copiar o plano completo em texto simples, com feedback de sucesso e tratamento de erro.
+- Adicionada exportação client-side do plano em PDF paginado, reutilizando o conteúdo textual já formatado.
+- O gerador de PDF é carregado somente ao clicar e mantém compatibilidade com planos antigos.
 - O texto copiado reúne as seções disponíveis do pacote e omite blocos ausentes em planos antigos.
 - Adicionada navegação rápida e responsiva para configuração, criativos, WhatsApp, métricas e checklist.
 - Padronizados IDs estáveis nas principais seções, mantendo a rolagem suave em cliques repetidos.

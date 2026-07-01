@@ -57,6 +57,7 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Roteiro de atendimento no WhatsApp com respostas copiáveis.
 - Guia simples de métricas, bons sinais, alertas e momento de esperar ou ajustar.
 - Ação `Copiar plano completo`, que formata o pacote em texto simples para WhatsApp, Google Docs, Notion ou e-mail.
+- Ação `Baixar PDF`, que exporta o mesmo conteúdo em um documento paginado e organizado diretamente no navegador.
 - Navegação rápida em `/resultado` para configuração, criativos, WhatsApp, métricas e checklist, exibindo apenas seções disponíveis.
 - Compatibilidade com planos antigos no `localStorage`: as novas seções são opcionais na leitura e ocultadas quando ausentes.
 - Botões de rolagem por âncora com `scrollIntoView`, funcionando repetidamente.
@@ -68,7 +69,6 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Login.
 - Banco de dados.
 - Histórico de campanhas.
-- Exportação para PDF.
 - Publicação automática de campanhas.
 - Integração com Meta Ads API.
 - Geração real de imagens; os criativos atuais são briefings e prompts para produção futura.
@@ -84,7 +84,7 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 6. O client salva formulário, plano e origem no `localStorage`.
 7. O usuário é redirecionado para `/resultado`.
 8. `/resultado` lê o plano salvo e exibe o pacote de execução personalizado.
-9. O usuário pode copiar itens isolados ou o plano completo em texto e navegar diretamente entre configuração, criativos, WhatsApp, métricas e checklist.
+9. O usuário pode copiar itens isolados, copiar o plano completo em texto, baixar o pacote em PDF e navegar diretamente entre as principais seções.
 10. O usuário pode clicar em `Ajustar informações` para voltar ao formulário com os dados preenchidos.
 
 ## Principais Decisões
@@ -141,6 +141,7 @@ Para testar IA real localmente, copie `.env.example` para `.env.local`, escolha 
 - Pacote de execução mock com três criativos, roteiro de WhatsApp e métricas simples.
 - Cópia de legenda, prompt visual e resposta do WhatsApp.
 - Cópia do plano completo com feedback `Plano copiado` e as principais seções em texto simples.
+- Download do plano em PDF paginado, legível e sem dados técnicos do provider.
 - Navegação rápida e repetida entre as principais seções do resultado.
 - Plano antigo sem as quatro novas seções renderizando sem erro.
 - Resultado responsivo sem overflow horizontal em largura de 390px.
