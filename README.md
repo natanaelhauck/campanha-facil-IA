@@ -27,9 +27,13 @@ Copie `.env.example` para `.env.local` e preencha a chave quando quiser testar g
 
 ```bash
 AI_PROVIDER=mock
+AI_REQUEST_TIMEOUT_MS=30000
+AI_RATE_LIMIT_ENABLED=true
+AI_RATE_LIMIT_MAX_REQUESTS=10
+AI_RATE_LIMIT_WINDOW_MS=60000
 OPENAI_API_KEY=
 OPENAI_MODEL=gpt-4.1-mini
-OPENAI_MAX_OUTPUT_TOKENS=1800
+OPENAI_MAX_OUTPUT_TOKENS=4200
 GEMINI_API_KEY=
 GEMINI_MODEL=gemini-2.5-flash
 AI_GENERATION_ENABLED=true
@@ -42,6 +46,17 @@ Use `AI_PROVIDER=mock` para executar sem API, `AI_PROVIDER=openai` para OpenAI o
 Os modelos padrão são `gpt-4.1-mini` e `gemini-2.5-flash`, ambos configuráveis. O Gemini está disponível como alternativa de teste; limites gratuitos e disponibilidade dependem do projeto e do modelo e devem ser conferidos no [Google AI Studio](https://aistudio.google.com/).
 
 Em desenvolvimento, a resposta do endpoint inclui um bloco `debug` sem dados sensíveis, com modelo, estado da geração e motivo do fallback. Um erro `429` com código `insufficient_quota` indica falta de cota ou faturamento disponível no projeto OpenAI; nesse caso, o sistema mantém o plano de demonstração.
+
+## Segurança E Controle De Custo
+
+- Chamadas OpenAI e Gemini usam timeout configurável entre 5 e 60 segundos, com padrão de 30 segundos.
+- Os dois provedores executam uma única tentativa por geração, evitando custo duplicado por retry automático.
+- O endpoint limita o body a 8 KB, valida campos e restringe o total útil informado pelo usuário.
+- Um rate limit em memória permite 10 requisições por IP a cada 60 segundos por padrão.
+- O rate limit é apenas uma proteção local por processo. Em produção serverless, múltiplas instâncias não compartilham contadores; antes do beta público, use uma camada distribuída ou o rate limit da plataforma.
+- Dados do formulário são tratados como contexto não confiável no prompt e a resposta continua sujeita ao schema e à validação local.
+
+Consulte a [revisão de segurança](docs/SECURITY_REVIEW.md) para riscos residuais e decisões.
 
 ## Scripts úteis
 

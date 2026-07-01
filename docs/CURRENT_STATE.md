@@ -44,6 +44,10 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Fallback mock automático quando não há chave, quando a IA está desabilitada ou quando a geração falha.
 - Diagnóstico seguro em desenvolvimento com motivo do fallback, sem expor chave, payload ou resposta bruta.
 - Chamadas OpenAI sem retries automáticos, evitando novas tentativas em erros como cota insuficiente.
+- Chamadas OpenAI e Gemini com timeout configurável e uma única tentativa por geração.
+- Body limitado a 8 KB durante a leitura, content type JSON obrigatório e limites por campo mantidos.
+- Rate limit em memória por cliente, com resposta `429` e `Retry-After` ao exceder a janela.
+- Prompt com delimitação explícita de dados não confiáveis e validação estrutural da saída.
 - Salvamento do plano gerado no `localStorage` com a chave `campaign-plan-result`.
 - Salvamento da origem do plano com a chave `campaign-plan-source`.
 - Salvamento do provedor efetivo com a chave `campaign-plan-provider`.
@@ -65,6 +69,7 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Layout responsivo validado manualmente em largura mobile.
 - Suíte E2E versionada com fluxo principal desktop e validação mobile em 390 px.
 - Ambiente E2E isolado, com servidor dedicado e `AI_PROVIDER=mock` forçado.
+- Cenários E2E para payload excessivo e rate limit, sem chamadas externas.
 
 ## Funcionalidades Que Ainda Não Existem
 
@@ -110,6 +115,7 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Planejar limites de uso e custo por geração antes de liberar publicamente.
 - Implementar limite por usuário/IP em fase futura.
 - Melhorar observabilidade sem registrar dados sensíveis.
+- Adotar rate limit distribuído ou da plataforma antes do beta público; o contador atual não é compartilhado entre instâncias serverless.
 - Criar testes automatizados específicos para regras de qualidade do plano.
 - Avaliar geração real de imagens somente em fase futura, com custo e revisão explícitos.
 
@@ -151,6 +157,7 @@ Para testar IA real localmente, copie `.env.example` para `.env.local`, escolha 
 - Resultado responsivo sem overflow horizontal em largura de 390px.
 - Botões `Ver próximos passos` e `Voltar ao topo`.
 - Testes E2E do fluxo principal, cópia, PDF, persistência, regeneração e navegação mobile passando em Chromium.
+- Testes de segurança do endpoint para body acima do limite e bloqueio `429` passando em mock.
 - `npm run lint` passando.
 - `npm run build` passando.
 - `npm run test:e2e` passando.

@@ -36,10 +36,12 @@ src/
   lib/formatCampaignPlanText.ts
   lib/ai/
     buildCampaignPrompt.ts
+    campaignRateLimit.ts
     campaignPlanSchema.ts
     generateCampaignPlan.ts
   types/campaign.ts
 tests/
+  e2e/api-security.spec.ts
   e2e/main-flow.spec.ts
 playwright.config.ts
 ```
@@ -86,13 +88,20 @@ A camada de provedores fica em `src/lib/ai/` e `src/app/api/generate-campaign/ro
 - `campaignPlanProvider.ts` contém o contrato comum, modelos padrão e parse seguro do plano.
 - `campaignPlanValidation.ts` aceita planos legados sem as novas seções para leitura do `localStorage`, mas exige o pacote completo nas respostas novas dos providers. Também valida quantidades, limites e promessas claras.
 - A rota `POST /api/generate-campaign` aceita dados do formulário, limita tamanho do payload, valida campos obrigatórios, normaliza textos e retorna `{ success, data, source, provider, warning }`.
+- O body é lido como stream até o limite de 8 KB, evitando manter um payload arbitrariamente grande em memória antes da rejeição. A rota aceita somente `application/json`.
+- `campaignRateLimit.ts` aplica um limite em memória por identificador de cliente, com padrão de 10 requisições por 60 segundos e no máximo 1.000 buckets ativos.
 - Em `development`, a rota também retorna `debug` com provedor tentado, modelo, geração habilitada, status da API e motivo do fallback. Esse bloco não é retornado em produção.
 - O cliente OpenAI usa `maxRetries: 0`. Assim, erros de cota, autenticação ou configuração caem imediatamente no fallback e não geram tentativas reais adicionais automáticas.
+- OpenAI e Gemini usam `AI_REQUEST_TIMEOUT_MS`, limitado entre 5 e 60 segundos. O Gemini define `retryOptions.attempts=1`, removendo o padrão do SDK de múltiplas tentativas.
 
 Variáveis esperadas:
 
 ```bash
 AI_PROVIDER=mock
+AI_REQUEST_TIMEOUT_MS=30000
+AI_RATE_LIMIT_ENABLED=true
+AI_RATE_LIMIT_MAX_REQUESTS=10
+AI_RATE_LIMIT_WINDOW_MS=60000
 OPENAI_API_KEY=
 OPENAI_MODEL=gpt-4.1-mini
 OPENAI_MAX_OUTPUT_TOKENS=4200
@@ -110,6 +119,18 @@ AI_GENERATION_ENABLED=true
 O Gemini usa limite de 4200 tokens para comportar o pacote estruturado e desabilita thinking nos modelos `gemini-2.5-flash*`. Limites gratuitos variam por projeto e modelo e devem ser conferidos no Google AI Studio.
 
 Os motivos de fallback distinguem provedor inválido, chave ausente, geração desabilitada, cota insuficiente, autenticação, modelo indisponível, erro de API, resposta incompleta, recusa, resposta vazia, JSON inválido e falha de validação.
+
+Os motivos também distinguem timeout sem expor mensagem bruta, stack trace, chave, header ou payload. Logs e o bloco `debug` continuam restritos a `development` e contêm somente metadados operacionais.
+
+## Segurança E Controle De Custo
+
+- O prompt delimita os dados do usuário como conteúdo não confiável e instrui o modelo a ignorar tentativas de mudar regras, papel ou revelar instruções.
+- Essa mitigação não torna modelos imunes a prompt injection. Schema estrito, validação local e ausência de ferramentas com efeitos reais continuam sendo as barreiras principais.
+- O limite de body, os limites por campo e o total de 1.500 caracteres reduzem abuso e custo por chamada.
+- O timeout limita espera no servidor, mas uma operação já aceita pelo provedor ainda pode gerar cobrança mesmo quando o cliente abandona a resposta.
+- O rate limit em memória é útil em desenvolvimento, servidor único e como proteção parcial por instância aquecida.
+- Em serverless, reinícios e múltiplas instâncias mantêm contadores independentes. `x-forwarded-for` só é confiável quando o proxy de entrada remove valores enviados diretamente pelo cliente.
+- Antes do beta público, o rate limit deve migrar para gateway ou armazenamento distribuído, com chave por usuário quando houver autenticação. A implementação atual não deve ser tratada como proteção completa de produção.
 
 ## Comportamentos Client-Side Atuais
 
@@ -137,7 +158,7 @@ Os motivos de fallback distinguem provedor inválido, chave ausente, geração d
 
 A suíte em `tests/e2e/main-flow.spec.ts` usa `@playwright/test` com Chromium. Ela protege o fluxo principal em desktop, incluindo formulário, resposta mock, resultado, três criativos, seções do pacote, cópia, PDF, persistência, edição e regeneração.
 
-Um segundo cenário usa viewport de 390 px para verificar overflow horizontal e acesso à navegação rápida. O `playwright.config.ts` inicia um servidor dedicado na porta 3100 com `AI_PROVIDER=mock`, geração real desabilitada e chaves de provedores vazias. O servidor não é reutilizado, evitando que os testes se conectem acidentalmente a uma instância configurada com IA real.
+Um segundo cenário usa viewport de 390 px para verificar overflow horizontal e acesso à navegação rápida. `api-security.spec.ts` valida o limite de body e o bloqueio temporário por frequência. O `playwright.config.ts` inicia um servidor dedicado na porta 3100 com `AI_PROVIDER=mock`, geração real desabilitada e chaves de provedores vazias. O servidor não é reutilizado, evitando que os testes se conectem acidentalmente a uma instância configurada com IA real.
 
 Os comandos disponíveis são `npm run test:e2e` para execução headless e `npm run test:e2e:headed` para execução com navegador visível. O Chromium precisa ser instalado uma vez por máquina com `npx playwright install chromium`.
 
@@ -153,6 +174,7 @@ Pontos ainda pendentes para amadurecer a IA:
 - Criar fallback e mensagens para indisponibilidade prolongada.
 - Ampliar testes automatizados da validação semântica antes de uso em produção.
 - Implementar limite por usuário/IP em fase futura com autenticação, middleware ou camada de infraestrutura.
+- Substituir o rate limit em memória por uma camada distribuída antes do beta público.
 
 ## Pontos Planejados Para Supabase
 

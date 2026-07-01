@@ -39,6 +39,37 @@ export type PlanParseResult =
 
 export const defaultOpenAIModel = "gpt-4.1-mini";
 export const defaultGeminiModel = "gemini-2.5-flash";
+const defaultRequestTimeoutMs = 30_000;
+const minRequestTimeoutMs = 5_000;
+const maxRequestTimeoutMs = 60_000;
+
+export function getAIRequestTimeoutMs() {
+  const configuredTimeout = Number.parseInt(
+    process.env.AI_REQUEST_TIMEOUT_MS ?? "",
+    10,
+  );
+
+  if (!Number.isFinite(configuredTimeout)) {
+    return defaultRequestTimeoutMs;
+  }
+
+  return Math.min(
+    Math.max(configuredTimeout, minRequestTimeoutMs),
+    maxRequestTimeoutMs,
+  );
+}
+
+export function isAIRequestTimeoutError(error: unknown) {
+  if (!(error instanceof Error)) {
+    return false;
+  }
+
+  return (
+    error.name === "AbortError" ||
+    error.name === "TimeoutError" ||
+    /timed?\s*out|timeout/i.test(error.message)
+  );
+}
 
 export function getProviderModel(provider: CampaignAIProvider) {
   if (provider === "openai") {

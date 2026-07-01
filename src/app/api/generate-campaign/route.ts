@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { consumeCampaignRateLimit } from "@/lib/ai/campaignRateLimit";
 import { generateCampaignPlan } from "@/lib/ai/generateCampaignPlan";
 import type { CampaignFormData } from "@/types/campaign";
 
@@ -13,7 +14,7 @@ type ValidationResult =
       status: number;
     };
 
-const maxRequestBodyLength = 8_000;
+const maxRequestBodyBytes = 8_000;
 const maxTotalInputLength = 1_500;
 
 const fieldLimits: Record<keyof CampaignFormData, number> = {
@@ -44,6 +45,57 @@ const fieldLabels: Record<keyof CampaignFormData, string> = {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+async function readRequestBody(request: Request) {
+  const contentLength = Number.parseInt(
+    request.headers.get("content-length") ?? "",
+    10,
+  );
+
+  if (Number.isFinite(contentLength) && contentLength > maxRequestBodyBytes) {
+    return {
+      ok: false as const,
+    };
+  }
+
+  if (!request.body) {
+    return {
+      ok: true as const,
+      body: "",
+    };
+  }
+
+  const reader = request.body.getReader();
+  const decoder = new TextDecoder();
+  let totalBytes = 0;
+  let body = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+
+    if (done) {
+      body += decoder.decode();
+      break;
+    }
+
+    totalBytes += value.byteLength;
+
+    if (totalBytes > maxRequestBodyBytes) {
+      await reader.cancel();
+
+      return {
+        ok: false as const,
+      };
+    }
+
+    body += decoder.decode(value, { stream: true });
+  }
+
+  return {
+    ok: true as const,
+    body,
+  };
 }
 
 function normalizeCampaignPayload(value: unknown): ValidationResult {
@@ -102,11 +154,43 @@ function normalizeCampaignPayload(value: unknown): ValidationResult {
 
 export async function POST(request: Request) {
   let payload: unknown;
+  const rateLimit = consumeCampaignRateLimit(request);
+
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      {
+        success: false,
+        error:
+          "Muitas tentativas em pouco tempo. Aguarde um momento e tente novamente.",
+        code: "rate_limited",
+      },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(rateLimit.retryAfterSeconds),
+          "X-RateLimit-Limit": String(rateLimit.limit),
+          "X-RateLimit-Remaining": "0",
+        },
+      },
+    );
+  }
+
+  const contentType = request.headers.get("content-type")?.toLowerCase();
+
+  if (!contentType?.startsWith("application/json")) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Envie os dados do formulário como JSON.",
+      },
+      { status: 415 },
+    );
+  }
 
   try {
-    const body = await request.text();
+    const requestBody = await readRequestBody(request);
 
-    if (body.length > maxRequestBodyLength) {
+    if (!requestBody.ok) {
       return NextResponse.json(
         {
           success: false,
@@ -117,7 +201,7 @@ export async function POST(request: Request) {
       );
     }
 
-    payload = JSON.parse(body) as unknown;
+    payload = JSON.parse(requestBody.body) as unknown;
   } catch {
     return NextResponse.json(
       {
@@ -154,12 +238,20 @@ export async function POST(request: Request) {
   const debug =
     process.env.NODE_ENV === "development" ? result.debug : undefined;
 
-  return NextResponse.json({
-    success: true,
-    data: result.data,
-    source: result.source,
-    provider: result.provider,
-    warning: result.warning,
-    debug,
-  });
+  return NextResponse.json(
+    {
+      success: true,
+      data: result.data,
+      source: result.source,
+      provider: result.provider,
+      warning: result.warning,
+      debug,
+    },
+    {
+      headers: {
+        "X-RateLimit-Limit": String(rateLimit.limit),
+        "X-RateLimit-Remaining": String(rateLimit.remaining),
+      },
+    },
+  );
 }

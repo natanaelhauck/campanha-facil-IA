@@ -33,6 +33,10 @@ export default defineConfig({
     env: {
       AI_PROVIDER: "mock",
       AI_GENERATION_ENABLED: "false",
+      AI_REQUEST_TIMEOUT_MS: "5000",
+      AI_RATE_LIMIT_ENABLED: "true",
+      AI_RATE_LIMIT_MAX_REQUESTS: "5",
+      AI_RATE_LIMIT_WINDOW_MS: "60000",
       OPENAI_API_KEY: "",
       GEMINI_API_KEY: "",
       NEXT_TELEMETRY_DISABLED: "1",

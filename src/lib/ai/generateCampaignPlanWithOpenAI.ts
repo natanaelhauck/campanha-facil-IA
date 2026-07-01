@@ -5,7 +5,9 @@ import {
   campaignPlanSystemInstruction,
 } from "./buildCampaignPrompt";
 import {
+  getAIRequestTimeoutMs,
   getProviderModel,
+  isAIRequestTimeoutError,
   parseCampaignPlanJson,
   type ProviderGenerationResult,
 } from "./campaignPlanProvider";
@@ -122,6 +124,7 @@ export async function generateCampaignPlanWithOpenAI(
     const client = new OpenAI({
       apiKey,
       maxRetries: 0,
+      timeout: getAIRequestTimeoutMs(),
     });
     const response = await client.responses.create({
       model,
@@ -195,7 +198,10 @@ export async function generateCampaignPlanWithOpenAI(
     };
   } catch (error) {
     const fallbackReason: CampaignFallbackReason =
-      error instanceof OpenAI.APIError &&
+      error instanceof OpenAI.APIConnectionTimeoutError ||
+      isAIRequestTimeoutError(error)
+        ? "timeout"
+        : error instanceof OpenAI.APIError &&
       error.status === 429 &&
       error.code === "insufficient_quota"
         ? "quota_exceeded"

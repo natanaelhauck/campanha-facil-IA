@@ -4,6 +4,16 @@ Todas as mudanças relevantes do projeto serão resumidas neste arquivo.
 
 ## Qualidade Técnica
 
+### Segurança E Controle De Custo Da IA
+
+- Adicionado timeout configurável e limitado para OpenAI e Gemini.
+- Desabilitados retries automáticos nos dois provedores para evitar custo duplicado.
+- O endpoint passou a limitar o body durante a leitura e aceitar somente JSON.
+- Adicionado rate limit simples em memória, com `429`, `Retry-After` e documentação explícita da limitação em ambientes serverless.
+- Reforçada a separação entre instruções do sistema e dados não confiáveis do formulário.
+- Adicionados testes E2E para payload excessivo e limite de frequência em modo mock.
+- Registrado o advisory moderado transitivo do PostCSS sem aplicar downgrade inseguro sugerido por `npm audit fix --force`.
+
 ### Testes E2E Do Fluxo Principal
 
 - Adicionado `@playwright/test` com configuração compatível com o servidor Next.js.

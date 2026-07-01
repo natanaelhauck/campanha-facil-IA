@@ -22,6 +22,7 @@ export type CampaignFallbackReason =
   | "quota_exceeded"
   | "authentication_error"
   | "model_not_available"
+  | "timeout"
   | "api_error"
   | "incomplete_response"
   | "refusal"

@@ -19,6 +19,10 @@ Para testar geração real, crie um `.env.local` local, nunca commitado:
 
 ```bash
 AI_PROVIDER=mock
+AI_REQUEST_TIMEOUT_MS=30000
+AI_RATE_LIMIT_ENABLED=true
+AI_RATE_LIMIT_MAX_REQUESTS=10
+AI_RATE_LIMIT_WINDOW_MS=60000
 OPENAI_API_KEY=sua-chave-local
 OPENAI_MODEL=gpt-4.1-mini
 OPENAI_MAX_OUTPUT_TOKENS=4200
@@ -63,7 +67,7 @@ Para acompanhar a execução com o navegador visível:
 npm run test:e2e:headed
 ```
 
-O `playwright.config.ts` inicia o Next.js em `http://127.0.0.1:3100`, não reutiliza outro servidor e sobrescreve o ambiente com `AI_PROVIDER=mock`, `AI_GENERATION_ENABLED=false` e chaves vazias. Assim, a suíte não depende de `.env.local` e não faz chamadas reais para OpenAI ou Gemini.
+O `playwright.config.ts` inicia o Next.js em `http://127.0.0.1:3100`, não reutiliza outro servidor e sobrescreve o ambiente com `AI_PROVIDER=mock`, `AI_GENERATION_ENABLED=false` e chaves vazias. Também reduz o rate limit para cinco requisições por IP no cenário específico de segurança. Assim, a suíte não depende de `.env.local` e não faz chamadas reais para OpenAI ou Gemini.
 
 Os cenários atuais cobrem:
 
@@ -76,6 +80,8 @@ Os cenários atuais cobrem:
 - edição e regeneração do resultado;
 - viewport mobile de 390 px sem overflow horizontal;
 - disponibilidade da navegação rápida no mobile.
+- rejeição de body acima de 8 KB antes da geração;
+- bloqueio por rate limit com status `429` e header `Retry-After`.
 
 Relatórios, traces, screenshots e vídeos produzidos pelo Playwright são artefatos locais ignorados pelo Git.
 
@@ -217,6 +223,8 @@ Use apenas uma chave de desenvolvimento em `.env.local`.
 - Confirme que `OPENAI_MAX_OUTPUT_TOKENS` comporta o pacote estruturado antes de testar com tráfego real.
 
 Se a API falhar, o comportamento esperado é fallback mock com `campaign-plan-source` igual a `mock`.
+
+Timeouts também devem resultar em fallback mock com `fallbackReason: "timeout"` no debug de desenvolvimento. OpenAI e Gemini estão configurados sem retry automático para evitar chamadas adicionais e custo duplicado.
 
 Para Gemini, faça no máximo uma geração real por rodada de validação. Confira previamente no Google AI Studio a disponibilidade do modelo e os limites do projeto; cotas gratuitas podem mudar.
 

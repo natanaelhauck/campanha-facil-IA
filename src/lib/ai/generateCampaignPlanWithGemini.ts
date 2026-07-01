@@ -5,7 +5,9 @@ import {
   campaignPlanSystemInstruction,
 } from "./buildCampaignPrompt";
 import {
+  getAIRequestTimeoutMs,
   getProviderModel,
+  isAIRequestTimeoutError,
   parseCampaignPlanJson,
   type ProviderGenerationResult,
 } from "./campaignPlanProvider";
@@ -47,7 +49,15 @@ export async function generateCampaignPlanWithGemini(
   }
 
   try {
-    const client = new GoogleGenAI({ apiKey });
+    const client = new GoogleGenAI({
+      apiKey,
+      httpOptions: {
+        timeout: getAIRequestTimeoutMs(),
+        retryOptions: {
+          attempts: 1,
+        },
+      },
+    });
     const response = await client.models.generateContent({
       model,
       contents: buildCampaignPrompt(form),
@@ -128,7 +138,9 @@ export async function generateCampaignPlanWithGemini(
     };
   } catch (error) {
     const fallbackReason: CampaignFallbackReason =
-      error instanceof ApiError && error.status === 429
+      isAIRequestTimeoutError(error)
+        ? "timeout"
+        : error instanceof ApiError && error.status === 429
         ? "quota_exceeded"
         : error instanceof ApiError &&
             (error.status === 401 || error.status === 403)
