@@ -25,6 +25,21 @@ function list(items: string[] | undefined, marker = "-") {
   return items?.map((item) => `${marker} ${item}`) ?? [];
 }
 
+function normalizeTextLine(value: string) {
+  return value
+    .normalize("NFC")
+    .replace(/[\u00ad\u200b-\u200d\u2060\ufeff]/g, "")
+    .replace(/[ \t]+/g, " ")
+    .replace(/[ \t]+([,.;:!?])/g, "$1")
+    .replace(
+      /([A-Za-zÀ-ÖØ-öø-ÿ]):(?=[A-Za-zÀ-ÖØ-öø-ÿ0-9])/g,
+      "$1: ",
+    )
+    .replace(/([;!?])(?=[A-Za-zÀ-ÖØ-öø-ÿ0-9])/g, "$1 ")
+    .replace(/\.([A-ZÀ-ÖØ-Þ])/g, ". $1")
+    .trimEnd();
+}
+
 export function formatCampaignPlanText(
   form: Partial<CampaignFormData> | null | undefined,
   plan: CampaignPlanResult,
@@ -137,5 +152,9 @@ export function formatCampaignPlanText(
     ]) ?? [],
   );
 
-  return sections.join("\n\n");
+  return sections
+    .join("\n\n")
+    .split("\n")
+    .map(normalizeTextLine)
+    .join("\n");
 }

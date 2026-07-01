@@ -108,6 +108,7 @@ Após enviar o formulário:
 - Confirme que o texto copiado não contém JSON nem informações técnicas de provider/source.
 - Clique em `Baixar PDF`, aguarde o feedback `PDF baixado` e confirme que o arquivo foi salvo com o nome do negócio.
 - Abra o PDF e confira título, aviso orientativo, seções separadas, quebras de linha, acentos, múltiplas páginas e rodapés.
+- Confirme que palavras como `Pizzaria`, `WhatsApp`, `bairro` e `orçamento` aparecem inteiras e que há espaços naturais depois de pontuação.
 - Confirme que o PDF contém as mesmas seções principais do texto completo, sem JSON, provider/source ou promessa de resultado.
 - Use a navegação rápida para `Configuração`, `Criativos`, `WhatsApp`, `Métricas` e `Checklist`.
 - Volte manualmente e clique novamente em cada destino para confirmar que a rolagem funciona mesmo com o mesmo hash na URL.

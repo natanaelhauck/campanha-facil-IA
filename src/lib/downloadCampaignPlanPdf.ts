@@ -16,6 +16,14 @@ function isSectionTitle(value: string) {
   );
 }
 
+function normalizePdfLine(value: string) {
+  return value
+    .normalize("NFC")
+    .replace(/[\u00ad\u200b-\u200d\u2060\ufeff]/g, "")
+    .replace(/[ \t]+/g, " ")
+    .trim();
+}
+
 export async function downloadCampaignPlanPdf(
   text: string,
   businessName: string,
@@ -45,6 +53,28 @@ export async function downloadCampaignPlanPdf(
     }
   }
 
+  function wrapLine(value: string, maxWidth: number) {
+    const words = normalizePdfLine(value).split(" ").filter(Boolean);
+
+    if (words.length === 0) {
+      return [" "];
+    }
+
+    return words.reduce<string[]>((wrappedLines, word) => {
+      const lastLine = wrappedLines.at(-1);
+
+      if (!lastLine) {
+        wrappedLines.push(word);
+      } else if (pdf.getTextWidth(`${lastLine} ${word}`) <= maxWidth) {
+        wrappedLines[wrappedLines.length - 1] = `${lastLine} ${word}`;
+      } else {
+        wrappedLines.push(word);
+      }
+
+      return wrappedLines;
+    }, []);
+  }
+
   function writeLines(
     lines: string[],
     options: {
@@ -61,17 +91,16 @@ export async function downloadCampaignPlanPdf(
 
     pdf.setFont("helvetica", options.style ?? "normal");
     pdf.setFontSize(fontSize);
+    pdf.setCharSpace(0);
     pdf.setTextColor(...(options.color ?? [68, 64, 60]));
 
     lines.forEach((line) => {
-      const wrappedLines = pdf.splitTextToSize(
-        line || " ",
-        contentWidth - indent,
-      ) as string[];
+      const wrappedLines = wrapLine(line, contentWidth - indent);
 
       wrappedLines.forEach((wrappedLine) => {
         ensureSpace(lineHeight);
-        pdf.text(wrappedLine, margin + indent, cursorY);
+        pdf.setCharSpace(0);
+        pdf.text(wrappedLine, margin + indent, cursorY, { charSpace: 0 });
         cursorY += lineHeight;
       });
 
@@ -96,10 +125,8 @@ export async function downloadCampaignPlanPdf(
   if (notice) {
     pdf.setFont("helvetica", "normal");
     pdf.setFontSize(9);
-    const noticeLines = pdf.splitTextToSize(
-      notice,
-      contentWidth - 10,
-    ) as string[];
+    pdf.setCharSpace(0);
+    const noticeLines = wrapLine(notice, contentWidth - 10);
     const noticeHeight = noticeLines.length * 4.5 + 8;
     ensureSpace(noticeHeight);
     pdf.setFillColor(255, 251, 235);
@@ -114,7 +141,12 @@ export async function downloadCampaignPlanPdf(
       "FD",
     );
     pdf.setTextColor(120, 53, 15);
-    pdf.text(noticeLines, margin + 5, cursorY + 1);
+    pdf.setCharSpace(0);
+    noticeLines.forEach((line, index) => {
+      pdf.text(line, margin + 5, cursorY + 1 + index * 4.5, {
+        charSpace: 0,
+      });
+    });
     cursorY += noticeHeight + 3;
   }
 
@@ -156,11 +188,13 @@ export async function downloadCampaignPlanPdf(
     pdf.line(margin, pageHeight - 12, pageWidth - margin, pageHeight - 12);
     pdf.setFont("helvetica", "normal");
     pdf.setFontSize(8);
+    pdf.setCharSpace(0);
     pdf.setTextColor(120, 113, 108);
     pdf.text(
       `Campanha Fácil IA • Plano inicial orientativo • Página ${page} de ${totalPages}`,
       margin,
       pageHeight - 7,
+      { charSpace: 0 },
     );
   }
 
