@@ -2,6 +2,17 @@
 
 Todas as mudanças relevantes do projeto serão resumidas neste arquivo.
 
+## Qualidade Técnica
+
+### Testes E2E Do Fluxo Principal
+
+- Adicionado `@playwright/test` com configuração compatível com o servidor Next.js.
+- Criada suíte E2E versionada para formulário, geração mock, resultado, três criativos, seções principais, cópia, PDF, persistência, edição e regeneração.
+- Adicionado cenário mobile em 390 px para overflow horizontal e navegação rápida.
+- O servidor dos testes usa porta dedicada, força `AI_PROVIDER=mock`, desabilita geração real e não depende de chaves.
+- Adicionados scripts para execução headless e com navegador visível.
+- Relatórios e artefatos locais do Playwright passaram a ser ignorados pelo Git.
+
 ## Estratégia
 
 ### Posicionamento Frente A MCPs E Conectores Meta Ads

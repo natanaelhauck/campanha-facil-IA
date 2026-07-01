@@ -9,6 +9,7 @@ MVP de uma aplicação web para ajudar pequenos negócios e pessoas leigas em an
 - App Router
 - Tailwind CSS
 - ESLint
+- Playwright para testes E2E
 - OpenAI SDK no backend do Next.js
 
 ## Como rodar localmente
@@ -47,7 +48,11 @@ Em desenvolvimento, a resposta do endpoint inclui um bloco `debug` sem dados sen
 ```bash
 npm run lint
 npm run build
+npm run test:e2e
+npm run test:e2e:headed
 ```
+
+Na primeira configuração da máquina, instale o Chromium gerenciado pelo Playwright com `npx playwright install chromium`. Os testes E2E iniciam o Next.js em uma porta dedicada e forçam `AI_PROVIDER=mock`, sem usar OpenAI ou Gemini.
 
 ## Documentação
 

@@ -25,6 +25,7 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - App Router
 - Tailwind CSS
 - ESLint
+- Playwright Test
 - OpenAI SDK no backend
 - `localStorage` para persistência temporária no navegador
 
@@ -62,6 +63,8 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Compatibilidade com planos antigos no `localStorage`: as novas seções são opcionais na leitura e ocultadas quando ausentes.
 - Botões de rolagem por âncora com `scrollIntoView`, funcionando repetidamente.
 - Layout responsivo validado manualmente em largura mobile.
+- Suíte E2E versionada com fluxo principal desktop e validação mobile em 390 px.
+- Ambiente E2E isolado, com servidor dedicado e `AI_PROVIDER=mock` forçado.
 
 ## Funcionalidades Que Ainda Não Existem
 
@@ -117,6 +120,7 @@ npm install
 npm run dev
 npm run lint
 npm run build
+npm run test:e2e
 git status --short --branch
 ```
 
@@ -146,5 +150,7 @@ Para testar IA real localmente, copie `.env.example` para `.env.local`, escolha 
 - Plano antigo sem as quatro novas seções renderizando sem erro.
 - Resultado responsivo sem overflow horizontal em largura de 390px.
 - Botões `Ver próximos passos` e `Voltar ao topo`.
+- Testes E2E do fluxo principal, cópia, PDF, persistência, regeneração e navegação mobile passando em Chromium.
 - `npm run lint` passando.
 - `npm run build` passando.
+- `npm run test:e2e` passando.

@@ -6,6 +6,7 @@
 - TypeScript.
 - Tailwind CSS.
 - ESLint.
+- Playwright Test para testes E2E versionados.
 - jsPDF para geração client-side do documento exportável.
 - React Client Components para páginas que acessam `localStorage`.
 - Rota backend no App Router para geração de plano.
@@ -38,6 +39,9 @@ src/
     campaignPlanSchema.ts
     generateCampaignPlan.ts
   types/campaign.ts
+tests/
+  e2e/main-flow.spec.ts
+playwright.config.ts
 ```
 
 ## Fluxo Atual Completo
@@ -128,6 +132,14 @@ Os motivos de fallback distinguem provedor inválido, chave ausente, geração d
 - Não há integração com Meta Ads API.
 - Não há geração real de imagens; `aiImagePrompt` é apenas um briefing textual.
 - Não há cobrança, planos pagos ou painel SaaS completo.
+
+## Testes E2E
+
+A suíte em `tests/e2e/main-flow.spec.ts` usa `@playwright/test` com Chromium. Ela protege o fluxo principal em desktop, incluindo formulário, resposta mock, resultado, três criativos, seções do pacote, cópia, PDF, persistência, edição e regeneração.
+
+Um segundo cenário usa viewport de 390 px para verificar overflow horizontal e acesso à navegação rápida. O `playwright.config.ts` inicia um servidor dedicado na porta 3100 com `AI_PROVIDER=mock`, geração real desabilitada e chaves de provedores vazias. O servidor não é reutilizado, evitando que os testes se conectem acidentalmente a uma instância configurada com IA real.
+
+Os comandos disponíveis são `npm run test:e2e` para execução headless e `npm run test:e2e:headed` para execução com navegador visível. O Chromium precisa ser instalado uma vez por máquina com `npx playwright install chromium`.
 
 ## Limites Da Base Atual De IA
 

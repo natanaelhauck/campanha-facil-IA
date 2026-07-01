@@ -7,6 +7,7 @@ Antes de commit, rode:
 ```bash
 npm run lint
 npm run build
+npm run test:e2e
 git status --short --branch
 ```
 
@@ -41,6 +42,42 @@ AI_GENERATION_ENABLED=false
 ```
 
 O padrão é `mock`. A variável correta da chave Gemini é `GEMINI_API_KEY`. O build e o fluxo mock não dependem de chave ou modelo válido.
+
+## Testes E2E Automatizados
+
+A suíte versionada usa `@playwright/test` e fica em `tests/e2e/`. Na primeira configuração da máquina, instale o navegador gerenciado pelo Playwright:
+
+```bash
+npx playwright install chromium
+```
+
+Execute os testes em modo headless:
+
+```bash
+npm run test:e2e
+```
+
+Para acompanhar a execução com o navegador visível:
+
+```bash
+npm run test:e2e:headed
+```
+
+O `playwright.config.ts` inicia o Next.js em `http://127.0.0.1:3100`, não reutiliza outro servidor e sobrescreve o ambiente com `AI_PROVIDER=mock`, `AI_GENERATION_ENABLED=false` e chaves vazias. Assim, a suíte não depende de `.env.local` e não faz chamadas reais para OpenAI ou Gemini.
+
+Os cenários atuais cobrem:
+
+- fluxo completo da home ao resultado;
+- resposta da API com `source` e `provider` iguais a `mock`;
+- pacote com três criativos e as principais seções;
+- cópia do plano completo e feedback visual;
+- download do PDF;
+- retorno ao formulário com dados persistidos;
+- edição e regeneração do resultado;
+- viewport mobile de 390 px sem overflow horizontal;
+- disponibilidade da navegação rápida no mobile.
+
+Relatórios, traces, screenshots e vídeos produzidos pelo Playwright são artefatos locais ignorados pelo Git.
 
 ## Checklist Manual Do Fluxo Principal
 
@@ -199,7 +236,8 @@ Se o debug mostrar `fallbackReason: "quota_exceeded"`, `apiStatus: 429` e `apiCo
 ## Cuidados Antes De Commit E Push
 
 - Não versionar `.next/`, logs, screenshots, perfis temporários de navegador ou arquivos de teste manual.
+- Não versionar `playwright-report/`, `test-results/` ou `blob-report/`.
 - Verificar `git status --short --branch`.
 - Revisar o diff para garantir que a mudança está dentro do escopo.
-- Rodar lint e build.
+- Rodar lint, build e `npm run test:e2e`.
 - Só commitar se as validações passarem.

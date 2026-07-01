@@ -11,3 +11,6 @@ yarn-debug.log*
 yarn-error.log*
 .DS_Store
 .codex/skills/
+playwright-report/
+test-results/
+blob-report/
