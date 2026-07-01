@@ -103,6 +103,11 @@ Após enviar o formulário:
 - Confirme que a seção `O que fazer primeiro` está visível.
 - Clique em `Ver próximos passos`, volte manualmente o scroll e clique novamente.
 - Confirme que a rolagem funciona repetidamente.
+- Clique em `Copiar plano completo` e confirme o feedback `Plano copiado`.
+- Cole o conteúdo em um editor de texto e confirme nome do negócio, aviso orientativo, resumo, configuração, próximos passos, textos, criativos, prompts, WhatsApp, checklist, métricas e acompanhamento.
+- Confirme que o texto copiado não contém JSON nem informações técnicas de provider/source.
+- Use a navegação rápida para `Configuração`, `Criativos`, `WhatsApp`, `Métricas` e `Checklist`.
+- Volte manualmente e clique novamente em cada destino para confirmar que a rolagem funciona mesmo com o mesmo hash na URL.
 - Clique em pelo menos um botão `Copiar texto` e confirme o feedback `Copiado` ou o erro amigável.
 - Confirme que as seções `Configuração sugerida da campanha`, `Pacote de criativos`, `Roteiro de atendimento no WhatsApp` e `Métricas simples para acompanhar` aparecem no plano novo.
 - Confirme que o pacote contém exatamente três criativos e informa que nenhuma imagem foi gerada.
@@ -122,6 +127,8 @@ Resultado esperado:
 
 - As seções antigas continuam renderizando.
 - As quatro seções novas ficam ocultas.
+- A navegação rápida omite configuração, WhatsApp e métricas ausentes, mantendo os destinos de criativos e checklist.
+- `Copiar plano completo` continua funcionando e omite os blocos opcionais ausentes.
 - A página não usa fallback por ausência exclusiva desses campos e não apresenta erro.
 - `Ajustar informações`, `Ver próximos passos`, cópia de textos e `Voltar ao topo` continuam funcionando.
 
@@ -181,6 +188,7 @@ Se o debug mostrar `fallbackReason: "quota_exceeded"`, `apiStatus: 429` e `apiCo
 - Verifique `/`, `/criar-campanha` e `/resultado`.
 - Confirme que não há overflow horizontal.
 - Confirme que botões, cards, inputs, selects e textareas continuam legíveis.
+- Em `/resultado`, confirme que a navegação rápida quebra em duas colunas e que `Copiar plano completo` ocupa a largura disponível sem causar overflow.
 - Confirme que os CTAs principais continuam acessíveis.
 
 ## Cuidados Antes De Commit E Push

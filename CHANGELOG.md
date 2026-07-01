@@ -13,6 +13,13 @@ Todas as mudanças relevantes do projeto serão resumidas neste arquivo.
 
 ## Fase 2: Base De IA Real
 
+### Usabilidade Do Pacote De Execução
+
+- Adicionada ação para copiar o plano completo em texto simples, com feedback de sucesso e tratamento de erro.
+- O texto copiado reúne as seções disponíveis do pacote e omite blocos ausentes em planos antigos.
+- Adicionada navegação rápida e responsiva para configuração, criativos, WhatsApp, métricas e checklist.
+- Padronizados IDs estáveis nas principais seções, mantendo a rolagem suave em cliques repetidos.
+
 ### Pacote De Execução Da Campanha
 
 - O resultado evoluiu de plano inicial para pacote com configuração sugerida, três briefings de criativos, roteiro de WhatsApp e guia simples de métricas.

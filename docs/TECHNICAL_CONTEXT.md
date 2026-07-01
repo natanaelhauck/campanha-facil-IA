@@ -30,6 +30,7 @@ src/
     Select.tsx
     Textarea.tsx
   data/mockCampaignResult.ts
+  lib/formatCampaignPlanText.ts
   lib/ai/
     buildCampaignPrompt.ts
     campaignPlanSchema.ts
@@ -107,7 +108,9 @@ Os motivos de fallback distinguem provedor inválido, chave ausente, geração d
 ## Comportamentos Client-Side Atuais
 
 - O componente `Button` trata links internos com hash usando `scrollIntoView({ behavior: "smooth" })`, para que botões como `Ver como funciona`, `Ver próximos passos` e `Voltar ao topo` funcionem repetidamente.
-- A página `/resultado` usa `navigator.clipboard.writeText` para copiar textos de anúncio, legendas, prompts visuais e respostas do WhatsApp, com feedback simples de sucesso ou erro.
+- A página `/resultado` usa `navigator.clipboard.writeText` para copiar o plano completo, textos de anúncio, legendas, prompts visuais e respostas do WhatsApp, com feedback simples de sucesso ou erro.
+- `formatCampaignPlanText.ts` transforma formulário e `CampaignPlanResult` em texto simples organizado. Seções opcionais ausentes são omitidas, sem JSON ou identificação técnica de provider/source.
+- A navegação rápida de `/resultado` aponta para IDs estáveis e inclui somente seções presentes no plano. Os destinos usam o mesmo comportamento repetível de rolagem suave do componente `Button`.
 - O formulário em `/criar-campanha` usa validação HTML simples com campos obrigatórios.
 - O envio do formulário mantém a chave `campaign-form-data` compatível com `/resultado` e adiciona o plano salvo quando a API responde.
 

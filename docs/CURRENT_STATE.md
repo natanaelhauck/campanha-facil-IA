@@ -56,6 +56,8 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Pacote com três briefings de criativos, incluindo legenda, prompt visual e dica de produção.
 - Roteiro de atendimento no WhatsApp com respostas copiáveis.
 - Guia simples de métricas, bons sinais, alertas e momento de esperar ou ajustar.
+- Ação `Copiar plano completo`, que formata o pacote em texto simples para WhatsApp, Google Docs, Notion ou e-mail.
+- Navegação rápida em `/resultado` para configuração, criativos, WhatsApp, métricas e checklist, exibindo apenas seções disponíveis.
 - Compatibilidade com planos antigos no `localStorage`: as novas seções são opcionais na leitura e ocultadas quando ausentes.
 - Botões de rolagem por âncora com `scrollIntoView`, funcionando repetidamente.
 - Layout responsivo validado manualmente em largura mobile.
@@ -82,7 +84,7 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 6. O client salva formulário, plano e origem no `localStorage`.
 7. O usuário é redirecionado para `/resultado`.
 8. `/resultado` lê o plano salvo e exibe o pacote de execução personalizado.
-9. O usuário pode copiar textos, legendas, prompts visuais e respostas de atendimento, além de revisar configuração, checklist e métricas.
+9. O usuário pode copiar itens isolados ou o plano completo em texto e navegar diretamente entre configuração, criativos, WhatsApp, métricas e checklist.
 10. O usuário pode clicar em `Ajustar informações` para voltar ao formulário com os dados preenchidos.
 
 ## Principais Decisões
@@ -138,6 +140,8 @@ Para testar IA real localmente, copie `.env.example` para `.env.local`, escolha 
 - Botões `Copiar texto`.
 - Pacote de execução mock com três criativos, roteiro de WhatsApp e métricas simples.
 - Cópia de legenda, prompt visual e resposta do WhatsApp.
+- Cópia do plano completo com feedback `Plano copiado` e as principais seções em texto simples.
+- Navegação rápida e repetida entre as principais seções do resultado.
 - Plano antigo sem as quatro novas seções renderizando sem erro.
 - Resultado responsivo sem overflow horizontal em largura de 390px.
 - Botões `Ver próximos passos` e `Voltar ao topo`.

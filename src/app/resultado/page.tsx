@@ -5,6 +5,7 @@ import { Button } from "@/components/Button";
 import { Header } from "@/components/Header";
 import { createMockCampaignPlan } from "@/data/mockCampaignResult";
 import { isCampaignPlanResult } from "@/lib/campaignPlanValidation";
+import { formatCampaignPlanText } from "@/lib/formatCampaignPlanText";
 import type {
   CampaignCreative,
   CampaignFormData,
@@ -68,16 +69,21 @@ function parsePlanSource(value: string | null): CampaignPlanSource | null {
 }
 
 function ResultSection({
+  id,
   title,
   eyebrow,
   children,
 }: {
+  id?: string;
   title: string;
   eyebrow?: string;
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-lg border border-stone-200 bg-white p-5 shadow-sm md:p-6">
+    <section
+      id={id}
+      className="scroll-mt-4 rounded-lg border border-stone-200 bg-white p-5 shadow-sm md:p-6"
+    >
       {eyebrow ? (
         <p className="text-xs font-semibold uppercase tracking-wide text-emerald-800">
           {eyebrow}
@@ -92,9 +98,13 @@ function ResultSection({
 function CopyButton({
   text,
   idleLabel,
+  copiedLabel = "Copiado",
+  prominent = false,
 }: {
   text: string;
   idleLabel: string;
+  copiedLabel?: string;
+  prominent?: boolean;
 }) {
   const [status, setStatus] = useState<CopyStatus>("idle");
 
@@ -111,18 +121,22 @@ function CopyButton({
 
   const buttonText =
     status === "copied"
-      ? "Copiado"
+      ? copiedLabel
       : status === "error"
         ? "Não copiado"
         : idleLabel;
 
   return (
-    <div className="shrink-0">
+    <div className={prominent ? "w-full shrink-0" : "shrink-0"}>
       <button
         type="button"
         onClick={copyText}
         aria-live="polite"
-        className="inline-flex min-h-9 items-center justify-center rounded-md border border-stone-300 bg-white px-3 py-2 text-xs font-semibold text-stone-900 transition hover:border-emerald-700 hover:bg-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:ring-offset-2"
+        className={
+          prominent
+            ? "inline-flex min-h-11 w-full items-center justify-center rounded-md bg-emerald-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:ring-offset-2"
+            : "inline-flex min-h-9 items-center justify-center rounded-md border border-stone-300 bg-white px-3 py-2 text-xs font-semibold text-stone-900 transition hover:border-emerald-700 hover:bg-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:ring-offset-2"
+        }
       >
         {buttonText}
       </button>
@@ -348,6 +362,20 @@ export default function ResultPage() {
         ["Follow-up sem insistência", plan.whatsappScript.followUpReply],
       ]
     : [];
+  const fullPlanText = formatCampaignPlanText(form, plan);
+  const quickNavigation = [
+    ...(plan.campaignSetupGuide
+      ? [{ label: "Configuração", target: "configuracao" }]
+      : []),
+    { label: "Criativos", target: "criativos" },
+    ...(plan.whatsappScript
+      ? [{ label: "WhatsApp", target: "whatsapp" }]
+      : []),
+    ...(plan.simpleMetricsGuide
+      ? [{ label: "Métricas", target: "metricas" }]
+      : []),
+    { label: "Checklist", target: "checklist" },
+  ];
 
   return (
     <main id="topo" className="min-h-screen bg-[#f7f8f5]">
@@ -369,6 +397,12 @@ export default function ResultPage() {
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row md:flex-col">
+              <CopyButton
+                text={fullPlanText}
+                idleLabel="Copiar plano completo"
+                copiedLabel="Plano copiado"
+                prominent
+              />
               <Button href="/criar-campanha" variant="secondary">
                 Ajustar informações
               </Button>
@@ -411,16 +445,38 @@ export default function ResultPage() {
           </div>
         </div>
 
+        <nav
+          aria-label="Navegação rápida do plano"
+          className="mb-6 rounded-lg border border-stone-200 bg-white p-3 shadow-sm"
+        >
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
+            <span className="col-span-2 px-2 text-xs font-semibold uppercase tracking-wide text-stone-500 sm:mr-1">
+              Ir para
+            </span>
+            {quickNavigation.map((item) => (
+              <Button
+                key={item.target}
+                href={`#${item.target}`}
+                variant="secondary"
+                className="min-h-9 px-3 py-2 text-xs"
+              >
+                {item.label}
+              </Button>
+            ))}
+          </div>
+        </nav>
+
         <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-5 text-sm leading-6 text-amber-950">
           {plan.disclaimer}
         </div>
 
         <div className="grid gap-5">
           <ResultSection
+            id="proximos-passos"
             title="O que fazer primeiro"
             eyebrow="Próximos passos recomendados"
           >
-            <div id="proximos-passos" className="grid gap-3 md:grid-cols-5">
+            <div className="grid gap-3 md:grid-cols-5">
               {plan.nextSteps.map((step, index) => (
                 <article
                   key={step.title}
@@ -473,6 +529,7 @@ export default function ResultPage() {
 
           {plan.campaignSetupGuide ? (
             <ResultSection
+              id="configuracao"
               title="Configuração sugerida da campanha"
               eyebrow="Ficha pronta para consultar"
             >
@@ -504,6 +561,7 @@ export default function ResultPage() {
 
           {plan.creativePack ? (
             <ResultSection
+              id="criativos"
               title="Pacote de criativos"
               eyebrow="Briefings para produzir — nenhuma imagem foi gerada"
             >
@@ -541,6 +599,7 @@ export default function ResultPage() {
 
           {plan.whatsappScript ? (
             <ResultSection
+              id="whatsapp"
               title="Roteiro de atendimento no WhatsApp"
               eyebrow="Respostas para adaptar antes de enviar"
             >
@@ -571,7 +630,10 @@ export default function ResultPage() {
             </ResultSection>
           ) : null}
 
-          <ResultSection title="Ideias de criativos">
+          <ResultSection
+            id={plan.creativePack ? undefined : "criativos"}
+            title="Ideias de criativos"
+          >
             <div className="grid gap-3 md:grid-cols-2">
               {plan.creativeIdeas.map((idea) => (
                 <div
@@ -600,7 +662,7 @@ export default function ResultPage() {
             </ol>
           </ResultSection>
 
-          <ResultSection title="Checklist antes de publicar">
+          <ResultSection id="checklist" title="Checklist antes de publicar">
             <ul className="grid gap-3 md:grid-cols-2">
               {plan.prePublishChecklist.map((item) => (
                 <li key={item} className="flex gap-3 rounded-lg bg-stone-50 p-4">
@@ -615,6 +677,7 @@ export default function ResultPage() {
 
           {plan.simpleMetricsGuide ? (
             <ResultSection
+              id="metricas"
               title="Métricas simples para acompanhar"
               eyebrow="Leia os sinais antes de mexer na verba"
             >
