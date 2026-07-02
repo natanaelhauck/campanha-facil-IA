@@ -4,6 +4,11 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/Button";
 import { Header } from "@/components/Header";
 import { createMockCampaignPlan } from "@/data/mockCampaignResult";
+import {
+  campaignFormStorageKey,
+  campaignPlanSourceStorageKey,
+  campaignPlanStorageKey,
+} from "@/lib/campaignPlanHistory";
 import { isCampaignPlanResult } from "@/lib/campaignPlanValidation";
 import { formatCampaignPlanText } from "@/lib/formatCampaignPlanText";
 import type {
@@ -13,9 +18,6 @@ import type {
   CampaignPlanSource,
 } from "@/types/campaign";
 
-const campaignStorageKey = "campaign-form-data";
-const campaignPlanStorageKey = "campaign-plan-result";
-const campaignPlanSourceStorageKey = "campaign-plan-source";
 type CopyStatus = "idle" | "copied" | "error";
 type PdfStatus = "idle" | "generating" | "downloaded" | "error";
 
@@ -331,7 +333,7 @@ export default function ResultPage() {
 
   useEffect(() => {
     queueMicrotask(() => {
-      const savedForm = localStorage.getItem(campaignStorageKey);
+      const savedForm = localStorage.getItem(campaignFormStorageKey);
       setForm(parseCampaignForm(savedForm));
       setSavedPlan(
         parseCampaignPlan(localStorage.getItem(campaignPlanStorageKey)),

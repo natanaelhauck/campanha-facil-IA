@@ -51,6 +51,10 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Salvamento do plano gerado no `localStorage` com a chave `campaign-plan-result`.
 - Salvamento da origem do plano com a chave `campaign-plan-source`.
 - Salvamento do provedor efetivo com a chave `campaign-plan-provider`.
+- Histórico local em `/historico`, salvo na chave `campaign-plan-history` e limitado aos 10 planos mais recentes.
+- Cada item do histórico preserva formulário, plano, data, negócio, objetivo, origem e provedor.
+- Ações para abrir um plano anterior, restaurando o estado atual, e excluir itens individualmente.
+- Leitura defensiva do histórico: conteúdo ausente, inválido ou corrompido resulta em estado vazio sem quebrar a interface.
 - Carregamento dos dados salvos ao voltar de `/resultado` para ajustar informações.
 - Resultado em `/resultado` usando o plano salvo ou fallback local quando necessário.
 - Indicação discreta da origem do plano: IA ou demonstração.
@@ -76,7 +80,7 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Supabase.
 - Login.
 - Banco de dados.
-- Histórico de campanhas.
+- Histórico sincronizado entre dispositivos ou associado a usuário.
 - Publicação automática de campanhas.
 - Integração com Meta Ads API.
 - Geração real de imagens; os criativos atuais são briefings e prompts para produção futura.
@@ -94,6 +98,8 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 8. `/resultado` lê o plano salvo e exibe o pacote de execução personalizado.
 9. O usuário pode copiar itens isolados, copiar o plano completo em texto, baixar o pacote em PDF e navegar diretamente entre as principais seções.
 10. O usuário pode clicar em `Ajustar informações` para voltar ao formulário com os dados preenchidos.
+11. Cada geração bem-sucedida também entra no histórico local, mantendo no máximo 10 itens.
+12. Em `/historico`, o usuário pode abrir um plano anterior ou excluí-lo.
 
 ## Principais Decisões
 
@@ -102,6 +108,7 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Usar `mock` como provedor padrão para impedir chamadas acidentais.
 - Manter fallback mock para desenvolvimento, falhas e ausência de chave.
 - Usar `localStorage` no MVP para evitar backend e banco de dados cedo demais.
+- Manter o histórico exclusivamente local nesta fase, sem simular conta ou sincronização.
 - Não prometer venda, lucro, performance ou aprovação de anúncios.
 - Tratar o pacote gerado como orientação inicial que precisa de revisão humana.
 - Evoluir em commits pequenos e focados.
@@ -158,6 +165,7 @@ Para testar IA real localmente, copie `.env.example` para `.env.local`, escolha 
 - Botões `Ver próximos passos` e `Voltar ao topo`.
 - Testes E2E do fluxo principal, cópia, PDF, persistência, regeneração e navegação mobile passando em Chromium.
 - Testes de segurança do endpoint para body acima do limite e bloqueio `429` passando em mock.
+- Histórico local validado em E2E com criação, listagem, restauração, exclusão, estado vazio e conteúdo corrompido.
 - `npm run lint` passando.
 - `npm run build` passando.
 - `npm run test:e2e` passando.

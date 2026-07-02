@@ -19,6 +19,7 @@ src/
   app/
     api/generate-campaign/route.ts
     criar-campanha/page.tsx
+    historico/page.tsx
     resultado/page.tsx
     globals.css
     layout.tsx
@@ -32,6 +33,7 @@ src/
     Select.tsx
     Textarea.tsx
   data/mockCampaignResult.ts
+  lib/campaignPlanHistory.ts
   lib/downloadCampaignPlanPdf.ts
   lib/formatCampaignPlanText.ts
   lib/ai/
@@ -57,9 +59,11 @@ playwright.config.ts
 7. O serviço lê `AI_PROVIDER` e seleciona `mock`, `openai` ou `gemini`.
 8. Com um provedor real selecionado e `AI_GENERATION_ENABLED` diferente de `false`, o serviço tenta gerar um pacote estruturado. Chave ausente, geração desabilitada, resposta incompleta ou erro retornam fallback mock compatível.
 9. O client salva os dados do formulário, o plano gerado e a origem do plano no `localStorage`.
-10. O usuário é redirecionado para `/resultado`.
-11. A página de resultado lê o plano salvo no client. Se não houver plano salvo, mantém fallback local com base nos dados do formulário.
-12. O usuário pode clicar em `Ajustar informações` para voltar ao formulário com os dados anteriores carregados.
+10. A mesma geração é adicionada ao histórico local, com limite de 10 itens e leitura tolerante a conteúdo corrompido.
+11. O usuário é redirecionado para `/resultado`.
+12. A página de resultado lê o plano salvo no client. Se não houver plano salvo, mantém fallback local com base nos dados do formulário.
+13. O usuário pode clicar em `Ajustar informações` para voltar ao formulário com os dados anteriores carregados.
+14. Em `/historico`, o usuário pode restaurar um item como plano atual ou excluí-lo.
 
 ## Uso Atual De localStorage
 
@@ -69,12 +73,17 @@ As chaves atuais são:
 - `campaign-plan-result`: plano retornado pelo endpoint ou fallback mock.
 - `campaign-plan-source`: origem do plano, `ai` ou `mock`.
 - `campaign-plan-provider`: provedor efetivo do plano, `openai`, `gemini` ou `mock`.
+- `campaign-plan-history`: array com até 10 planos anteriores, ordenados do mais recente para o mais antigo.
 
 O `localStorage` é usado apenas como persistência temporária do MVP. Ele não substitui banco de dados e não deve ser usado para dados sensíveis.
 
 Em `/criar-campanha`, a leitura acontece no client com `useEffect`, parse seguro e preenchimento do formulário quando há dados válidos. Isso permite editar informações anteriores ao voltar de `/resultado`.
 
 Em `/resultado`, a leitura também acontece no client, com `useEffect`, `try/catch` no `JSON.parse` e estado amigável quando os dados não existem ou são inválidos. A página prioriza `campaign-plan-result` quando ele existe. Planos antigos sem o pacote de execução continuam válidos; as novas seções são opcionais na leitura e não são renderizadas quando ausentes.
+
+`campaignPlanHistory.ts` centraliza as chaves atuais e valida cada item do histórico antes de usá-lo. Entradas inválidas são descartadas; JSON corrompido vira uma lista vazia. Ao abrir um item, formulário, plano, origem e provedor voltam para as chaves atuais antes do redirecionamento a `/resultado`.
+
+O histórico é local e pode desaparecer quando o usuário limpa dados do navegador, usa navegação privada ou troca de dispositivo. Ele não representa persistência de conta nem deve armazenar dados sensíveis.
 
 ## Geração Com IA
 
@@ -142,13 +151,14 @@ Os motivos também distinguem timeout sem expor mensagem bruta, stack trace, cha
 - A navegação rápida de `/resultado` aponta para IDs estáveis e inclui somente seções presentes no plano. Os destinos usam o mesmo comportamento repetível de rolagem suave do componente `Button`.
 - O formulário em `/criar-campanha` usa validação HTML simples com campos obrigatórios.
 - O envio do formulário mantém a chave `campaign-form-data` compatível com `/resultado` e adiciona o plano salvo quando a API responde.
+- O envio também adiciona uma cópia validável ao histórico local sem impedir o fluxo principal caso essa gravação secundária falhe.
 
 ## O Que Ainda Não Existe
 
 - Não há Supabase.
 - Não há login.
 - Não há banco de dados.
-- Não há histórico de campanhas.
+- Não há histórico remoto, sincronizado ou associado a usuário.
 - Não há publicação automática de campanhas.
 - Não há integração com Meta Ads API.
 - Não há geração real de imagens; `aiImagePrompt` é apenas um briefing textual.
@@ -156,15 +166,15 @@ Os motivos também distinguem timeout sem expor mensagem bruta, stack trace, cha
 
 ## Testes E2E
 
-A suíte em `tests/e2e/main-flow.spec.ts` usa `@playwright/test` com Chromium. Ela protege o fluxo principal em desktop, incluindo formulário, resposta mock, resultado, três criativos, seções do pacote, cópia, PDF, persistência, edição e regeneração.
+A suíte em `tests/e2e/main-flow.spec.ts` usa `@playwright/test` com Chromium. Ela protege o fluxo principal em desktop, incluindo formulário, resposta mock, resultado, três criativos, seções do pacote, cópia, PDF, persistência, edição, regeneração e histórico local.
 
-Um segundo cenário usa viewport de 390 px para verificar overflow horizontal e acesso à navegação rápida. `api-security.spec.ts` valida o limite de body e o bloqueio temporário por frequência. O `playwright.config.ts` inicia um servidor dedicado na porta 3100 com `AI_PROVIDER=mock`, geração real desabilitada e chaves de provedores vazias. O servidor não é reutilizado, evitando que os testes se conectem acidentalmente a uma instância configurada com IA real.
+Um segundo cenário usa viewport de 390 px para verificar overflow horizontal e acesso à navegação rápida. A suíte também valida criação, restauração, exclusão, estado vazio e JSON corrompido no histórico. `api-security.spec.ts` valida o limite de body e o bloqueio temporário por frequência. O `playwright.config.ts` inicia um servidor dedicado na porta 3100 com `AI_PROVIDER=mock`, geração real desabilitada e chaves de provedores vazias. O servidor não é reutilizado, evitando que os testes se conectem acidentalmente a uma instância configurada com IA real.
 
 Os comandos disponíveis são `npm run test:e2e` para execução headless e `npm run test:e2e:headed` para execução com navegador visível. O Chromium precisa ser instalado uma vez por máquina com `npx playwright install chromium`.
 
 ## Limites Da Base Atual De IA
 
-A Fase 2 inicial adiciona somente a base backend para geração de plano. Ainda não há persistência, autenticação, limite por usuário, painel de histórico, cobrança, integração com Meta Ads ou publicação automática.
+A Fase 2 inicial adiciona a base backend para geração de plano e persistência temporária no navegador. Ainda não há persistência remota, autenticação, limite por usuário, histórico sincronizado, cobrança, integração com Meta Ads ou publicação automática.
 
 Pontos ainda pendentes para amadurecer a IA:
 

@@ -82,6 +82,10 @@ Os cenários atuais cobrem:
 - disponibilidade da navegação rápida no mobile.
 - rejeição de body acima de 8 KB antes da geração;
 - bloqueio por rate limit com status `429` e header `Retry-After`.
+- criação de registros no histórico local;
+- abertura e restauração de um plano anterior;
+- exclusão individual até chegar ao estado vazio;
+- estado vazio com histórico ausente ou JSON corrompido.
 
 Relatórios, traces, screenshots e vídeos produzidos pelo Playwright são artefatos locais ignorados pelo Git.
 
@@ -106,6 +110,8 @@ Relatórios, traces, screenshots e vídeos produzidos pelo Playwright são artef
 12. Clique em `Ajustar informações` e confirme que volta para `/criar-campanha`.
 13. Confirme que os dados anteriores aparecem preenchidos.
 14. Edite uma informação, gere o plano novamente e confirme que `/resultado` reflete a alteração.
+15. Acesse `/historico` e confirme que as duas gerações aparecem com as mais recentes primeiro.
+16. Abra um plano, volte ao histórico e exclua os itens.
 
 ## Como Testar A Home
 
@@ -189,6 +195,7 @@ localStorage.removeItem("campaign-form-data");
 localStorage.removeItem("campaign-plan-result");
 localStorage.removeItem("campaign-plan-source");
 localStorage.removeItem("campaign-plan-provider");
+localStorage.removeItem("campaign-plan-history");
 ```
 
 Depois acesse `http://localhost:3000/resultado`.
@@ -198,6 +205,18 @@ Resultado esperado:
 - A página deve mostrar `Nenhum plano encontrado`.
 - Deve haver um botão para voltar e criar uma campanha.
 - A página não deve quebrar.
+
+## Como Testar /historico
+
+- Com o storage vazio, acesse `/historico` e confirme `Nenhum plano salvo ainda`.
+- Gere um plano e confirme que ele aparece com nome, data, origem, objetivo e canal.
+- Gere mais um plano alterando o nome do negócio e confirme que o novo item aparece primeiro.
+- Clique em `Abrir plano` e confirme que `/resultado` mostra o negócio escolhido.
+- Volte ao histórico, clique em `Excluir` e confirme que apenas o item selecionado desaparece.
+- Exclua todos os itens e confirme o retorno ao estado vazio.
+- Salve um texto inválido em `campaign-plan-history`, recarregue e confirme que a página não quebra.
+- Confirme que o histórico contém no máximo os 10 planos mais recentes.
+- Limpar dados do site deve apagar o histórico; não existe sincronização ou recuperação por conta nesta versão.
 
 ## Como Testar Modo IA Real
 

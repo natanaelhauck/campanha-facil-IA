@@ -21,6 +21,12 @@ npm run dev
 
 Depois acesse `http://localhost:3000`.
 
+## Histórico Local
+
+Cada geração concluída é adicionada ao histórico disponível em `/historico`. Os 10 planos mais recentes ficam salvos na chave `campaign-plan-history` do `localStorage`, junto com formulário, resultado, origem e provedor.
+
+O histórico existe somente no navegador atual: não há conta, login ou sincronização. Limpar os dados do site pode apagar os planos salvos. Supabase e persistência por usuário continuam reservados para uma fase futura.
+
 ## Configuração Da IA
 
 Copie `.env.example` para `.env.local` e preencha a chave quando quiser testar geração real:
@@ -85,6 +91,6 @@ Na primeira configuração da máquina, instale o Chromium gerenciado pelo Playw
 
 - Testar e calibrar a geração real com OpenAI API.
 - Definir limites simples de uso e custo para chamadas de IA.
-- Adicionar Supabase para salvar campanhas.
-- Implementar login e histórico do usuário.
+- Avaliar Supabase para sincronizar campanhas entre dispositivos.
+- Implementar login e histórico por usuário somente após validar recorrência.
 - Evoluir o resultado com mais personalização por segmento.

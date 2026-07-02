@@ -7,15 +7,17 @@ import { Header } from "@/components/Header";
 import { Input } from "@/components/Input";
 import { Select } from "@/components/Select";
 import { Textarea } from "@/components/Textarea";
+import {
+  addCampaignPlanToHistory,
+  campaignFormStorageKey,
+  campaignPlanProviderStorageKey,
+  campaignPlanSourceStorageKey,
+  campaignPlanStorageKey,
+} from "@/lib/campaignPlanHistory";
 import type {
   CampaignFormData,
   CampaignGenerationResponse,
 } from "@/types/campaign";
-
-const campaignStorageKey = "campaign-form-data";
-const campaignPlanStorageKey = "campaign-plan-result";
-const campaignPlanSourceStorageKey = "campaign-plan-source";
-const campaignPlanProviderStorageKey = "campaign-plan-provider";
 
 const initialForm: CampaignFormData = {
   businessName: "",
@@ -96,7 +98,9 @@ export default function CreateCampaignPage() {
 
   useEffect(() => {
     queueMicrotask(() => {
-      const savedForm = parseSavedForm(localStorage.getItem(campaignStorageKey));
+      const savedForm = parseSavedForm(
+        localStorage.getItem(campaignFormStorageKey),
+      );
 
       if (savedForm) {
         setForm(savedForm);
@@ -128,13 +132,19 @@ export default function CreateCampaignPage() {
         throw new Error(result.error ?? "Erro ao gerar plano.");
       }
 
-      localStorage.setItem(campaignStorageKey, JSON.stringify(form));
+      const effectiveProvider =
+        result.provider ?? (result.source === "ai" ? "openai" : "mock");
+
+      localStorage.setItem(campaignFormStorageKey, JSON.stringify(form));
       localStorage.setItem(campaignPlanStorageKey, JSON.stringify(result.data));
       localStorage.setItem(campaignPlanSourceStorageKey, result.source);
-      localStorage.setItem(
-        campaignPlanProviderStorageKey,
-        result.provider ?? (result.source === "ai" ? "openai" : "mock"),
-      );
+      localStorage.setItem(campaignPlanProviderStorageKey, effectiveProvider);
+      addCampaignPlanToHistory(localStorage, {
+        formData: form,
+        planResult: result.data,
+        source: result.source,
+        provider: effectiveProvider,
+      });
       router.push("/resultado");
     } catch {
       setSubmitError(

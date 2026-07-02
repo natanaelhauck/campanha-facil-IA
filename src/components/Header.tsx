@@ -8,7 +8,16 @@ export function Header() {
         <Link href="/" className="text-base font-bold text-stone-950">
           Campanha Fácil IA
         </Link>
-        <nav className="flex items-center gap-3">
+        <nav
+          aria-label="Navegação principal"
+          className="flex items-center gap-2 sm:gap-3"
+        >
+          <Link
+            href="/historico"
+            className="text-xs font-medium text-stone-600 transition hover:text-stone-950 sm:text-sm"
+          >
+            Histórico
+          </Link>
           <Link
             href="/criar-campanha"
             className="hidden text-sm font-medium text-stone-700 hover:text-stone-950 sm:inline"

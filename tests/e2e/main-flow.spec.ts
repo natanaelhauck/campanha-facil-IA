@@ -135,6 +135,54 @@ test("protege o fluxo principal da campanha em modo mock", async ({
       name: `Resultado para ${updatedBusinessName}`,
     }),
   ).toBeVisible();
+
+  await page
+    .getByRole("link", { name: "Histórico", exact: true })
+    .click();
+  await expect(page).toHaveURL(/\/historico$/);
+  await expect(
+    page.getByRole("heading", { name: "Histórico de planos" }),
+  ).toBeVisible();
+  await expect(page.getByRole("article")).toHaveCount(2);
+
+  const updatedPlanCard = page.getByRole("article").filter({
+    has: page.getByRole("heading", {
+      name: updatedBusinessName,
+      exact: true,
+    }),
+  });
+  await expect(updatedPlanCard).toBeVisible();
+  await updatedPlanCard
+    .getByRole("button", { name: "Abrir plano" })
+    .click();
+
+  await expect(page).toHaveURL(/\/resultado$/);
+  await expect(
+    page.getByRole("heading", {
+      name: `Resultado para ${updatedBusinessName}`,
+    }),
+  ).toBeVisible();
+
+  await page
+    .getByRole("link", { name: "Histórico", exact: true })
+    .click();
+  const restoredPlanCard = page.getByRole("article").filter({
+    has: page.getByRole("heading", {
+      name: updatedBusinessName,
+      exact: true,
+    }),
+  });
+  await restoredPlanCard.getByRole("button", { name: "Excluir" }).click();
+  await expect(restoredPlanCard).toHaveCount(0);
+  await expect(page.getByRole("article")).toHaveCount(1);
+
+  await page
+    .getByRole("article")
+    .getByRole("button", { name: "Excluir" })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Nenhum plano salvo ainda" }),
+  ).toBeVisible();
 });
 
 test("mantém o resultado utilizável em viewport mobile", async ({ page }) => {
@@ -172,5 +220,23 @@ test("mantém o resultado utilizável em viewport mobile", async ({ page }) => {
   await expect(page).toHaveURL(/#checklist$/);
   await expect(
     page.getByRole("heading", { name: "Checklist antes de publicar" }),
+  ).toBeVisible();
+});
+
+test("mantém estado vazio com histórico ausente ou corrompido", async ({
+  page,
+}) => {
+  await page.goto("/historico");
+  await expect(
+    page.getByRole("heading", { name: "Nenhum plano salvo ainda" }),
+  ).toBeVisible();
+
+  await page.evaluate(() => {
+    localStorage.setItem("campaign-plan-history", "{conteudo-invalido");
+  });
+  await page.reload();
+
+  await expect(
+    page.getByRole("heading", { name: "Nenhum plano salvo ainda" }),
   ).toBeVisible();
 });

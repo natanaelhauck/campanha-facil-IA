@@ -12,6 +12,7 @@ Status: concluída como primeira versão visual funcional. Deve continuar recebe
 - Carregamento dos dados salvos ao voltar de `/resultado` para ajustar informações.
 - Resultado simulado em `/resultado`, com plano inicial personalizado.
 - Personalização local com `localStorage`.
+- Histórico local com até 10 planos, abertura e exclusão individual.
 - Textos de anúncio copiáveis.
 - Próximos passos, checklist e acompanhamento em `/resultado`.
 - Botões de rolagem por âncora funcionando repetidamente.
@@ -32,9 +33,10 @@ Status: concluída como primeira versão visual funcional. Deve continuar recebe
 - Resultado exibe informações personalizadas.
 - Estado sem dados em `/resultado` funciona.
 - Formulário recarrega dados salvos ao ajustar informações.
+- Histórico local tolera conteúdo ausente ou corrompido.
 - Home, formulário e resultado são responsivos.
-- `npm run lint` e `npm run build` passam.
-- Fluxo principal validado manualmente.
+- `npm run lint`, `npm run build` e `npm run test:e2e` passam.
+- Fluxo principal e histórico local validados automaticamente.
 
 ### Transição Para IA Real
 
@@ -183,8 +185,8 @@ Status: em evolução. A base técnica funciona com OpenAI, Gemini e fallback mo
 - Erros são tratados de forma clara.
 - A experiência continua guiada para pequenos negócios, não técnica para gestores avançados.
 
-## Fase Futura: SaaS, Histórico E Persistência
+## Fase Futura: SaaS, Sincronização E Persistência Remota
 
-Supabase, autenticação, histórico, limites de uso e eventual cobrança continuam possíveis, mas devem entrar quando houver validação de valor e necessidade clara de uso recorrente.
+O histórico local atende ao MVP sem conta. Supabase, autenticação, sincronização entre dispositivos, histórico por usuário, limites de uso e eventual cobrança continuam possíveis, mas devem entrar quando houver validação de valor e necessidade clara de uso recorrente.
 
 Essa fase não deve antecipar integrações complexas nem transformar o produto em painel avançado antes de consolidar a experiência guiada.

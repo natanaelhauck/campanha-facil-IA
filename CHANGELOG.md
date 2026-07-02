@@ -2,6 +2,18 @@
 
 Todas as mudanças relevantes do projeto serão resumidas neste arquivo.
 
+## Histórico Local
+
+### Planos Anteriores No Navegador
+
+- Adicionada página `/historico` com estado vazio, lista dos planos, origem, data, objetivo e canal.
+- Cada geração bem-sucedida salva uma cópia em `campaign-plan-history`, limitada aos 10 itens mais recentes.
+- Planos anteriores podem ser restaurados como resultado atual ou excluídos individualmente.
+- Conteúdo ausente, legado ou corrompido no histórico não quebra o fluxo atual.
+- Adicionado acesso discreto ao histórico na navegação principal.
+- A interface esclarece que não há conta ou sincronização e que limpar o navegador pode apagar os planos.
+- O E2E passou a cobrir criação, abertura, exclusão e estado vazio do histórico local.
+
 ## Qualidade Técnica
 
 ### Segurança E Controle De Custo Da IA

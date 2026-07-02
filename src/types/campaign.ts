@@ -100,6 +100,17 @@ export type CampaignPlanResult = {
   simpleMetricsGuide?: CampaignSimpleMetricsGuide;
 };
 
+export type CampaignPlanHistoryItem = {
+  id: string;
+  createdAt: string;
+  businessName: string;
+  objective: string;
+  source: CampaignPlanSource;
+  provider: CampaignAIProvider;
+  formData: CampaignFormData;
+  planResult: CampaignPlanResult;
+};
+
 export type CampaignGenerationResponse = {
   success: boolean;
   data?: CampaignPlanResult;
