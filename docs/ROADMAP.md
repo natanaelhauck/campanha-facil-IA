@@ -104,6 +104,33 @@ Status: camada interna concluída, sem provedor externo.
 - Em produção, tracking permanece desabilitado.
 - PostHog ou alternativa futura depende de política de privacidade, retenção e revisão de consentimento.
 
+## Preparação Para Beta Público
+
+Status: base documental e legal concluída, sem deploy realizado. A liberação com IA real continua condicionada a proteção distribuída contra abuso e controle operacional de custo.
+
+### Entregas Concluídas
+
+- Página `/privacidade` com explicação simples sobre formulário, `localStorage`, provedores de IA, analytics e dados sensíveis.
+- Página `/termos` com caráter orientativo, ausência de garantia, revisão humana e responsabilidade pela campanha real.
+- Links legais globais e discretos.
+- Checklist de ambiente, segredos, validação, liberação e reversão em `docs/DEPLOYMENT.md`.
+- `.env.example` revisado com todos os provedores e controles atuais.
+- Cobertura E2E para links e carregamento das páginas legais.
+
+### Bloqueios Antes Da Liberação Com IA Real
+
+- Substituir ou complementar o rate limit em memória com uma camada distribuída ou proteção da plataforma.
+- Definir alertas e limites de custo/cota no provedor escolhido.
+- Revisar os textos legais com os dados reais da operação e da empresa quando estiverem disponíveis.
+- Executar smoke test do artefato em ambiente de preview usando mock.
+
+### Fora Do Escopo Desta Preparação
+
+- Deploy real.
+- Supabase, banco de dados ou login.
+- Meta Ads API.
+- PostHog ou outro analytics externo.
+
 ## Fase Futura: Geração Assistida De Imagens
 
 ### Entregas Planejadas

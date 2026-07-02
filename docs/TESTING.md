@@ -86,6 +86,9 @@ Os cenários atuais cobrem:
 - abertura e restauração de um plano anterior;
 - exclusão individual até chegar ao estado vazio;
 - estado vazio com histórico ausente ou JSON corrompido.
+- presença dos links globais de Privacidade e Termos;
+- carregamento e conteúdo essencial de `/privacidade` e `/termos`;
+- aviso orientativo e ausência de garantia na tela e no texto copiado.
 
 Os E2E validam comportamento de produto e não dependem dos logs internos de analytics.
 
@@ -229,6 +232,14 @@ Resultado esperado:
 - Salve um texto inválido em `campaign-plan-history`, recarregue e confirme que a página não quebra.
 - Confirme que o histórico contém no máximo os 10 planos mais recentes.
 - Limpar dados do site deve apagar o histórico; não existe sincronização ou recuperação por conta nesta versão.
+
+## Como Testar Páginas Legais
+
+- Acesse `/` e confirme que o rodapé contém links discretos para `Privacidade` e `Termos`.
+- Abra `/privacidade` e confirme as informações sobre dados do formulário, histórico no navegador, envio ao provedor real, analytics externo inativo e dados sensíveis.
+- Abra `/termos` e confirme o caráter orientativo, a ausência de garantia, a revisão antes de publicar, a responsabilidade do usuário e a ausência de integração com Meta Ads.
+- Verifique as duas páginas em desktop e mobile.
+- Confirme que o header e os links legais permitem continuar a navegação pelo produto.
 
 ## Como Testar Modo IA Real
 

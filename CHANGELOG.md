@@ -2,6 +2,23 @@
 
 Todas as mudanças relevantes do projeto serão resumidas neste arquivo.
 
+## Preparação Para Beta Público
+
+### Documentação E Configuração
+
+- Criado `docs/DEPLOYMENT.md` com variáveis, modos mock/OpenAI/Gemini, cuidados com segredos e checklist de publicação e reversão.
+- Revisado `.env.example` com os controles atuais de geração, timeout, rate limit, modelos e limite de saída.
+- Documentado que o rate limit em memória não protege múltiplas instâncias ou ambientes serverless e deve ser complementado antes do beta com IA real.
+- README, estado atual, roadmap, contexto técnico, testes e analytics foram atualizados para refletir a preparação.
+
+### Privacidade E Termos
+
+- Criadas as páginas `/privacidade` e `/termos` em linguagem simples.
+- Adicionados links legais discretos no rodapé global.
+- A política explica dados do formulário, histórico no navegador, provedores reais, ausência de analytics externo e cuidado com dados sensíveis.
+- Os termos reforçam orientação inicial, ausência de garantia, revisão humana, responsabilidade do usuário e inexistência de integração com Meta Ads.
+- O E2E passou a verificar links legais, carregamento das páginas e avisos orientativos no resultado e no texto copiado.
+
 ## Analytics Com Privacidade
 
 ### Camada Interna De Eventos

@@ -27,6 +27,7 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - ESLint
 - Playwright Test
 - OpenAI SDK no backend
+- Google GenAI SDK no backend
 - `localStorage` para persistência temporária no navegador
 
 ## Funcionalidades Existentes
@@ -76,6 +77,10 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Cenários E2E para payload excessivo e rate limit, sem chamadas externas.
 - Camada interna de analytics com 10 eventos tipados, whitelist de propriedades e nenhum envio externo.
 - Logs de analytics somente em desenvolvimento; produção permanece no-op.
+- Páginas legais simples em `/privacidade` e `/termos`, com links globais discretos.
+- Política de privacidade explicando dados do formulário, `localStorage`, uso de provedores reais, ausência de analytics externo e cuidado com dados sensíveis.
+- Termos deixando claro o caráter orientativo, a ausência de garantia, a revisão humana e a inexistência de integração com Meta Ads.
+- Checklist de configuração e validação para futuro deploy em `docs/DEPLOYMENT.md`.
 
 ## Funcionalidades Que Ainda Não Existem
 
@@ -128,6 +133,7 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Melhorar observabilidade sem registrar dados sensíveis.
 - Avaliar PostHog somente após definir política de privacidade, retenção e consentimento aplicável.
 - Adotar rate limit distribuído ou da plataforma antes do beta público; o contador atual não é compartilhado entre instâncias serverless.
+- Revisar identificação da empresa e canal de contato nas páginas legais quando essas informações existirem.
 - Criar testes automatizados específicos para regras de qualidade do plano.
 - Avaliar geração real de imagens somente em fase futura, com custo e revisão explícitos.
 
@@ -171,6 +177,7 @@ Para testar IA real localmente, copie `.env.example` para `.env.local`, escolha 
 - Testes E2E do fluxo principal, cópia, PDF, persistência, regeneração e navegação mobile passando em Chromium.
 - Testes de segurança do endpoint para body acima do limite e bloqueio `429` passando em mock.
 - Histórico local validado em E2E com criação, listagem, restauração, exclusão, estado vazio e conteúdo corrompido.
+- Links legais e carregamento de `/privacidade` e `/termos` validados em E2E.
 - `npm run lint` passando.
 - `npm run build` passando.
 - `npm run test:e2e` passando.

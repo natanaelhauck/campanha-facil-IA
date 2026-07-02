@@ -20,7 +20,9 @@ src/
     api/generate-campaign/route.ts
     criar-campanha/page.tsx
     historico/page.tsx
+    privacidade/page.tsx
     resultado/page.tsx
+    termos/page.tsx
     globals.css
     layout.tsx
     page.tsx
@@ -28,6 +30,7 @@ src/
     Button.tsx
     CampaignResultSection.tsx
     Card.tsx
+    Footer.tsx
     Header.tsx
     Input.tsx
     Select.tsx
@@ -163,6 +166,14 @@ As únicas propriedades aceitas são origem, provedor, canal normalizado, nível
 
 A proteção existe em dois níveis: o tipo `AnalyticsProperties` restringe os pontos de chamada e `sanitizeProperties` reconstrói uma whitelist antes de qualquer log. Uma futura integração com PostHog deve ser implementada apenas dentro de `trackEvent` e preservar essas regras.
 
+## Páginas Legais E Preparação De Deploy
+
+`/privacidade` e `/termos` são Server Components estáticos, sem coleta adicional de dados. O `Footer` é renderizado pelo layout raiz e mantém os dois links disponíveis em todas as rotas.
+
+`docs/DEPLOYMENT.md` centraliza variáveis de ambiente, modos de provedor, cuidados com segredos, configuração recomendada, checklist de publicação e reversão. Nenhum script do projeto realiza deploy.
+
+O rate limit atual continua local ao processo. Para um beta público com IA real em múltiplas instâncias ou serverless, uma proteção distribuída ou da plataforma é requisito operacional.
+
 ## O Que Ainda Não Existe
 
 - Não há Supabase.
@@ -176,7 +187,7 @@ A proteção existe em dois níveis: o tipo `AnalyticsProperties` restringe os p
 
 ## Testes E2E
 
-A suíte em `tests/e2e/main-flow.spec.ts` usa `@playwright/test` com Chromium. Ela protege o fluxo principal em desktop, incluindo formulário, resposta mock, resultado, três criativos, seções do pacote, cópia, PDF, persistência, edição, regeneração e histórico local.
+A suíte em `tests/e2e/main-flow.spec.ts` usa `@playwright/test` com Chromium. Ela protege o fluxo principal em desktop, incluindo formulário, resposta mock, resultado, aviso orientativo, três criativos, seções do pacote, cópia, PDF, persistência, edição, regeneração, histórico local e páginas legais.
 
 Um segundo cenário usa viewport de 390 px para verificar overflow horizontal e acesso à navegação rápida. A suíte também valida criação, restauração, exclusão, estado vazio e JSON corrompido no histórico. `api-security.spec.ts` valida o limite de body e o bloqueio temporário por frequência. O `playwright.config.ts` inicia um servidor dedicado na porta 3100 com `AI_PROVIDER=mock`, geração real desabilitada e chaves de provedores vazias. O servidor não é reutilizado, evitando que os testes se conectem acidentalmente a uma instância configurada com IA real.
 

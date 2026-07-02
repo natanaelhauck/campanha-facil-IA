@@ -8,6 +8,7 @@ O projeto possui uma camada interna em `src/lib/analytics.ts`, sem PostHog ou qu
 - Em `production`, `trackEvent` é um no-op.
 - Nenhum evento é salvo no navegador ou enviado pela rede.
 - A integração futura deve acontecer dentro dessa camada, sem espalhar SDKs pelos componentes.
+- A página pública `/privacidade` informa que analytics externo, autocapture e gravação de sessão não estão ativos.
 
 ## Eventos Definidos
 
@@ -58,3 +59,5 @@ Nunca registrar em analytics:
 PostHog ou outro provedor pode ser conectado futuramente dentro de `trackEvent`, depois de definir base legal, consentimento quando necessário, retenção e política de privacidade.
 
 Uma integração futura deve manter a whitelist atual, evitar autocapture de formulários e não habilitar gravação de sessão sem revisão específica de privacidade.
+
+Antes de ativar um provedor externo, atualize `/privacidade`, defina retenção e base legal aplicável e revise se consentimento é necessário. Esta preparação não conecta PostHog.

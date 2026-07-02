@@ -11,6 +11,7 @@ MVP de uma aplicação web para ajudar pequenos negócios e pessoas leigas em an
 - ESLint
 - Playwright para testes E2E
 - OpenAI SDK no backend do Next.js
+- Google GenAI SDK no backend do Next.js
 
 ## Como rodar localmente
 
@@ -64,6 +65,14 @@ Em desenvolvimento, a resposta do endpoint inclui um bloco `debug` sem dados sen
 
 Consulte a [revisão de segurança](docs/SECURITY_REVIEW.md) para riscos residuais e decisões.
 
+## Preparação Para Deploy
+
+O projeto possui páginas simples de Privacidade e Termos, links legais globais e um checklist de configuração para um futuro beta.
+
+Consulte [Preparação para deploy e beta público](docs/DEPLOYMENT.md) antes de configurar qualquer ambiente publicado. O documento cobre variáveis, modos mock/OpenAI/Gemini, segredos, validações, reversão e o bloqueio atual do rate limit em memória.
+
+Nenhum deploy é realizado pelos scripts do repositório. Para um preview ou smoke test, mantenha `AI_PROVIDER=mock`. Antes de liberar IA real em múltiplas instâncias ou serverless, é obrigatório adicionar rate limit distribuído ou proteção equivalente da plataforma.
+
 ## Scripts úteis
 
 ```bash
@@ -87,11 +96,12 @@ Na primeira configuração da máquina, instale o Chromium gerenciado pelo Playw
 - [Histórico de prompts](docs/PROMPTS.md)
 - [Testes e validação](docs/TESTING.md)
 - [Analytics e privacidade](docs/ANALYTICS.md)
+- [Preparação para deploy](docs/DEPLOYMENT.md)
 
 ## Próximos passos planejados
 
-- Testar e calibrar a geração real com OpenAI API.
-- Definir limites simples de uso e custo para chamadas de IA.
+- Testar e calibrar a geração real com o provedor escolhido.
+- Adotar rate limit distribuído e limites de custo antes do beta público com IA real.
 - Avaliar Supabase para sincronizar campanhas entre dispositivos.
 - Implementar login e histórico por usuário somente após validar recorrência.
 - Evoluir o resultado com mais personalização por segmento.

@@ -84,6 +84,11 @@ test("protege o fluxo principal da campanha em modo mock", async ({
       name: `Resultado para ${campaignData.businessName}`,
     }),
   ).toBeVisible();
+  await expect(
+    page.getByText(
+      /Plano inicial orientativo.*não garante vendas, lucro, aprovação de anúncios ou performance/i,
+    ),
+  ).toBeVisible();
   await expect(page.getByText(/^Criativo [1-3]$/)).toHaveCount(3);
 
   for (const sectionTitle of [
@@ -106,7 +111,15 @@ test("protege o fluxo principal da campanha em modo mock", async ({
   ).toBeVisible();
 
   const copiedPlan = await page.evaluate(() => navigator.clipboard.readText());
-  expect(copiedPlan).toContain(`PLANO INICIAL DE CAMPANHA — ${campaignData.businessName}`);
+  expect(copiedPlan).toContain(
+    `PLANO INICIAL DE CAMPANHA — ${campaignData.businessName}`,
+  );
+  expect(copiedPlan).toContain(
+    "este é um plano inicial orientativo. Revise as informações antes de publicar.",
+  );
+  expect(copiedPlan).toContain(
+    "O conteúdo não garante vendas, lucro ou performance.",
+  );
   expect(copiedPlan).toMatch(/\[ \] \S/);
   expect(copiedPlan).not.toMatch(/\[ \]\S/);
 
@@ -238,5 +251,49 @@ test("mantém estado vazio com histórico ausente ou corrompido", async ({
 
   await expect(
     page.getByRole("heading", { name: "Nenhum plano salvo ainda" }),
+  ).toBeVisible();
+});
+
+test("mantém páginas legais acessíveis pela navegação discreta", async ({
+  page,
+}) => {
+  await page.goto("/");
+
+  const legalNavigation = page.getByRole("navigation", {
+    name: "Links legais",
+  });
+  await expect(
+    legalNavigation.getByRole("link", { name: "Privacidade", exact: true }),
+  ).toBeVisible();
+  await expect(
+    legalNavigation.getByRole("link", { name: "Termos", exact: true }),
+  ).toBeVisible();
+
+  await legalNavigation
+    .getByRole("link", { name: "Privacidade", exact: true })
+    .click();
+  await expect(page).toHaveURL(/\/privacidade$/);
+  await expect(
+    page.getByRole("heading", { name: "Privacidade", level: 1 }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Nenhum serviço externo de analytics está ativo."),
+  ).toBeVisible();
+
+  await page
+    .getByRole("navigation", { name: "Links legais" })
+    .getByRole("link", { name: "Termos", exact: true })
+    .click();
+  await expect(page).toHaveURL(/\/termos$/);
+  await expect(
+    page.getByRole("heading", { name: "Termos de uso", level: 1 }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Sem garantia de resultado" }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Esta versão não se conecta ao Meta Ads", {
+      exact: false,
+    }),
   ).toBeVisible();
 });
