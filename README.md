@@ -71,7 +71,9 @@ O projeto possui páginas simples de Privacidade e Termos, links legais globais 
 
 Consulte [Preparação para deploy e beta público](docs/DEPLOYMENT.md) antes de configurar qualquer ambiente publicado. O documento cobre variáveis, modos mock/OpenAI/Gemini, segredos, validações, reversão e o bloqueio atual do rate limit em memória.
 
-Nenhum deploy é realizado pelos scripts do repositório. Para um preview ou smoke test, mantenha `AI_PROVIDER=mock`. Antes de liberar IA real em múltiplas instâncias ou serverless, é obrigatório adicionar rate limit distribuído ou proteção equivalente da plataforma.
+Para Vercel, o checklist também documenta os defaults do Next.js, Node.js `24.x`, variáveis por ambiente e validação pós-deploy de `/api/health`. Nenhum deploy é realizado pelos scripts do repositório.
+
+Para um preview ou smoke test, mantenha `AI_PROVIDER=mock` e `AI_GENERATION_ENABLED=false`. Antes de liberar IA real em múltiplas instâncias ou serverless, é obrigatório adicionar rate limit distribuído ou proteção equivalente da plataforma. O beta permanece com `noindex`/`nofollow` até uma decisão explícita de indexação.
 
 ## Scripts úteis
 

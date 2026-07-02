@@ -3,6 +3,8 @@ import { consumeCampaignRateLimit } from "@/lib/ai/campaignRateLimit";
 import { generateCampaignPlan } from "@/lib/ai/generateCampaignPlan";
 import type { CampaignFormData } from "@/types/campaign";
 
+export const runtime = "nodejs";
+
 type ValidationResult =
   | {
       ok: true;

@@ -17,11 +17,13 @@
 ```text
 src/
   app/
+    api/health/route.ts
     api/generate-campaign/route.ts
     criar-campanha/page.tsx
     historico/page.tsx
     privacidade/page.tsx
     resultado/page.tsx
+    robots.ts
     termos/page.tsx
     globals.css
     layout.tsx
@@ -48,6 +50,7 @@ src/
   types/campaign.ts
 tests/
   e2e/api-security.spec.ts
+  e2e/deployment-readiness.spec.ts
   e2e/main-flow.spec.ts
 playwright.config.ts
 ```
@@ -101,6 +104,8 @@ A camada de provedores fica em `src/lib/ai/` e `src/app/api/generate-campaign/ro
 - `campaignPlanProvider.ts` contém o contrato comum, modelos padrão e parse seguro do plano.
 - `campaignPlanValidation.ts` aceita planos legados sem as novas seções para leitura do `localStorage`, mas exige o pacote completo nas respostas novas dos providers. Também valida quantidades, limites e promessas claras.
 - A rota `POST /api/generate-campaign` aceita dados do formulário, limita tamanho do payload, valida campos obrigatórios, normaliza textos e retorna `{ success, data, source, provider, warning }`.
+- A rota `GET /api/health` retorna somente status, identificador do app, timestamp e ambiente normalizado, com cache desabilitado.
+- As duas rotas declaram runtime Node.js explicitamente para manter compatibilidade previsível na Vercel.
 - O body é lido como stream até o limite de 8 KB, evitando manter um payload arbitrariamente grande em memória antes da rejeição. A rota aceita somente `application/json`.
 - `campaignRateLimit.ts` aplica um limite em memória por identificador de cliente, com padrão de 10 requisições por 60 segundos e no máximo 1.000 buckets ativos.
 - Em `development`, a rota também retorna `debug` com provedor tentado, modelo, geração habilitada, status da API e motivo do fallback. Esse bloco não é retornado em produção.
@@ -174,6 +179,8 @@ A proteção existe em dois níveis: o tipo `AnalyticsProperties` restringe os p
 
 O rate limit atual continua local ao processo. Para um beta público com IA real em múltiplas instâncias ou serverless, uma proteção distribuída ou da plataforma é requisito operacional.
 
+A metadata raiz identifica a versão como beta e usa `noindex`/`nofollow`. `robots.ts` também bloqueia crawling enquanto não houver decisão explícita de indexação pública.
+
 ## O Que Ainda Não Existe
 
 - Não há Supabase.
@@ -189,7 +196,7 @@ O rate limit atual continua local ao processo. Para um beta público com IA real
 
 A suíte em `tests/e2e/main-flow.spec.ts` usa `@playwright/test` com Chromium. Ela protege o fluxo principal em desktop, incluindo formulário, resposta mock, resultado, aviso orientativo, três criativos, seções do pacote, cópia, PDF, persistência, edição, regeneração, histórico local e páginas legais.
 
-Um segundo cenário usa viewport de 390 px para verificar overflow horizontal e acesso à navegação rápida. A suíte também valida criação, restauração, exclusão, estado vazio e JSON corrompido no histórico. `api-security.spec.ts` valida o limite de body e o bloqueio temporário por frequência. O `playwright.config.ts` inicia um servidor dedicado na porta 3100 com `AI_PROVIDER=mock`, geração real desabilitada e chaves de provedores vazias. O servidor não é reutilizado, evitando que os testes se conectem acidentalmente a uma instância configurada com IA real.
+Um segundo cenário usa viewport de 390 px para verificar overflow horizontal e acesso à navegação rápida. A suíte também valida criação, restauração, exclusão, estado vazio e JSON corrompido no histórico. `api-security.spec.ts` valida o limite de body e o bloqueio temporário por frequência. `deployment-readiness.spec.ts` valida `/api/health`, ausência de campos extras, cache desabilitado e bloqueio de indexação. O `playwright.config.ts` inicia um servidor dedicado na porta 3100 com `AI_PROVIDER=mock`, geração real desabilitada e chaves de provedores vazias. O servidor não é reutilizado, evitando que os testes se conectem acidentalmente a uma instância configurada com IA real.
 
 Os comandos disponíveis são `npm run test:e2e` para execução headless e `npm run test:e2e:headed` para execução com navegador visível. O Chromium precisa ser instalado uma vez por máquina com `npx playwright install chromium`.
 

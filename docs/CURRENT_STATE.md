@@ -81,6 +81,9 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Política de privacidade explicando dados do formulário, `localStorage`, uso de provedores reais, ausência de analytics externo e cuidado com dados sensíveis.
 - Termos deixando claro o caráter orientativo, a ausência de garantia, a revisão humana e a inexistência de integração com Meta Ads.
 - Checklist de configuração e validação para futuro deploy em `docs/DEPLOYMENT.md`.
+- Rota `GET /api/health` com resposta mínima, ambiente normalizado e sem cache.
+- Runtime Node.js explícito nas rotas server-side e Node.js `24.x` fixado para builds.
+- Metadata de beta com `noindex`/`nofollow` e `/robots.txt` bloqueando indexação por enquanto.
 
 ## Funcionalidades Que Ainda Não Existem
 

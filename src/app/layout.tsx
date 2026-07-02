@@ -3,9 +3,14 @@ import { Footer } from "@/components/Footer";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Campanha Fácil IA",
+  title: "Campanha Fácil IA — Beta",
   description:
-    "Monte planos iniciais de campanha para Meta Ads, Instagram, Facebook e WhatsApp.",
+    "Organize um plano inicial orientativo para Meta Ads, Instagram, Facebook e WhatsApp.",
+  applicationName: "Campanha Fácil IA",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function RootLayout({

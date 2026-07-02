@@ -89,6 +89,8 @@ Os cenários atuais cobrem:
 - presença dos links globais de Privacidade e Termos;
 - carregamento e conteúdo essencial de `/privacidade` e `/termos`;
 - aviso orientativo e ausência de garantia na tela e no texto copiado.
+- resposta segura e sem cache de `/api/health`;
+- metadata `noindex`/`nofollow` e bloqueio em `/robots.txt`.
 
 Os E2E validam comportamento de produto e não dependem dos logs internos de analytics.
 
@@ -240,6 +242,15 @@ Resultado esperado:
 - Abra `/termos` e confirme o caráter orientativo, a ausência de garantia, a revisão antes de publicar, a responsabilidade do usuário e a ausência de integração com Meta Ads.
 - Verifique as duas páginas em desktop e mobile.
 - Confirme que o header e os links legais permitem continuar a navegação pelo produto.
+
+## Como Testar Prontidão De Deploy
+
+- Acesse `/api/health` e confirme status `200`.
+- Confirme que o JSON contém somente `status`, `app`, `timestamp` e `environment`.
+- Confirme que não aparecem provider, modelo, chave ou qualquer outra variável de ambiente.
+- Confirme que o header `Cache-Control` contém `no-store`.
+- Acesse `/` e confirme a meta `robots` com `noindex` e `nofollow`.
+- Acesse `/robots.txt` e confirme `Disallow: /` enquanto o beta não deve ser indexado.
 
 ## Como Testar Modo IA Real
 

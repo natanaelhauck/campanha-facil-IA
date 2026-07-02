@@ -14,6 +14,77 @@ Este documento descreve a configuração necessária para preparar um ambiente p
 
 O build e o fluxo em modo mock não dependem de chaves de IA.
 
+## Configuração Específica Para Vercel
+
+A Vercel detecta Next.js e usa o script `build` do `package.json`. Para este repositório, mantenha:
+
+| Configuração | Valor |
+| --- | --- |
+| Framework Preset | `Next.js` |
+| Root Directory | raiz do repositório |
+| Install Command | automático, usando `package-lock.json` |
+| Build Command | automático ou `npm run build` |
+| Output Directory | padrão do Next.js, sem override |
+| Node.js | `24.x`, fixado em `package.json` |
+
+Não é necessário criar `vercel.json` para a configuração atual. As rotas `/api/generate-campaign` e `/api/health` declaram runtime Node.js compatível com os SDKs usados no backend.
+
+Configure variáveis separadamente nos ambientes Preview e Production da Vercel. Alterações em variáveis só entram em novos deployments; será necessário gerar um novo build para aplicá-las.
+
+### Vercel Em Modo Mock
+
+Configuração recomendada para o primeiro preview e smoke test:
+
+```bash
+AI_PROVIDER=mock
+AI_GENERATION_ENABLED=false
+AI_REQUEST_TIMEOUT_MS=30000
+AI_RATE_LIMIT_ENABLED=true
+AI_RATE_LIMIT_MAX_REQUESTS=10
+AI_RATE_LIMIT_WINDOW_MS=60000
+```
+
+Não configure `GEMINI_API_KEY` nem `OPENAI_API_KEY` nesse ambiente.
+
+### Vercel Com Gemini
+
+```bash
+AI_PROVIDER=gemini
+AI_GENERATION_ENABLED=true
+AI_REQUEST_TIMEOUT_MS=30000
+AI_RATE_LIMIT_ENABLED=true
+AI_RATE_LIMIT_MAX_REQUESTS=10
+AI_RATE_LIMIT_WINDOW_MS=60000
+GEMINI_API_KEY=
+GEMINI_MODEL=gemini-2.5-flash
+```
+
+Cadastre `GEMINI_API_KEY` como segredo server-side somente no ambiente que deve usar geração real. Não configure uma chave OpenAI sem necessidade.
+
+### Vercel Com OpenAI
+
+```bash
+AI_PROVIDER=openai
+AI_GENERATION_ENABLED=true
+AI_REQUEST_TIMEOUT_MS=30000
+AI_RATE_LIMIT_ENABLED=true
+AI_RATE_LIMIT_MAX_REQUESTS=10
+AI_RATE_LIMIT_WINDOW_MS=60000
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-4.1-mini
+OPENAI_MAX_OUTPUT_TOKENS=4200
+```
+
+Cadastre `OPENAI_API_KEY` como segredo server-side somente no ambiente que deve usar geração real. Não configure uma chave Gemini sem necessidade.
+
+### Recomendação Inicial Para O Beta
+
+Comece com `AI_PROVIDER=mock` e `AI_GENERATION_ENABLED=false` em Preview e no primeiro smoke test. Isso valida build, navegação, formulário, PDF, histórico e páginas legais sem consumir cota.
+
+Se o beta precisar de geração real, Gemini pode ser o primeiro provedor habilitado, desde que modelo, cota, alertas de custo e comportamento do fallback tenham sido validados. OpenAI continua suportada como alternativa. Para qualquer provedor real, o rate limit distribuído continua sendo requisito antes de acesso público.
+
+O beta permanece com `noindex` e `nofollow` na metadata e `Disallow: /` em `/robots.txt`. Remova essas restrições somente quando houver decisão explícita de permitir indexação pública.
+
 ## Variáveis De Ambiente
 
 | Variável | Valor recomendado inicial | Uso |
@@ -38,7 +109,7 @@ Use `.env.example` como referência. `.env.local` é apenas local, está ignorad
 
 ```bash
 AI_PROVIDER=mock
-AI_GENERATION_ENABLED=true
+AI_GENERATION_ENABLED=false
 ```
 
 Não requer chave e não chama OpenAI ou Gemini. É o modo obrigatório para build, testes automatizados, smoke tests iniciais e ambientes que não precisam de IA real.
@@ -83,7 +154,7 @@ Se um provedor real estiver sem chave, desabilitado, indisponível ou retornar u
 
 O rate limit atual vive na memória de cada processo. Reinícios apagam os contadores, e múltiplas instâncias ou funções serverless não compartilham estado. Portanto, ele é útil em desenvolvimento e como proteção parcial de uma única instância, mas não é suficiente para controlar abuso ou custo em um beta público distribuído.
 
-Antes de liberar geração real ao público, configure uma camada distribuída ou a proteção da plataforma. Sem essa proteção, mantenha o ambiente público em modo mock ou restrito.
+Na Vercel, cada instância serverless pode manter um contador diferente e perdê-lo quando for reciclada. Antes de liberar geração real ao público, configure uma camada distribuída ou a proteção da plataforma. Sem essa proteção, mantenha o ambiente público em modo mock ou restrito.
 
 ## Cuidados Com Segredos
 
@@ -132,6 +203,21 @@ Antes de liberar geração real ao público, configure uma camada distribuída o
 - [ ] Definir responsável por acompanhar erros e custo durante o beta.
 - [ ] Ter uma forma rápida de definir `AI_GENERATION_ENABLED=false` ou `AI_PROVIDER=mock`.
 - [ ] Documentar como reverter para a última versão estável.
+
+## Checklist Pós-Deploy Na Vercel
+
+Execute este checklist primeiro em Preview e sem habilitar IA real:
+
+- [ ] Abrir `/` e confirmar título, conteúdo e links principais.
+- [ ] Abrir `/api/health` e confirmar `status: "ok"`, timestamp atual e ausência de configuração sensível.
+- [ ] Gerar um plano com `AI_PROVIDER=mock` e confirmar `source` e `provider` como `mock`.
+- [ ] Copiar o plano e baixar o PDF.
+- [ ] Abrir `/historico`, restaurar um plano e excluir um item.
+- [ ] Abrir `/privacidade` e `/termos`.
+- [ ] Conferir `/robots.txt` e a meta `robots` enquanto o beta permanecer sem indexação.
+- [ ] Verificar layout em desktop e mobile.
+- [ ] Verificar logs da Function sem payload, conteúdo do plano, chaves ou stack traces sensíveis.
+- [ ] Confirmar que nenhuma chamada foi enviada para OpenAI ou Gemini durante o smoke test mock.
 
 ## O Que Não Faz Parte Deste Deploy
 

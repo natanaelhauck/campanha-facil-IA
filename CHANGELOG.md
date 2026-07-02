@@ -2,6 +2,16 @@
 
 Todas as mudanças relevantes do projeto serão resumidas neste arquivo.
 
+## Preparação Para Vercel
+
+- Fixada a versão Node.js `24.x` usada no build da plataforma.
+- Declarado runtime Node.js nas rotas server-side.
+- Criada a rota segura e sem cache `GET /api/health`.
+- Atualizada a metadata do app para beta com `noindex` e `nofollow`.
+- Adicionado `/robots.txt` bloqueando indexação enquanto o beta não for liberado para busca.
+- Documentadas configuração Vercel, variáveis por provedor e validações pós-deploy.
+- Adicionados E2E para health check, resposta mínima e bloqueio de indexação.
+
 ## Preparação Para Beta Público
 
 ### Documentação E Configuração
