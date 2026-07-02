@@ -75,8 +75,11 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Suíte E2E versionada com fluxo principal desktop e validação mobile em 390 px.
 - Ambiente E2E isolado, com servidor dedicado e `AI_PROVIDER=mock` forçado.
 - Cenários E2E para payload excessivo e rate limit, sem chamadas externas.
-- Camada interna de analytics com 10 eventos tipados, whitelist de propriedades e nenhum envio externo.
+- Camada interna de analytics com 13 eventos tipados, whitelist de propriedades e nenhum envio externo.
 - Logs de analytics somente em desenvolvimento; produção permanece no-op.
+- Página `/beta` com proposta, público, roteiro de teste, aviso orientativo, feedback e próximos recursos possíveis.
+- Link discreto para o programa beta no rodapé.
+- CTAs opcionais de feedback e ajuda em `/resultado`, controlados por URLs públicas e sem envio automático do plano.
 - Páginas legais simples em `/privacidade` e `/termos`, com links globais discretos.
 - Política de privacidade explicando dados do formulário, `localStorage`, uso de provedores reais, ausência de analytics externo e cuidado com dados sensíveis.
 - Termos deixando claro o caráter orientativo, a ausência de garantia, a revisão humana e a inexistência de integração com Meta Ads.
@@ -84,6 +87,7 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Rota `GET /api/health` com resposta mínima, ambiente normalizado e sem cache.
 - Runtime Node.js explícito nas rotas server-side e Node.js `24.x` fixado para builds.
 - Metadata de beta com `noindex`/`nofollow` e `/robots.txt` bloqueando indexação por enquanto.
+- Roteiro de validação com perfil de participantes, perguntas, sinais e métricas manuais em `docs/BETA_VALIDATION.md`.
 
 ## Funcionalidades Que Ainda Não Existem
 

@@ -100,6 +100,8 @@ O beta permanece com `noindex` e `nofollow` na metadata e `Disallow: /` em `/rob
 | `OPENAI_API_KEY` | vazio em mock | Segredo da OpenAI, usado somente no servidor. |
 | `OPENAI_MODEL` | `gpt-4.1-mini` | Modelo OpenAI configurado para geração. Confirme acesso e disponibilidade antes da liberação. |
 | `OPENAI_MAX_OUTPUT_TOKENS` | `4200` | Limite de saída da OpenAI; o código aceita de 3.000 a 6.000 tokens. |
+| `NEXT_PUBLIC_FEEDBACK_URL` | vazio | URL pública opcional para Google Forms, formulário externo ou outro canal de feedback. |
+| `NEXT_PUBLIC_HELP_URL` | vazio | URL pública opcional para `wa.me` ou página de contato. |
 
 Use `.env.example` como referência. `.env.local` é apenas local, está ignorado pelo Git e nunca deve ser copiado para documentação, logs ou commits.
 
@@ -138,6 +140,15 @@ OPENAI_MAX_OUTPUT_TOKENS=4200
 Configure `OPENAI_API_KEY` no cofre de segredos da plataforma. A chave deve existir somente no ambiente server-side.
 
 Se um provedor real estiver sem chave, desabilitado, indisponível ou retornar um plano inválido, o endpoint usa o fallback mock. `AI_GENERATION_ENABLED=false` funciona como trava para impedir chamadas reais sem remover a configuração.
+
+### Canais Opcionais Do Beta
+
+```bash
+NEXT_PUBLIC_FEEDBACK_URL=
+NEXT_PUBLIC_HELP_URL=
+```
+
+Essas variáveis são incorporadas ao bundle do navegador e não são segredos. Use somente URLs HTTP(S) públicas, sem token, chave ou dado pessoal. Cada botão aparece apenas quando sua URL é válida; nenhum dado do formulário ou do plano é anexado ao destino.
 
 ## Configuração Recomendada Para O Beta
 
@@ -214,6 +225,8 @@ Execute este checklist primeiro em Preview e sem habilitar IA real:
 - [ ] Copiar o plano e baixar o PDF.
 - [ ] Abrir `/historico`, restaurar um plano e excluir um item.
 - [ ] Abrir `/privacidade` e `/termos`.
+- [ ] Abrir `/beta` e confirmar o roteiro de validação.
+- [ ] Confirmar os CTAs configurados sem parâmetros sensíveis.
 - [ ] Conferir `/robots.txt` e a meta `robots` enquanto o beta permanecer sem indexação.
 - [ ] Verificar layout em desktop e mobile.
 - [ ] Verificar logs da Function sem payload, conteúdo do plano, chaves ou stack traces sensíveis.

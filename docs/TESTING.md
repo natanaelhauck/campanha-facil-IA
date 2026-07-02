@@ -29,6 +29,8 @@ OPENAI_MAX_OUTPUT_TOKENS=4200
 GEMINI_API_KEY=sua-chave-local
 GEMINI_MODEL=gemini-2.5-flash
 AI_GENERATION_ENABLED=true
+NEXT_PUBLIC_FEEDBACK_URL=
+NEXT_PUBLIC_HELP_URL=
 ```
 
 Escolha apenas o provedor que deseja testar:
@@ -67,7 +69,7 @@ Para acompanhar a execução com o navegador visível:
 npm run test:e2e:headed
 ```
 
-O `playwright.config.ts` inicia o Next.js em `http://127.0.0.1:3100`, não reutiliza outro servidor e sobrescreve o ambiente com `AI_PROVIDER=mock`, `AI_GENERATION_ENABLED=false` e chaves vazias. Também reduz o rate limit para cinco requisições por IP no cenário específico de segurança. Assim, a suíte não depende de `.env.local` e não faz chamadas reais para OpenAI ou Gemini.
+O `playwright.config.ts` inicia o Next.js em `http://127.0.0.1:3100`, não reutiliza outro servidor e sobrescreve o ambiente com `AI_PROVIDER=mock`, `AI_GENERATION_ENABLED=false` e chaves vazias. Também configura URLs públicas fictícias para validar os CTAs e reduz o rate limit para cinco requisições por IP no cenário específico de segurança. Assim, a suíte não depende de `.env.local` e não faz chamadas reais para OpenAI ou Gemini.
 
 Os cenários atuais cobrem:
 
@@ -91,8 +93,14 @@ Os cenários atuais cobrem:
 - aviso orientativo e ausência de garantia na tela e no texto copiado.
 - resposta segura e sem cache de `/api/health`;
 - metadata `noindex`/`nofollow` e bloqueio em `/robots.txt`.
+- carregamento de `/beta` e acesso pelo rodapé;
+- presença dos CTAs quando as duas URLs públicas estão configuradas;
+- abertura dos canais externos em nova aba com `noopener` e `noreferrer`;
+- presença dos CTAs também no resultado mock.
 
 Os E2E validam comportamento de produto e não dependem dos logs internos de analytics.
+
+Quando `NEXT_PUBLIC_FEEDBACK_URL` ou `NEXT_PUBLIC_HELP_URL` estiver vazia, o botão correspondente não deve ser renderizado. Se ambas estiverem vazias, o card inteiro fica oculto. Use apenas URLs HTTP(S); valores inválidos também são ignorados.
 
 ## Como Validar Analytics Local
 
@@ -242,6 +250,16 @@ Resultado esperado:
 - Abra `/termos` e confirme o caráter orientativo, a ausência de garantia, a revisão antes de publicar, a responsabilidade do usuário e a ausência de integração com Meta Ads.
 - Verifique as duas páginas em desktop e mobile.
 - Confirme que o header e os links legais permitem continuar a navegação pelo produto.
+
+## Como Testar /beta E Os CTAs
+
+- Abra `/beta` pelo link `Programa beta` no rodapé.
+- Confirme proposta, público, quatro passos de teste, aviso sem garantia e próximos recursos possíveis.
+- Com as duas variáveis públicas vazias, confirme que não há card de feedback.
+- Configure URLs de teste sem segredo, reinicie o servidor e confirme os dois botões.
+- Confirme que os links abrem em nova aba e não incluem dados do formulário ou do plano.
+- Gere um plano mock e confirme o mesmo card em `/resultado`.
+- Em desenvolvimento, confirme os eventos `beta_page_viewed`, `feedback_clicked` e `help_clicked` sem propriedades sensíveis.
 
 ## Como Testar Prontidão De Deploy
 

@@ -75,6 +75,19 @@ Para Vercel, o checklist também documenta os defaults do Next.js, Node.js `24.x
 
 Para um preview ou smoke test, mantenha `AI_PROVIDER=mock` e `AI_GENERATION_ENABLED=false`. Antes de liberar IA real em múltiplas instâncias ou serverless, é obrigatório adicionar rate limit distribuído ou proteção equivalente da plataforma. O beta permanece com `noindex`/`nofollow` até uma decisão explícita de indexação.
 
+## Validação Beta
+
+A página `/beta` explica como participar da validação controlada. Em `/resultado`, os canais opcionais de feedback e ajuda aparecem somente quando estas variáveis públicas contêm URLs HTTP(S) válidas:
+
+```bash
+NEXT_PUBLIC_FEEDBACK_URL=
+NEXT_PUBLIC_HELP_URL=
+```
+
+Elas podem apontar para Google Forms, `wa.me`, formulário externo ou página de contato. Nunca coloque chaves, tokens ou dados sensíveis nessas variáveis. Os links abrem em nova aba e não enviam automaticamente dados do formulário ou do plano.
+
+O roteiro para entrevistas, sinais de interesse, sinais de confusão e métricas manuais está em [Validação beta controlada](docs/BETA_VALIDATION.md).
+
 ## Scripts úteis
 
 ```bash
@@ -99,6 +112,7 @@ Na primeira configuração da máquina, instale o Chromium gerenciado pelo Playw
 - [Testes e validação](docs/TESTING.md)
 - [Analytics e privacidade](docs/ANALYTICS.md)
 - [Preparação para deploy](docs/DEPLOYMENT.md)
+- [Validação beta controlada](docs/BETA_VALIDATION.md)
 
 ## Próximos passos planejados
 

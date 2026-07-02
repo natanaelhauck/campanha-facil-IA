@@ -24,6 +24,9 @@ O projeto possui uma camada interna em `src/lib/analytics.ts`, sem PostHog ou qu
 | `campaign_history_item_opened` | Restauração de um plano anterior |
 | `campaign_history_item_deleted` | Exclusão de um item do histórico |
 | `campaign_adjust_clicked` | Retorno ao formulário para ajustes |
+| `beta_page_viewed` | Abertura da página do programa beta |
+| `feedback_clicked` | Clique no canal externo de feedback |
+| `help_clicked` | Clique no canal externo de pedido de ajuda |
 
 ## Propriedades Permitidas
 
@@ -53,6 +56,8 @@ Nunca registrar em analytics:
 - conteúdo do plano ou do formulário;
 - IDs do histórico;
 - chaves, headers, stack traces ou mensagens brutas de provedores.
+
+Os três eventos do beta são emitidos sem propriedades. As URLs de destino, conteúdo do plano e informações do formulário não entram no evento.
 
 ## Integração Futura
 

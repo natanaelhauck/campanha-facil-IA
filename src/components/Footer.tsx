@@ -5,7 +5,13 @@ export function Footer() {
     <footer className="border-t border-stone-200 bg-white">
       <div className="mx-auto flex max-w-6xl flex-col gap-3 px-5 py-6 text-xs text-stone-500 sm:flex-row sm:items-center sm:justify-between">
         <p>Campanha Fácil IA · Plano inicial orientativo.</p>
-        <nav aria-label="Links legais" className="flex items-center gap-4">
+        <nav
+          aria-label="Links do rodapé"
+          className="flex items-center gap-4"
+        >
+          <Link href="/beta" className="transition hover:text-stone-950">
+            Programa beta
+          </Link>
           <Link
             href="/privacidade"
             className="transition hover:text-stone-950"

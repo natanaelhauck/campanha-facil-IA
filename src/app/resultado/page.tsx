@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/Button";
+import { BetaFeedbackCard } from "@/components/BetaFeedbackCard";
 import { Header } from "@/components/Header";
 import { createMockCampaignPlan } from "@/data/mockCampaignResult";
 import { trackEvent } from "@/lib/analytics";
@@ -825,6 +826,8 @@ export default function ResultPage() {
               </div>
             </ResultSection>
           ) : null}
+
+          <BetaFeedbackCard />
 
           <ResultSection title="Acompanhamento em 3, 7 e 14 dias">
             <div className="grid gap-4 md:grid-cols-3">

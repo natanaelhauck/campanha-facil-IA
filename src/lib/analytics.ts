@@ -14,6 +14,9 @@ const analyticsEventNames = [
   "campaign_history_item_opened",
   "campaign_history_item_deleted",
   "campaign_adjust_clicked",
+  "beta_page_viewed",
+  "feedback_clicked",
+  "help_clicked",
 ] as const;
 
 export type AnalyticsEventName = (typeof analyticsEventNames)[number];

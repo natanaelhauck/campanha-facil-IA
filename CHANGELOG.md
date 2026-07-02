@@ -2,6 +2,16 @@
 
 Todas as mudanças relevantes do projeto serão resumidas neste arquivo.
 
+## Validação Beta Controlada
+
+- Criada a página `/beta` com proposta, público, roteiro de teste, limites e próximos recursos possíveis.
+- Adicionado link discreto para o programa beta no rodapé.
+- Adicionados CTAs opcionais de feedback e ajuda em `/resultado`.
+- Criadas `NEXT_PUBLIC_FEEDBACK_URL` e `NEXT_PUBLIC_HELP_URL`, sem envio automático de dados.
+- Adicionados os eventos internos `beta_page_viewed`, `feedback_clicked` e `help_clicked`.
+- Criado `docs/BETA_VALIDATION.md` com perfil de teste, perguntas, sinais e métricas manuais.
+- Atualizado o E2E para validar página beta e canais externos configurados em modo mock.
+
 ## Preparação Para Vercel
 
 - Fixada a versão Node.js `24.x` usada no build da plataforma.

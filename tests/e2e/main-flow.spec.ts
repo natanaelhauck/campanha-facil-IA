@@ -90,6 +90,12 @@ test("protege o fluxo principal da campanha em modo mock", async ({
     ),
   ).toBeVisible();
   await expect(page.getByText(/^Criativo [1-3]$/)).toHaveCount(3);
+  await expect(
+    page.getByRole("link", { name: "Enviar feedback" }),
+  ).toHaveAttribute("href", "https://example.com/feedback");
+  await expect(
+    page.getByRole("link", { name: "Quero ajuda para configurar" }),
+  ).toHaveAttribute("href", "https://wa.me/5500000000000");
 
   for (const sectionTitle of [
     "Configuração sugerida da campanha",
@@ -254,22 +260,31 @@ test("mantém estado vazio com histórico ausente ou corrompido", async ({
   ).toBeVisible();
 });
 
-test("mantém páginas legais acessíveis pela navegação discreta", async ({
+test("mantém páginas institucionais acessíveis pelo rodapé", async ({
   page,
 }) => {
   await page.goto("/");
 
-  const legalNavigation = page.getByRole("navigation", {
-    name: "Links legais",
+  const footerNavigation = page.getByRole("navigation", {
+    name: "Links do rodapé",
   });
   await expect(
-    legalNavigation.getByRole("link", { name: "Privacidade", exact: true }),
+    footerNavigation.getByRole("link", {
+      name: "Programa beta",
+      exact: true,
+    }),
   ).toBeVisible();
   await expect(
-    legalNavigation.getByRole("link", { name: "Termos", exact: true }),
+    footerNavigation.getByRole("link", {
+      name: "Privacidade",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(
+    footerNavigation.getByRole("link", { name: "Termos", exact: true }),
   ).toBeVisible();
 
-  await legalNavigation
+  await footerNavigation
     .getByRole("link", { name: "Privacidade", exact: true })
     .click();
   await expect(page).toHaveURL(/\/privacidade$/);
@@ -281,7 +296,7 @@ test("mantém páginas legais acessíveis pela navegação discreta", async ({
   ).toBeVisible();
 
   await page
-    .getByRole("navigation", { name: "Links legais" })
+    .getByRole("navigation", { name: "Links do rodapé" })
     .getByRole("link", { name: "Termos", exact: true })
     .click();
   await expect(page).toHaveURL(/\/termos$/);
@@ -296,4 +311,42 @@ test("mantém páginas legais acessíveis pela navegação discreta", async ({
       exact: false,
     }),
   ).toBeVisible();
+});
+
+test("carrega o programa beta e mostra canais públicos configurados", async ({
+  page,
+}) => {
+  await page.goto("/beta");
+
+  await expect(
+    page.getByRole("heading", {
+      name: "Ajude a tornar o primeiro plano de campanha mais simples",
+      level: 1,
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Um ponto de partida, não uma promessa" }),
+  ).toBeVisible();
+
+  const feedbackLink = page.getByRole("link", {
+    name: "Enviar feedback",
+  });
+  const helpLink = page.getByRole("link", {
+    name: "Quero ajuda para configurar",
+  });
+
+  await expect(feedbackLink).toHaveAttribute(
+    "href",
+    "https://example.com/feedback",
+  );
+  await expect(helpLink).toHaveAttribute(
+    "href",
+    "https://wa.me/5500000000000",
+  );
+
+  for (const link of [feedbackLink, helpLink]) {
+    await expect(link).toHaveAttribute("target", "_blank");
+    await expect(link).toHaveAttribute("rel", /noopener/);
+    await expect(link).toHaveAttribute("rel", /noreferrer/);
+  }
 });

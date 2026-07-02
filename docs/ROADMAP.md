@@ -131,6 +131,34 @@ Status: base documental e legal concluída, sem deploy realizado. A liberação 
 - Meta Ads API.
 - PostHog ou outro analytics externo.
 
+## Validação Beta Controlada
+
+Status: base de recrutamento e feedback concluída; entrevistas e observação com usuários reais devem acontecer em rodadas pequenas.
+
+### Entregas Concluídas
+
+- Página `/beta` explicando proposta, público, roteiro de teste, limites e próximos recursos possíveis.
+- Link discreto para o programa beta no rodapé.
+- CTAs opcionais para feedback e pedido de ajuda, sem anexar dados do plano.
+- Variáveis públicas separadas para os dois canais.
+- Eventos internos `beta_page_viewed`, `feedback_clicked` e `help_clicked`, ainda sem envio externo.
+- Documento `docs/BETA_VALIDATION.md` com método, perguntas, sinais e métricas manuais.
+- Cobertura E2E para a página e para os links configurados.
+
+### Próximas Decisões Baseadas Em Evidência
+
+- Identificar onde participantes abandonam ou precisam de ajuda.
+- Priorizar clareza e utilidade antes de ampliar funcionalidades.
+- Validar se existe demanda recorrente por ajuda para configuração.
+- Decidir se login, persistência remota ou pagamento resolvem um problema observado.
+
+### Limites
+
+- Nenhum botão envia formulário ou plano automaticamente.
+- Analytics externo continua desativado.
+- Feedback pode ser coletado em canal externo configurado manualmente.
+- Recursos planejados na página beta não representam compromisso de entrega.
+
 ## Fase Futura: Geração Assistida De Imagens
 
 ### Entregas Planejadas

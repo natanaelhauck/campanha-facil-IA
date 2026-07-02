@@ -43,6 +43,8 @@ export default defineConfig({
       AI_RATE_LIMIT_WINDOW_MS: "60000",
       OPENAI_API_KEY: "",
       GEMINI_API_KEY: "",
+      NEXT_PUBLIC_FEEDBACK_URL: "https://example.com/feedback",
+      NEXT_PUBLIC_HELP_URL: "https://wa.me/5500000000000",
       NEXT_TELEMETRY_DISABLED: "1",
     },
   },

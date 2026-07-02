@@ -19,6 +19,7 @@ src/
   app/
     api/health/route.ts
     api/generate-campaign/route.ts
+    beta/page.tsx
     criar-campanha/page.tsx
     historico/page.tsx
     privacidade/page.tsx
@@ -30,6 +31,8 @@ src/
     page.tsx
   components/
     Button.tsx
+    BetaFeedbackCard.tsx
+    BetaPageViewTracker.tsx
     CampaignResultSection.tsx
     Card.tsx
     Footer.tsx
@@ -165,11 +168,13 @@ Os motivos também distinguem timeout sem expor mensagem bruta, stack trace, cha
 
 ## Analytics Interno
 
-A instrumentação atual não usa SDK externo, cookies ou persistência. Os eventos cobrem formulário, geração, cópia, PDF, histórico e ajuste de informações.
+A instrumentação atual não usa SDK externo, cookies ou persistência. Os eventos cobrem formulário, geração, cópia, PDF, histórico, ajuste de informações e interações da validação beta.
 
 As únicas propriedades aceitas são origem, provedor, canal normalizado, nível de experiência normalizado, presença de histórico, status do resultado e categoria genérica de erro. Nome do negócio, localização, oferta, público, orçamento e qualquer texto livre são proibidos.
 
 A proteção existe em dois níveis: o tipo `AnalyticsProperties` restringe os pontos de chamada e `sanitizeProperties` reconstrói uma whitelist antes de qualquer log. Uma futura integração com PostHog deve ser implementada apenas dentro de `trackEvent` e preservar essas regras.
+
+`BetaFeedbackCard` lê somente `NEXT_PUBLIC_FEEDBACK_URL` e `NEXT_PUBLIC_HELP_URL`, aceita URLs HTTP(S), abre o destino em nova aba e não anexa dados do plano. `BetaPageViewTracker` registra a abertura de `/beta` sem propriedades.
 
 ## Páginas Legais E Preparação De Deploy
 
