@@ -94,6 +94,16 @@ Status: em evolução. A base técnica funciona com OpenAI, Gemini e fallback mo
 - Fallback funcionando quando a IA falhar.
 - Lint, build e teste manual passam.
 
+### Preparação De Analytics Com Privacidade
+
+Status: camada interna concluída, sem provedor externo.
+
+- Eventos principais do funil foram definidos em um contrato único.
+- Apenas propriedades enumeradas e não identificáveis são aceitas.
+- Nenhum nome, localização, oferta, público ou texto livre é registrado.
+- Em produção, tracking permanece desabilitado.
+- PostHog ou alternativa futura depende de política de privacidade, retenção e revisão de consentimento.
+
 ## Fase Futura: Geração Assistida De Imagens
 
 ### Entregas Planejadas

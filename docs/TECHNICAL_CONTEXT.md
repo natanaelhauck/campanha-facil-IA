@@ -33,6 +33,7 @@ src/
     Select.tsx
     Textarea.tsx
   data/mockCampaignResult.ts
+  lib/analytics.ts
   lib/campaignPlanHistory.ts
   lib/downloadCampaignPlanPdf.ts
   lib/formatCampaignPlanText.ts
@@ -143,6 +144,7 @@ Os motivos também distinguem timeout sem expor mensagem bruta, stack trace, cha
 
 ## Comportamentos Client-Side Atuais
 
+- `analytics.ts` oferece `trackEvent` com nomes e propriedades tipados, sanitização por whitelist, log seguro somente em `development` e no-op em `production`.
 - O componente `Button` trata links internos com hash usando `scrollIntoView({ behavior: "smooth" })`, para que botões como `Ver como funciona`, `Ver próximos passos` e `Voltar ao topo` funcionem repetidamente.
 - A página `/resultado` usa `navigator.clipboard.writeText` para copiar o plano completo, textos de anúncio, legendas, prompts visuais e respostas do WhatsApp, com feedback simples de sucesso ou erro.
 - `formatCampaignPlanText.ts` transforma formulário e `CampaignPlanResult` em texto simples organizado. Seções opcionais ausentes são omitidas, sem JSON ou identificação técnica de provider/source.
@@ -152,6 +154,14 @@ Os motivos também distinguem timeout sem expor mensagem bruta, stack trace, cha
 - O formulário em `/criar-campanha` usa validação HTML simples com campos obrigatórios.
 - O envio do formulário mantém a chave `campaign-form-data` compatível com `/resultado` e adiciona o plano salvo quando a API responde.
 - O envio também adiciona uma cópia validável ao histórico local sem impedir o fluxo principal caso essa gravação secundária falhe.
+
+## Analytics Interno
+
+A instrumentação atual não usa SDK externo, cookies ou persistência. Os eventos cobrem formulário, geração, cópia, PDF, histórico e ajuste de informações.
+
+As únicas propriedades aceitas são origem, provedor, canal normalizado, nível de experiência normalizado, presença de histórico, status do resultado e categoria genérica de erro. Nome do negócio, localização, oferta, público, orçamento e qualquer texto livre são proibidos.
+
+A proteção existe em dois níveis: o tipo `AnalyticsProperties` restringe os pontos de chamada e `sanitizeProperties` reconstrói uma whitelist antes de qualquer log. Uma futura integração com PostHog deve ser implementada apenas dentro de `trackEvent` e preservar essas regras.
 
 ## O Que Ainda Não Existe
 

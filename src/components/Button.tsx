@@ -6,6 +6,7 @@ import type { ButtonHTMLAttributes, MouseEvent, ReactNode } from "react";
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   children: ReactNode;
   href?: string;
+  onNavigate?: () => void;
   scrollTargetId?: string;
   variant?: "primary" | "secondary";
 };
@@ -23,6 +24,7 @@ const variants = {
 export function Button({
   children,
   href,
+  onNavigate,
   scrollTargetId,
   variant = "primary",
   className = "",
@@ -33,6 +35,8 @@ export function Button({
     scrollTargetId ?? (href?.startsWith("#") ? href.slice(1) : undefined);
 
   function handleAnchorClick(event: MouseEvent<HTMLAnchorElement>) {
+    onNavigate?.();
+
     if (!targetId) {
       return;
     }

@@ -74,6 +74,8 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Suíte E2E versionada com fluxo principal desktop e validação mobile em 390 px.
 - Ambiente E2E isolado, com servidor dedicado e `AI_PROVIDER=mock` forçado.
 - Cenários E2E para payload excessivo e rate limit, sem chamadas externas.
+- Camada interna de analytics com 10 eventos tipados, whitelist de propriedades e nenhum envio externo.
+- Logs de analytics somente em desenvolvimento; produção permanece no-op.
 
 ## Funcionalidades Que Ainda Não Existem
 
@@ -85,6 +87,7 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Integração com Meta Ads API.
 - Geração real de imagens; os criativos atuais são briefings e prompts para produção futura.
 - Cobrança, planos pagos ou painel SaaS completo.
+- Provedor externo de analytics, autocapture ou gravação de sessão.
 
 ## Fluxo Principal
 
@@ -109,6 +112,7 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Manter fallback mock para desenvolvimento, falhas e ausência de chave.
 - Usar `localStorage` no MVP para evitar backend e banco de dados cedo demais.
 - Manter o histórico exclusivamente local nesta fase, sem simular conta ou sincronização.
+- Centralizar analytics em uma camada interna e proibir texto livre ou identificação do negócio.
 - Não prometer venda, lucro, performance ou aprovação de anúncios.
 - Tratar o pacote gerado como orientação inicial que precisa de revisão humana.
 - Evoluir em commits pequenos e focados.
@@ -122,6 +126,7 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Planejar limites de uso e custo por geração antes de liberar publicamente.
 - Implementar limite por usuário/IP em fase futura.
 - Melhorar observabilidade sem registrar dados sensíveis.
+- Avaliar PostHog somente após definir política de privacidade, retenção e consentimento aplicável.
 - Adotar rate limit distribuído ou da plataforma antes do beta público; o contador atual não é compartilhado entre instâncias serverless.
 - Criar testes automatizados específicos para regras de qualidade do plano.
 - Avaliar geração real de imagens somente em fase futura, com custo e revisão explícitos.

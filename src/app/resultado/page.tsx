@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/Button";
 import { Header } from "@/components/Header";
 import { createMockCampaignPlan } from "@/data/mockCampaignResult";
+import { trackEvent } from "@/lib/analytics";
 import {
   campaignFormStorageKey,
   campaignPlanSourceStorageKey,
@@ -103,17 +104,20 @@ function CopyButton({
   idleLabel,
   copiedLabel = "Copiado",
   prominent = false,
+  onCopied,
 }: {
   text: string;
   idleLabel: string;
   copiedLabel?: string;
   prominent?: boolean;
+  onCopied?: () => void;
 }) {
   const [status, setStatus] = useState<CopyStatus>("idle");
 
   async function copyText() {
     try {
       await navigator.clipboard.writeText(text);
+      onCopied?.();
       setStatus("copied");
       window.setTimeout(() => setStatus("idle"), 2000);
     } catch {
@@ -155,9 +159,11 @@ function CopyButton({
 function PdfDownloadButton({
   text,
   businessName,
+  onDownloaded,
 }: {
   text: string;
   businessName: string;
+  onDownloaded?: () => void;
 }) {
   const [status, setStatus] = useState<PdfStatus>("idle");
 
@@ -168,6 +174,7 @@ function PdfDownloadButton({
         "@/lib/downloadCampaignPlanPdf"
       );
       await downloadCampaignPlanPdf(text, businessName);
+      onDownloaded?.();
       setStatus("downloaded");
       window.setTimeout(() => setStatus("idle"), 2500);
     } catch {
@@ -458,12 +465,30 @@ export default function ResultPage() {
                 idleLabel="Copiar plano completo"
                 copiedLabel="Plano copiado"
                 prominent
+                onCopied={() =>
+                  trackEvent("campaign_plan_copied", {
+                    source: effectivePlanSource,
+                  })
+                }
               />
               <PdfDownloadButton
                 text={fullPlanText}
                 businessName={businessName}
+                onDownloaded={() =>
+                  trackEvent("campaign_pdf_downloaded", {
+                    source: effectivePlanSource,
+                  })
+                }
               />
-              <Button href="/criar-campanha" variant="secondary">
+              <Button
+                href="/criar-campanha"
+                variant="secondary"
+                onNavigate={() =>
+                  trackEvent("campaign_adjust_clicked", {
+                    source: effectivePlanSource,
+                  })
+                }
+              >
                 Ajustar informações
               </Button>
               <Button href="#proximos-passos" variant="secondary">
@@ -828,7 +853,15 @@ export default function ResultPage() {
               Quer revisar alguma informação antes de configurar a campanha?
             </p>
             <div className="flex flex-col gap-3 sm:flex-row">
-              <Button href="/criar-campanha" variant="secondary">
+              <Button
+                href="/criar-campanha"
+                variant="secondary"
+                onNavigate={() =>
+                  trackEvent("campaign_adjust_clicked", {
+                    source: effectivePlanSource,
+                  })
+                }
+              >
                 Ajustar informações
               </Button>
               <Button href="#topo" variant="secondary">

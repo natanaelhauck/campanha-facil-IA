@@ -1,6 +1,12 @@
 "use client";
 
-import { FormEvent, ReactNode, useEffect, useState } from "react";
+import {
+  FormEvent,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/Button";
 import { Header } from "@/components/Header";
@@ -14,6 +20,11 @@ import {
   campaignPlanSourceStorageKey,
   campaignPlanStorageKey,
 } from "@/lib/campaignPlanHistory";
+import {
+  getSafeCampaignAnalyticsContext,
+  trackEvent,
+  type AnalyticsErrorCategory,
+} from "@/lib/analytics";
 import type {
   CampaignFormData,
   CampaignGenerationResponse,
@@ -94,9 +105,15 @@ export default function CreateCampaignPage() {
   const [form, setForm] = useState(initialForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const hasTrackedFormStart = useRef(false);
   const router = useRouter();
 
   useEffect(() => {
+    if (!hasTrackedFormStart.current) {
+      hasTrackedFormStart.current = true;
+      trackEvent("campaign_form_started");
+    }
+
     queueMicrotask(() => {
       const savedForm = parseSavedForm(
         localStorage.getItem(campaignFormStorageKey),
@@ -116,25 +133,46 @@ export default function CreateCampaignPage() {
     event.preventDefault();
     setSubmitError("");
     setIsSubmitting(true);
+    const safeCampaignContext = getSafeCampaignAnalyticsContext(
+      form.mainChannel,
+      form.experienceLevel,
+    );
+    let errorCategory: AnalyticsErrorCategory = "unknown";
+
+    trackEvent("campaign_form_submitted", safeCampaignContext);
 
     try {
-      const response = await fetch("/api/generate-campaign", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
-      });
+      let response: Response;
+
+      try {
+        response = await fetch("/api/generate-campaign", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(form),
+        });
+      } catch {
+        errorCategory = "network";
+        throw new Error("Falha de rede.");
+      }
 
       const result = (await response.json()) as CampaignGenerationResponse;
 
       if (!response.ok || !result.success || !result.data || !result.source) {
+        errorCategory =
+          response.status === 429
+            ? "rate_limited"
+            : response.status >= 500
+              ? "provider"
+              : "validation";
         throw new Error(result.error ?? "Erro ao gerar plano.");
       }
 
       const effectiveProvider =
         result.provider ?? (result.source === "ai" ? "openai" : "mock");
 
+      errorCategory = "storage";
       localStorage.setItem(campaignFormStorageKey, JSON.stringify(form));
       localStorage.setItem(campaignPlanStorageKey, JSON.stringify(result.data));
       localStorage.setItem(campaignPlanSourceStorageKey, result.source);
@@ -145,8 +183,19 @@ export default function CreateCampaignPage() {
         source: result.source,
         provider: effectiveProvider,
       });
+      trackEvent("campaign_plan_generated", {
+        ...safeCampaignContext,
+        source: result.source,
+        provider: effectiveProvider,
+        resultStatus: "success",
+      });
       router.push("/resultado");
     } catch {
+      trackEvent("campaign_plan_generation_failed", {
+        ...safeCampaignContext,
+        resultStatus: "failure",
+        errorCategory,
+      });
       setSubmitError(
         "Não foi possível gerar o plano agora. Confira sua conexão e tente novamente.",
       );

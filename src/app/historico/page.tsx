@@ -1,9 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/Button";
 import { Header } from "@/components/Header";
+import {
+  getSafeCampaignAnalyticsContext,
+  trackEvent,
+} from "@/lib/analytics";
 import {
   readCampaignPlanHistory,
   removeCampaignPlanFromHistory,
@@ -30,12 +34,22 @@ export default function CampaignHistoryPage() {
   const [history, setHistory] = useState<CampaignPlanHistoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [restoreError, setRestoreError] = useState("");
+  const hasTrackedHistoryOpen = useRef(false);
   const router = useRouter();
 
   useEffect(() => {
+    if (hasTrackedHistoryOpen.current) {
+      return;
+    }
+
+    hasTrackedHistoryOpen.current = true;
     queueMicrotask(() => {
-      setHistory(readCampaignPlanHistory(localStorage));
+      const savedHistory = readCampaignPlanHistory(localStorage);
+      setHistory(savedHistory);
       setIsLoading(false);
+      trackEvent("campaign_history_opened", {
+        hasHistoryItem: savedHistory.length > 0,
+      });
     });
   }, []);
 
@@ -49,12 +63,36 @@ export default function CampaignHistoryPage() {
       return;
     }
 
+    trackEvent("campaign_history_item_opened", {
+      ...getSafeCampaignAnalyticsContext(
+        item.formData.mainChannel,
+        item.formData.experienceLevel,
+      ),
+      source: item.source,
+      provider: item.provider,
+      hasHistoryItem: true,
+      resultStatus: "success",
+    });
     router.push("/resultado");
   }
 
-  function deletePlan(id: string) {
+  function deletePlan(item: CampaignPlanHistoryItem) {
     setRestoreError("");
-    setHistory(removeCampaignPlanFromHistory(localStorage, id));
+    const nextHistory = removeCampaignPlanFromHistory(
+      localStorage,
+      item.id,
+    );
+
+    if (nextHistory.length < history.length) {
+      trackEvent("campaign_history_item_deleted", {
+        source: item.source,
+        provider: item.provider,
+        hasHistoryItem: nextHistory.length > 0,
+        resultStatus: "success",
+      });
+    }
+
+    setHistory(nextHistory);
   }
 
   return (
@@ -174,7 +212,7 @@ export default function CampaignHistoryPage() {
                     <Button
                       type="button"
                       variant="secondary"
-                      onClick={() => deletePlan(item.id)}
+                      onClick={() => deletePlan(item)}
                       className="flex-1 whitespace-nowrap text-red-700 hover:border-red-300 hover:bg-red-50 md:flex-none"
                     >
                       Excluir

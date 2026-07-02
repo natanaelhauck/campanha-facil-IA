@@ -86,6 +86,7 @@ Na primeira configuração da máquina, instale o Chromium gerenciado pelo Playw
 - [Decisões](docs/DECISIONS.md)
 - [Histórico de prompts](docs/PROMPTS.md)
 - [Testes e validação](docs/TESTING.md)
+- [Analytics e privacidade](docs/ANALYTICS.md)
 
 ## Próximos passos planejados
 

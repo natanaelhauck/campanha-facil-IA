@@ -2,6 +2,18 @@
 
 Todas as mudanças relevantes do projeto serão resumidas neste arquivo.
 
+## Analytics Com Privacidade
+
+### Camada Interna De Eventos
+
+- Criado `trackEvent` com 10 eventos principais do funil e da utilização do plano.
+- Adicionada whitelist tipada e sanitização em runtime para propriedades seguras.
+- Canal e experiência são normalizados para enums sem texto livre.
+- Nome do negócio, localização, oferta, público e conteúdo do plano não entram nos eventos.
+- Em desenvolvimento, eventos são registrados no console; em produção, a função é no-op.
+- Formulário, geração, cópia, PDF, histórico e ajuste de informações foram instrumentados.
+- PostHog permanece apenas como possibilidade futura, sem SDK ou envio externo.
+
 ## Histórico Local
 
 ### Planos Anteriores No Navegador

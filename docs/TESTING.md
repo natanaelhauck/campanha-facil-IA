@@ -87,6 +87,18 @@ Os cenários atuais cobrem:
 - exclusão individual até chegar ao estado vazio;
 - estado vazio com histórico ausente ou JSON corrompido.
 
+Os E2E validam comportamento de produto e não dependem dos logs internos de analytics.
+
+## Como Validar Analytics Local
+
+- Rode o projeto em `development`.
+- Abra o console do navegador e percorra formulário, resultado e histórico.
+- Confirme que as mensagens `[analytics]` usam somente eventos documentados.
+- Confirme que propriedades contêm apenas enums, booleanos e categorias genéricas.
+- Não devem aparecer nome do negócio, cidade, oferta, público, orçamento ou conteúdo textual.
+- Em build de produção, `trackEvent` deve permanecer no-op.
+- Não existe requisição de rede para PostHog ou outro provedor nesta fase.
+
 Relatórios, traces, screenshots e vídeos produzidos pelo Playwright são artefatos locais ignorados pelo Git.
 
 ## Checklist Manual Do Fluxo Principal
