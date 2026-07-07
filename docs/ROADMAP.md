@@ -61,7 +61,7 @@ Status: em evolução. A base técnica funciona com OpenAI, Gemini e fallback mo
 - Modo de fallback quando a chave está ausente, a geração está desabilitada ou a IA falha.
 - Chave da OpenAI restrita ao servidor.
 - Configuração sugerida da campanha em formato consultável.
-- Três briefings de criativos com legenda, CTA, prompt visual e dica de produção.
+- Três guias de criativos com objetivo, cena, materiais, passos de produção, dica de Canva, legenda, CTA, prompt visual, erros a evitar e briefing copiável.
 - Roteiro de atendimento no WhatsApp com respostas copiáveis.
 - Guia simples de métricas e sinais para esperar ou ajustar.
 - Leitura compatível de planos antigos salvos sem as novas seções.

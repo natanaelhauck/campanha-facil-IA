@@ -122,8 +122,23 @@ export const mockCampaignResult: CampaignPlanResult = {
     {
       title: "Oferta em destaque",
       format: "Feed quadrado",
+      goal: "Apresentar a oferta de forma clara para gerar interesse inicial.",
       visualIdea:
         "Foto real e bem iluminada do produto ou serviço em uso, com o principal benefício visível.",
+      sceneGuide:
+        "Use luz natural, enquadre o produto ou serviço no centro e deixe o fundo limpo para a pessoa entender a oferta em poucos segundos.",
+      requiredAssets: [
+        "Foto real do produto ou serviço",
+        "Celular com boa iluminação",
+        "Fundo simples e organizado",
+      ],
+      canvaLayoutTip:
+        "Use a foto ocupando quase toda a arte, coloque o texto curto no topo e deixe a chamada para ação no rodapé.",
+      recordingSteps: [
+        "Limpe o ambiente e posicione a oferta perto de uma janela.",
+        "Faça 3 fotos de ângulos diferentes e escolha a mais clara.",
+        "Monte a peça com pouco texto e contraste suficiente.",
+      ],
       textOnCreative: "Uma solução simples perto de você",
       caption:
         "Conheça uma opção local para resolver o que você precisa com atendimento direto. Fale com a gente e tire suas dúvidas.",
@@ -132,12 +147,34 @@ export const mockCampaignResult: CampaignPlanResult = {
         "Foto publicitária realista de um pequeno negócio brasileiro, luz natural, ambiente organizado, produto ou serviço em destaque, sem textos e sem marcas inventadas.",
       productionTip:
         "Fotografe perto de uma janela, limpe o fundo e evite colocar muito texto sobre a imagem.",
+      avoid: [
+        "Usar foto escura ou tremida",
+        "Colocar texto demais sobre a imagem",
+        "Fazer promessa de resultado",
+      ],
+      readyToUseBriefing:
+        "Criar uma arte quadrada com foto real da oferta em destaque, texto curto no topo, CTA no rodapé e visual limpo. Usar linguagem simples e não prometer resultado.",
     },
     {
       title: "Bastidores reais",
       format: "Story/Reels vertical",
+      goal: "Mostrar cuidado e rotina real para aumentar confiança.",
       visualIdea:
         "Vídeo curto mostrando três momentos: preparação, detalhe do trabalho e resultado final.",
+      sceneGuide:
+        "Grave na vertical, em ambiente iluminado, mostrando mãos, detalhes e o resultado sem precisar falar para a câmera.",
+      requiredAssets: [
+        "Celular na vertical",
+        "Três cenas curtas do processo",
+        "Produto, serviço ou equipe em ação",
+      ],
+      canvaLayoutTip:
+        "Use modelo vertical simples, uma frase curta por cena e mantenha a marca ou nome pequeno no final.",
+      recordingSteps: [
+        "Grave 2 segundos da preparação.",
+        "Grave 2 segundos de um detalhe do trabalho.",
+        "Grave 2 segundos do resultado e finalize com o CTA.",
+      ],
       textOnCreative: "Veja como preparamos tudo",
       caption:
         "Um pouco dos bastidores para você conhecer nosso cuidado de perto. Quer saber mais? Chame para conversar.",
@@ -146,12 +183,34 @@ export const mockCampaignResult: CampaignPlanResult = {
         "Sequência vertical realista de bastidores de um pequeno negócio brasileiro, equipe trabalhando, detalhes do processo, luz natural e aparência autêntica.",
       productionTip:
         "Grave três cenas de 2 a 3 segundos com o celular na vertical e use movimentos lentos.",
+      avoid: [
+        "Gravar com câmera balançando muito",
+        "Mostrar ambiente bagunçado",
+        "Usar música ou efeitos que escondam a oferta",
+      ],
+      readyToUseBriefing:
+        "Produzir um Story/Reels vertical com três cenas curtas de bastidores: preparação, detalhe e resultado. Inserir texto curto em cada cena e finalizar com convite para conversar.",
     },
     {
       title: "Diferencial explicado",
       format: "Vídeo curto",
+      goal: "Explicar por que escolher o negócio sem parecer propaganda exagerada.",
       visualIdea:
         "Pessoa da equipe olhando para a câmera e explicando em uma frase o principal diferencial.",
+      sceneGuide:
+        "Apoie o celular na altura dos olhos, escolha um canto silencioso e grave uma pessoa falando de forma natural.",
+      requiredAssets: [
+        "Pessoa da equipe disponível",
+        "Celular apoiado",
+        "Frase curta sobre o diferencial",
+      ],
+      canvaLayoutTip:
+        "Use legenda grande para a frase principal e deixe o CTA em uma faixa simples no final do vídeo.",
+      recordingSteps: [
+        "Escreva uma frase curta sobre o diferencial.",
+        "Grave olhando para a câmera em local silencioso.",
+        "Corte pausas longas e adicione legenda simples.",
+      ],
       textOnCreative: "Atendimento simples e direto",
       caption:
         "Se você valoriza atendimento claro e próximo, conheça nossa proposta. Envie uma mensagem para entender como funciona.",
@@ -160,6 +219,13 @@ export const mockCampaignResult: CampaignPlanResult = {
         "Retrato realista de uma pessoa de pequeno negócio brasileiro falando com a câmera, ambiente de trabalho ao fundo, expressão acolhedora e iluminação natural.",
       productionTip:
         "Apoie o celular, grave em local silencioso e fale uma frase por vez sem decorar um texto longo.",
+      avoid: [
+        "Ler um texto longo sem naturalidade",
+        "Falar de vários assuntos no mesmo vídeo",
+        "Usar promessa de venda ou desempenho",
+      ],
+      readyToUseBriefing:
+        "Gravar vídeo curto com alguém da equipe explicando o diferencial em uma frase. Usar legenda simples, tom próximo e CTA para tirar dúvidas no canal principal.",
     },
   ],
   whatsappScript: {
@@ -305,10 +371,27 @@ export function createMockCampaignPlan(
       {
         title: "Oferta em destaque",
         format: "Feed quadrado",
+        goal: "Mostrar a oferta principal de forma rápida e fácil de entender.",
         visualIdea: fit(
           `Fotografe ${offer} em uma situação real e destaque visualmente ${differentiator}. ${visualAssetsContext}`,
           220,
         ),
+        sceneGuide: fit(
+          `Use luz natural, coloque ${offer} no centro e deixe o fundo limpo para destacar ${differentiator}.`,
+          260,
+        ),
+        requiredAssets: [
+          fit(`Foto real de ${offer}`, 80),
+          "Celular com boa iluminação",
+          "Fundo simples e organizado",
+        ],
+        canvaLayoutTip:
+          "Use a foto ocupando quase toda a arte, texto curto no topo e CTA em uma faixa simples no rodapé.",
+        recordingSteps: [
+          "Organize a oferta em um local claro.",
+          "Faça três fotos e escolha a mais nítida.",
+          "Monte a peça com pouco texto e CTA visível.",
+        ],
         textOnCreative: fit(`Conheça ${offer}`, 100),
         caption: fit(
           `${businessName} apresenta ${offer} para quem está em ${region}. ${differentiator}. Fale pelo ${mainChannel} e tire suas dúvidas.${toneContext}`,
@@ -321,14 +404,40 @@ export function createMockCampaignPlan(
         ),
         productionTip:
           "Use uma foto real perto de uma janela, com fundo limpo e o produto ou serviço como foco.",
+        avoid: [
+          "Usar foto escura ou tremida",
+          "Colocar texto demais na imagem",
+          "Fazer promessa de venda ou resultado",
+        ],
+        readyToUseBriefing: fit(
+          `Criar arte quadrada para ${businessName} com foto real de ${offer}, texto curto "${fit(`Conheça ${offer}`, 80)}", CTA para ${mainChannel} e visual limpo. Tom ${communicationTone || "simples"}.`,
+          360,
+        ),
       },
       {
         title: "Bastidores da oferta",
         format: "Story/Reels vertical",
+        goal: "Mostrar cuidado e bastidores reais para gerar confiança.",
         visualIdea: fit(
           `Grave três cenas curtas mostrando a preparação, um detalhe e a entrega de ${offer}. ${visualAssetsContext}`,
           220,
         ),
+        sceneGuide: fit(
+          `Grave na vertical, com cenas de mãos, detalhes e resultado de ${offer}, sem precisar falar para a câmera.`,
+          260,
+        ),
+        requiredAssets: [
+          "Celular na vertical",
+          fit(`Cenas curtas de ${offer}`, 80),
+          "Ambiente real do negócio",
+        ],
+        canvaLayoutTip:
+          "Use tela vertical, uma frase curta por cena e finalize com o nome do negócio e o CTA.",
+        recordingSteps: [
+          "Grave a preparação em 2 segundos.",
+          "Grave um detalhe do produto ou serviço.",
+          "Mostre o resultado final e encerre com CTA.",
+        ],
         textOnCreative: "Veja como preparamos tudo",
         caption: fit(
           `Veja um pouco do cuidado da ${businessName} com ${offer}. Quer entender como funciona? Converse com a gente pelo ${mainChannel}.${toneContext}`,
@@ -341,14 +450,40 @@ export function createMockCampaignPlan(
         ),
         productionTip:
           "Grave na vertical três cenas de 2 a 3 segundos e mantenha o celular firme.",
+        avoid: [
+          "Gravar com câmera muito instável",
+          "Mostrar ambiente bagunçado",
+          "Esconder a oferta com efeitos demais",
+        ],
+        readyToUseBriefing: fit(
+          `Produzir Story/Reels vertical para ${businessName} com três cenas de bastidores de ${offer}: preparação, detalhe e resultado. Usar texto curto e CTA para ${mainChannel}.`,
+          360,
+        ),
       },
       {
         title: "Diferencial explicado",
         format: "Vídeo curto",
+        goal: "Explicar o diferencial sem parecer propaganda exagerada.",
         visualIdea: fit(
           `Uma pessoa da ${businessName} explica em uma frase por que ${differentiator} faz diferença para quem procura ${offer}.`,
           220,
         ),
+        sceneGuide: fit(
+          `Apoie o celular na altura dos olhos, escolha um local silencioso e explique ${differentiator} em uma frase natural.`,
+          260,
+        ),
+        requiredAssets: [
+          "Pessoa da equipe disponível",
+          "Celular apoiado",
+          "Frase curta sobre o diferencial",
+        ],
+        canvaLayoutTip:
+          "Coloque legenda grande para o diferencial e deixe o CTA em uma faixa simples no final.",
+        recordingSteps: [
+          "Escreva uma frase curta sobre o diferencial.",
+          "Grave em local silencioso olhando para a câmera.",
+          "Adicione legenda simples e CTA final.",
+        ],
         textOnCreative: fit(differentiator, 100),
         caption: fit(
           `Procurando ${offer} em ${region}? Conheça como a ${businessName} trabalha e envie uma mensagem para tirar suas dúvidas.${toneContext}`,
@@ -361,6 +496,15 @@ export function createMockCampaignPlan(
         ),
         productionTip:
           "Apoie o celular, grave em local silencioso e explique o diferencial em até 15 segundos.",
+        avoid: [
+          "Ler texto longo sem naturalidade",
+          "Falar de muitos assuntos no mesmo vídeo",
+          "Usar promessa de performance",
+        ],
+        readyToUseBriefing: fit(
+          `Gravar vídeo curto com alguém da ${businessName} explicando "${differentiator}" em linguagem simples. Incluir legenda, CTA para ${mainChannel} e sem promessa garantida.`,
+          360,
+        ),
       },
     ],
     whatsappScript: {

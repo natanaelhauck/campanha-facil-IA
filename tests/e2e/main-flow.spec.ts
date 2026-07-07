@@ -152,11 +152,33 @@ test("protege o fluxo principal da campanha em modo mock", async ({
   expect(copiedPlan).toContain(
     `Principal dificuldade: ${campaignData.currentChallenge}`,
   );
+  expect(copiedPlan).toContain("Materiais necessários:");
+  expect(copiedPlan).toContain("Montagem no Canva:");
+  expect(copiedPlan).toContain("Passos de produção:");
+  expect(copiedPlan).toContain("Evite:");
+  expect(copiedPlan).toContain("Briefing pronto:");
   expect(copiedPlan).toContain(
     "O conteúdo não garante vendas, lucro ou performance.",
   );
   expect(copiedPlan).toMatch(/\[ \] \S/);
   expect(copiedPlan).not.toMatch(/\[ \]\S/);
+
+  await expect(
+    page.getByRole("button", { name: "Copiar briefing do criativo" }),
+  ).toHaveCount(3);
+  await page
+    .getByRole("button", { name: "Copiar briefing do criativo" })
+    .first()
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Briefing copiado" }),
+  ).toBeVisible();
+  const copiedCreativeBriefing = await page.evaluate(() =>
+    navigator.clipboard.readText(),
+  );
+  expect(copiedCreativeBriefing).toContain("CRIATIVO 1:");
+  expect(copiedCreativeBriefing).toContain("Materiais necessários:");
+  expect(copiedCreativeBriefing).toContain("Evite:");
 
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: "Baixar PDF" }).click();

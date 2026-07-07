@@ -44,6 +44,18 @@ function isStringArray(
   );
 }
 
+function isBoundedStringArray(
+  value: unknown,
+  minItems: number,
+  maxItems: number,
+  maxLength: number,
+) {
+  return (
+    isStringArray(value, minItems, maxItems) &&
+    value.every((item) => item.length <= maxLength)
+  );
+}
+
 function isAdTextArray(value: unknown) {
   return (
     Array.isArray(value) &&
@@ -103,7 +115,19 @@ function isCampaignSetupGuide(value: unknown) {
   );
 }
 
-function isCreativePack(value: unknown) {
+function hasProductionGuideFields(item: UnknownRecord) {
+  return (
+    isBoundedString(item.goal, 120) &&
+    isBoundedString(item.sceneGuide, 260) &&
+    isBoundedStringArray(item.requiredAssets, 2, 4, 80) &&
+    isBoundedString(item.canvaLayoutTip, 220) &&
+    isBoundedStringArray(item.recordingSteps, 2, 4, 120) &&
+    isBoundedStringArray(item.avoid, 2, 4, 110) &&
+    isBoundedString(item.readyToUseBriefing, 360)
+  );
+}
+
+function isCreativePack(value: unknown, requireProductionGuide = false) {
   return (
     Array.isArray(value) &&
     value.length === 3 &&
@@ -117,7 +141,8 @@ function isCreativePack(value: unknown) {
         isBoundedString(item.caption, 300) &&
         isBoundedString(item.callToAction, 80) &&
         isBoundedString(item.aiImagePrompt, 300) &&
-        isBoundedString(item.productionTip, 220),
+        isBoundedString(item.productionTip, 220) &&
+        (!requireProductionGuide || hasProductionGuideFields(item)),
     )
   );
 }
@@ -242,7 +267,7 @@ export function isCurrentCampaignPlanResult(
     isCampaignPlanResult(value) &&
     value.nextSteps.length === 5 &&
     isCampaignSetupGuide(value.campaignSetupGuide) &&
-    isCreativePack(value.creativePack) &&
+    isCreativePack(value.creativePack, true) &&
     isWhatsappScript(value.whatsappScript) &&
     isSimpleMetricsGuide(value.simpleMetricsGuide)
   );

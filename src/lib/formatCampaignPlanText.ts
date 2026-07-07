@@ -1,4 +1,5 @@
 import type {
+  CampaignCreative,
   CampaignFormData,
   CampaignPlanResult,
 } from "@/types/campaign";
@@ -25,6 +26,10 @@ function list(items: string[] | undefined, marker = "-") {
   return items?.map((item) => `${marker} ${item}`) ?? [];
 }
 
+function numberedList(items: string[] | undefined) {
+  return items?.map((item, index) => `${index + 1}. ${item}`) ?? [];
+}
+
 function normalizeTextLine(value: string) {
   return value
     .normalize("NFC")
@@ -39,6 +44,42 @@ function normalizeTextLine(value: string) {
     .replace(/([;!?])(?=[A-Za-zÀ-ÖØ-öø-ÿ0-9])/g, "$1 ")
     .replace(/\.([A-ZÀ-ÖØ-Þ])/g, ". $1")
     .trimEnd();
+}
+
+export function formatCreativeBriefing(
+  creative: CampaignCreative,
+  index?: number,
+  options: { includePrompt?: boolean } = {},
+) {
+  const includePrompt = options.includePrompt ?? true;
+  const lines = [
+    `${index ? `CRIATIVO ${index}: ` : ""}${creative.title} — ${creative.format}`,
+    creative.goal ? `Objetivo: ${creative.goal}` : undefined,
+    `Ideia visual: ${creative.visualIdea}`,
+    creative.sceneGuide ? `Guia de cena: ${creative.sceneGuide}` : undefined,
+    ...(creative.requiredAssets?.length
+      ? ["Materiais necessários:", ...list(creative.requiredAssets)]
+      : []),
+    creative.canvaLayoutTip
+      ? `Montagem no Canva: ${creative.canvaLayoutTip}`
+      : undefined,
+    ...(creative.recordingSteps?.length
+      ? ["Passos de produção:", ...numberedList(creative.recordingSteps)]
+      : []),
+    `Texto na peça: ${creative.textOnCreative}`,
+    `Legenda: ${creative.caption}`,
+    `Chamada para ação: ${creative.callToAction}`,
+    `Dica de produção: ${creative.productionTip}`,
+    ...(creative.avoid?.length
+      ? ["Evite:", ...list(creative.avoid)]
+      : []),
+    creative.readyToUseBriefing
+      ? `Briefing pronto: ${creative.readyToUseBriefing}`
+      : undefined,
+    includePrompt ? `Prompt visual: ${creative.aiImagePrompt}` : undefined,
+  ].filter((line): line is string => Boolean(line?.trim()));
+
+  return lines.map(normalizeTextLine).join("\n");
 }
 
 export function formatCampaignPlanText(
@@ -115,14 +156,11 @@ export function formatCampaignPlanText(
   addSection(
     sections,
     "PACOTE DE CRIATIVOS",
-    plan.creativePack?.flatMap((creative, index) => [
-      `${index + 1}. ${creative.title} — ${creative.format}`,
-      `Ideia visual: ${creative.visualIdea}`,
-      `Texto na peça: ${creative.textOnCreative}`,
-      `Legenda: ${creative.caption}`,
-      `Chamada para ação: ${creative.callToAction}`,
-      `Dica de produção: ${creative.productionTip}`,
-    ]) ?? [],
+    plan.creativePack?.map((creative, index) =>
+      formatCreativeBriefing(creative, index + 1, {
+        includePrompt: false,
+      }),
+    ) ?? [],
   );
 
   addSection(

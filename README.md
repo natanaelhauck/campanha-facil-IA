@@ -34,6 +34,12 @@ O formulário em `/criar-campanha` coleta os campos essenciais do plano: negóci
 
 Também existem campos opcionais e estruturados para melhorar a personalização sem exigir texto longo: tom de comunicação, disponibilidade de fotos ou vídeos, disponibilidade para responder WhatsApp e principal dificuldade atual. Dados antigos salvos no `localStorage` continuam válidos; campos opcionais ausentes são tratados como vazios.
 
+## Guia De Criativos
+
+O `creativePack` gera exatamente três briefings de criativos. Cada briefing orienta objetivo da peça, cena, materiais necessários, passos de foto ou gravação, montagem simples no Canva ou editor similar, texto da peça, legenda, CTA, erros a evitar e um briefing pronto para copiar.
+
+Nenhuma imagem real é gerada nesta fase. O pacote serve como guia prático para produzir com celular, Canva, designer ou futura ferramenta de imagem, sempre com revisão humana antes de publicar.
+
 ## Configuração Da IA
 
 Copie `.env.example` para `.env.local` e preencha a chave quando quiser testar geração real:

@@ -208,12 +208,19 @@ export const campaignPlanSchema = {
         required: [
           "title",
           "format",
+          "goal",
           "visualIdea",
+          "sceneGuide",
+          "requiredAssets",
+          "canvaLayoutTip",
+          "recordingSteps",
           "textOnCreative",
           "caption",
           "callToAction",
           "aiImagePrompt",
           "productionTip",
+          "avoid",
+          "readyToUseBriefing",
         ],
         properties: {
           title: {
@@ -227,11 +234,51 @@ export const campaignPlanSchema = {
             description:
               "Formato fácil de reconhecer, como Story/Reels vertical, Feed quadrado ou Vídeo curto.",
           },
+          goal: {
+            type: "string",
+            maxLength: 120,
+            description:
+              "Objetivo prático do criativo, como chamar atenção local, explicar a oferta ou gerar conversa.",
+          },
           visualIdea: {
             type: "string",
             maxLength: 220,
             description:
               "Cena específica que a pessoa pode fotografar, gravar ou montar.",
+          },
+          sceneGuide: {
+            type: "string",
+            maxLength: 260,
+            description:
+              "Orientação de enquadramento, luz, cenário e composição para uma pessoa leiga produzir com celular.",
+          },
+          requiredAssets: {
+            type: "array",
+            minItems: 2,
+            maxItems: 4,
+            description:
+              "Materiais necessários para produzir o criativo, sem exigir equipamento profissional.",
+            items: {
+              type: "string",
+              maxLength: 80,
+            },
+          },
+          canvaLayoutTip: {
+            type: "string",
+            maxLength: 220,
+            description:
+              "Dica simples para montar a peça no Canva ou editor similar, com hierarquia de texto e imagem.",
+          },
+          recordingSteps: {
+            type: "array",
+            minItems: 2,
+            maxItems: 4,
+            description:
+              "Passos curtos para fotografar, gravar ou montar o criativo.",
+            items: {
+              type: "string",
+              maxLength: 120,
+            },
           },
           textOnCreative: {
             type: "string",
@@ -260,6 +307,23 @@ export const campaignPlanSchema = {
             maxLength: 220,
             description:
               "Dica prática para produzir o criativo com celular e recursos simples.",
+          },
+          avoid: {
+            type: "array",
+            minItems: 2,
+            maxItems: 4,
+            description:
+              "Erros simples a evitar, sem jargão técnico e sem citar políticas avançadas.",
+            items: {
+              type: "string",
+              maxLength: 110,
+            },
+          },
+          readyToUseBriefing: {
+            type: "string",
+            maxLength: 360,
+            description:
+              "Resumo pronto para copiar e enviar a quem vai produzir a peça, sem prometer resultado.",
           },
         },
       },

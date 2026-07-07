@@ -66,6 +66,7 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Próximos passos, checklist, ideias de criativos e acompanhamento em 3, 7 e 14 dias.
 - Configuração sugerida da campanha com objetivo, canal, verba, região, público e duração do primeiro teste.
 - Pacote com três briefings de criativos, incluindo legenda, prompt visual e dica de produção.
+- Guia prático de produção em cada criativo, com objetivo, cena, materiais, passos, dica de Canva, erros a evitar e briefing pronto para copiar.
 - Roteiro de atendimento no WhatsApp com respostas copiáveis.
 - Guia simples de métricas, bons sinais, alertas e momento de esperar ou ajustar.
 - Ação `Copiar plano completo`, que formata o pacote em texto simples para WhatsApp, Google Docs, Notion ou e-mail.
@@ -77,7 +78,7 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Suíte E2E versionada com fluxo principal desktop e validação mobile em 390 px.
 - Ambiente E2E isolado, com servidor dedicado e `AI_PROVIDER=mock` forçado.
 - Cenários E2E para payload excessivo e rate limit, sem chamadas externas.
-- Camada interna de analytics com 13 eventos tipados, whitelist de propriedades e nenhum envio externo.
+- Camada interna de analytics com 14 eventos tipados, whitelist de propriedades e nenhum envio externo.
 - Analytics aceita apenas enums seguros para canal, experiência, tom de comunicação e disponibilidade de fotos/vídeos; textos livres do briefing continuam proibidos.
 - Logs de analytics somente em desenvolvimento; produção permanece no-op.
 - Página `/beta` com proposta, público, roteiro de teste, aviso orientativo, feedback e próximos recursos possíveis.
@@ -178,6 +179,7 @@ Para testar IA real localmente, copie `.env.example` para `.env.local`, escolha 
 - Botões `Copiar texto`.
 - Pacote de execução mock com três criativos, roteiro de WhatsApp e métricas simples.
 - Cópia de legenda, prompt visual e resposta do WhatsApp.
+- Cópia do briefing completo de cada criativo com materiais, passos e erros a evitar.
 - Cópia do plano completo com feedback `Plano copiado`, dados do briefing e as principais seções em texto simples.
 - Download do plano em PDF paginado, legível e sem dados técnicos do provider.
 - Navegação rápida e repetida entre as principais seções do resultado.

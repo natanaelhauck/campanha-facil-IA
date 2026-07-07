@@ -77,6 +77,7 @@ Os cenários atuais cobrem:
 - preenchimento dos campos opcionais do briefing ampliado;
 - resposta da API com `source` e `provider` iguais a `mock`;
 - pacote com três criativos e as principais seções;
+- guia de produção nos três criativos e cópia do briefing completo;
 - cópia do plano completo e feedback visual;
 - download do PDF;
 - retorno ao formulário com dados persistidos, incluindo tom, fotos/vídeos, disponibilidade no WhatsApp e dificuldade atual;
@@ -180,7 +181,7 @@ Após enviar o formulário:
 - Clique em `Ver próximos passos`, volte manualmente o scroll e clique novamente.
 - Confirme que a rolagem funciona repetidamente.
 - Clique em `Copiar plano completo` e confirme o feedback `Plano copiado`.
-- Cole o conteúdo em um editor de texto e confirme nome do negócio, dados do briefing, aviso orientativo, resumo, configuração, próximos passos, textos, criativos, prompts, WhatsApp, checklist, métricas e acompanhamento.
+- Cole o conteúdo em um editor de texto e confirme nome do negócio, dados do briefing, aviso orientativo, resumo, configuração, próximos passos, textos, criativos, materiais, passos de produção, erros a evitar, prompts, WhatsApp, checklist, métricas e acompanhamento.
 - Confirme que o texto copiado não contém JSON nem informações técnicas de provider/source.
 - Clique em `Baixar PDF`, aguarde o feedback `PDF baixado` e confirme que o arquivo foi salvo com o nome do negócio.
 - Abra o PDF e confira título, aviso orientativo, seções separadas, quebras de linha, acentos, múltiplas páginas e rodapés.
@@ -191,7 +192,7 @@ Após enviar o formulário:
 - Clique em pelo menos um botão `Copiar texto` e confirme o feedback `Copiado` ou o erro amigável.
 - Confirme que as seções `Configuração sugerida da campanha`, `Pacote de criativos`, `Roteiro de atendimento no WhatsApp` e `Métricas simples para acompanhar` aparecem no plano novo.
 - Confirme que o pacote contém exatamente três criativos e informa que nenhuma imagem foi gerada.
-- Copie uma legenda, um prompt visual e uma resposta do WhatsApp; confirme o feedback `Copiado`.
+- Copie uma legenda, um prompt visual, um briefing completo de criativo e uma resposta do WhatsApp; confirme o feedback `Copiado` ou `Briefing copiado`.
 - Confirme que não há recomendação automática para aumentar verba.
 - Clique em `Voltar ao topo`, role manualmente para baixo e clique novamente.
 - Confirme que a rolagem para o topo funciona repetidamente.

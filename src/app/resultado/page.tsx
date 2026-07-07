@@ -12,7 +12,10 @@ import {
   campaignPlanStorageKey,
 } from "@/lib/campaignPlanHistory";
 import { isCampaignPlanResult } from "@/lib/campaignPlanValidation";
-import { formatCampaignPlanText } from "@/lib/formatCampaignPlanText";
+import {
+  formatCampaignPlanText,
+  formatCreativeBriefing,
+} from "@/lib/formatCampaignPlanText";
 import type {
   CampaignCreative,
   CampaignFormData,
@@ -236,10 +239,14 @@ function CopyableAdText({ index, text }: { index: number; text: string }) {
 function CreativePackCard({
   creative,
   index,
+  onBriefingCopied,
 }: {
   creative: CampaignCreative;
   index: number;
+  onBriefingCopied?: () => void;
 }) {
+  const briefingText = formatCreativeBriefing(creative, index);
+
   return (
     <article className="overflow-hidden rounded-xl border border-stone-200 bg-stone-50">
       <div className="border-b border-stone-200 bg-stone-900 p-4 text-white">
@@ -255,6 +262,17 @@ function CreativePackCard({
       </div>
 
       <div className="grid gap-4 p-4">
+        {creative.goal ? (
+          <div className="rounded-lg border border-stone-200 bg-white p-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+              Objetivo da peça
+            </p>
+            <p className="mt-1 text-sm leading-6 text-stone-800">
+              {creative.goal}
+            </p>
+          </div>
+        ) : null}
+
         <div>
           <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
             Cena principal
@@ -263,6 +281,61 @@ function CreativePackCard({
             {creative.visualIdea}
           </p>
         </div>
+
+        {creative.sceneGuide ? (
+          <div className="rounded-lg border border-stone-200 bg-white p-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+              Como montar a cena
+            </p>
+            <p className="mt-1 text-sm leading-6 text-stone-800">
+              {creative.sceneGuide}
+            </p>
+          </div>
+        ) : null}
+
+        {creative.requiredAssets?.length ? (
+          <div className="rounded-lg border border-stone-200 bg-white p-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+              Materiais
+            </p>
+            <ul className="mt-2 grid gap-2 text-sm leading-6 text-stone-800">
+              {creative.requiredAssets.map((asset) => (
+                <li key={asset} className="border-l-2 border-stone-300 pl-3">
+                  {asset}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+
+        {creative.recordingSteps?.length ? (
+          <div className="rounded-lg border border-stone-200 bg-white p-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+              Passos de produção
+            </p>
+            <ol className="mt-2 grid gap-2 text-sm leading-6 text-stone-800">
+              {creative.recordingSteps.map((step, stepIndex) => (
+                <li key={step} className="flex gap-2">
+                  <span className="font-bold text-emerald-800">
+                    {stepIndex + 1}.
+                  </span>
+                  <span>{step}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        ) : null}
+
+        {creative.canvaLayoutTip ? (
+          <div className="rounded-lg border border-stone-200 bg-white p-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+              Montagem no Canva
+            </p>
+            <p className="mt-1 text-sm leading-6 text-stone-800">
+              {creative.canvaLayoutTip}
+            </p>
+          </div>
+        ) : null}
 
         <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3">
           <p className="text-xs font-semibold uppercase tracking-wide text-emerald-900">
@@ -288,6 +361,32 @@ function CreativePackCard({
           </div>
         </div>
 
+        {creative.avoid?.length ? (
+          <div className="rounded-lg border border-amber-200 bg-amber-50 p-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-amber-900">
+              Evite
+            </p>
+            <ul className="mt-2 grid gap-2 text-xs leading-5 text-amber-950">
+              {creative.avoid.map((item) => (
+                <li key={item} className="border-l-2 border-amber-500 pl-3">
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+
+        {creative.readyToUseBriefing ? (
+          <div className="rounded-lg border border-stone-200 bg-white p-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+              Briefing pronto
+            </p>
+            <p className="mt-2 text-sm leading-6 text-stone-800">
+              {creative.readyToUseBriefing}
+            </p>
+          </div>
+        ) : null}
+
         <div className="rounded-lg border border-dashed border-stone-300 bg-white p-3">
           <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
             Prompt visual
@@ -307,6 +406,13 @@ function CreativePackCard({
           <strong className="text-stone-900">Dica de produção:</strong>{" "}
           {creative.productionTip}
         </p>
+
+        <CopyButton
+          text={briefingText}
+          idleLabel="Copiar briefing do criativo"
+          copiedLabel="Briefing copiado"
+          onCopied={onBriefingCopied}
+        />
       </div>
     </article>
   );
@@ -675,6 +781,11 @@ export default function ResultPage() {
                     key={`${creative.title}-${creative.format}`}
                     creative={creative}
                     index={index + 1}
+                    onBriefingCopied={() =>
+                      trackEvent("creative_briefing_copied", {
+                        source: effectivePlanSource,
+                      })
+                    }
                   />
                 ))}
               </div>

@@ -99,9 +99,9 @@ O histórico é local e pode desaparecer quando o usuário limpa dados do navega
 
 A camada de provedores fica em `src/lib/ai/` e `src/app/api/generate-campaign/route.ts`.
 
-- `buildCampaignPrompt.ts` monta instruções em português do Brasil para um pacote com configuração, três briefings criativos, roteiro de atendimento, métricas simples, orçamento conservador e nenhuma promessa de resultado.
+- `buildCampaignPrompt.ts` monta instruções em português do Brasil para um pacote com configuração, três guias de produção de criativos, roteiro de atendimento, métricas simples, orçamento conservador e nenhuma promessa de resultado.
 - O prompt envia somente campos preenchidos do formulário e orienta os providers a usar tom de comunicação, fotos/vídeos disponíveis, disponibilidade no WhatsApp e dificuldade atual sem inventar dados ausentes.
-- `campaignPlanSchema.ts` exige três textos de anúncio, cinco próximos passos, acompanhamento em 3, 7 e 14 dias e as quatro seções do pacote de execução.
+- `campaignPlanSchema.ts` exige três textos de anúncio, cinco próximos passos, acompanhamento em 3, 7 e 14 dias, três criativos com guia de produção e as quatro seções do pacote de execução.
 - `generateCampaignPlan.ts` seleciona `mock`, OpenAI ou Gemini e centraliza o fallback.
 - `generateCampaignPlanWithOpenAI.ts` usa OpenAI Responses API com Structured Outputs.
 - `generateCampaignPlanWithGemini.ts` usa `@google/genai`, `generateContent`, JSON Schema e validação local.
@@ -159,6 +159,7 @@ Os motivos também distinguem timeout sem expor mensagem bruta, stack trace, cha
 - `analytics.ts` oferece `trackEvent` com nomes e propriedades tipados, sanitização por whitelist, log seguro somente em `development` e no-op em `production`.
 - O componente `Button` trata links internos com hash usando `scrollIntoView({ behavior: "smooth" })`, para que botões como `Ver como funciona`, `Ver próximos passos` e `Voltar ao topo` funcionem repetidamente.
 - A página `/resultado` usa `navigator.clipboard.writeText` para copiar o plano completo, textos de anúncio, legendas, prompts visuais e respostas do WhatsApp, com feedback simples de sucesso ou erro.
+- Cada criativo também possui um botão para copiar o briefing completo de produção, incluindo cena, materiais, passos, Canva e erros a evitar.
 - `formatCampaignPlanText.ts` transforma formulário e `CampaignPlanResult` em texto simples organizado. Seções opcionais ausentes são omitidas, sem JSON ou identificação técnica de provider/source.
 - `downloadCampaignPlanPdf.ts` recebe o texto já formatado, cria um PDF A4 com quebra de linhas, múltiplas páginas, títulos e rodapés e inicia o download no navegador.
 - O módulo de PDF e o `jsPDF` são carregados por import dinâmico somente quando o usuário solicita o download, evitando custo no carregamento inicial da página.
@@ -200,7 +201,7 @@ A metadata raiz identifica a versão como beta e usa `noindex`/`nofollow`. `robo
 
 ## Testes E2E
 
-A suíte em `tests/e2e/main-flow.spec.ts` usa `@playwright/test` com Chromium. Ela protege o fluxo principal em desktop, incluindo formulário com briefing ampliado, resposta mock, resultado, aviso orientativo, três criativos, seções do pacote, cópia, PDF, persistência dos novos campos, edição, regeneração, histórico local e páginas legais.
+A suíte em `tests/e2e/main-flow.spec.ts` usa `@playwright/test` com Chromium. Ela protege o fluxo principal em desktop, incluindo formulário com briefing ampliado, resposta mock, resultado, aviso orientativo, três criativos, cópia do briefing de criativo, seções do pacote, cópia, PDF, persistência dos novos campos, edição, regeneração, histórico local e páginas legais.
 
 Um segundo cenário usa viewport de 390 px para verificar overflow horizontal e acesso à navegação rápida. A suíte também valida criação, restauração, exclusão, estado vazio e JSON corrompido no histórico. `api-security.spec.ts` valida o limite de body e o bloqueio temporário por frequência. `deployment-readiness.spec.ts` valida `/api/health`, ausência de campos extras, cache desabilitado e bloqueio de indexação. O `playwright.config.ts` inicia um servidor dedicado na porta 3100 com `AI_PROVIDER=mock`, geração real desabilitada e chaves de provedores vazias. O servidor não é reutilizado, evitando que os testes se conectem acidentalmente a uma instância configurada com IA real.
 

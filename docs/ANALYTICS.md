@@ -19,6 +19,7 @@ O projeto possui uma camada interna em `src/lib/analytics.ts`, sem PostHog ou qu
 | `campaign_plan_generated` | Plano gerado e salvo com sucesso |
 | `campaign_plan_generation_failed` | Falha genérica na geração ou persistência atual |
 | `campaign_plan_copied` | Cópia do plano completo |
+| `creative_briefing_copied` | Cópia do briefing completo de um criativo |
 | `campaign_pdf_downloaded` | PDF gerado e baixado |
 | `campaign_history_opened` | Abertura do histórico local |
 | `campaign_history_item_opened` | Restauração de um plano anterior |
@@ -60,7 +61,7 @@ Nunca registrar em analytics:
 - IDs do histórico;
 - chaves, headers, stack traces ou mensagens brutas de provedores.
 
-Os três eventos do beta são emitidos sem propriedades. As URLs de destino, conteúdo do plano e informações do formulário não entram no evento.
+O evento `creative_briefing_copied` pode receber apenas `source` e não inclui título, legenda, prompt, briefing ou qualquer texto do criativo. Os três eventos do beta são emitidos sem propriedades. As URLs de destino, conteúdo do plano e informações do formulário não entram no evento.
 
 ## Integração Futura
 

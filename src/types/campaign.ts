@@ -68,6 +68,13 @@ export type CampaignCreative = {
   callToAction: string;
   aiImagePrompt: string;
   productionTip: string;
+  goal?: string;
+  sceneGuide?: string;
+  requiredAssets?: string[];
+  canvaLayoutTip?: string;
+  recordingSteps?: string[];
+  avoid?: string[];
+  readyToUseBriefing?: string;
 };
 
 export type CampaignWhatsappScript = {

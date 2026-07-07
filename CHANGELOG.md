@@ -2,6 +2,16 @@
 
 Todas as mudanças relevantes do projeto serão resumidas neste arquivo.
 
+## Guia De Criativos Da Campanha
+
+- Evoluído o `creativePack` para incluir objetivo, guia de cena, materiais necessários, dica de layout no Canva, passos de produção, erros a evitar e briefing pronto para copiar.
+- Atualizados schema, validação e prompt para exigir os novos campos em respostas novas, mantendo planos antigos compatíveis.
+- Atualizado o mock com exemplos realistas e executáveis para produção com celular e editor simples.
+- Melhorada a seção `Pacote de criativos` em `/resultado`, com leitura mais prática e botão `Copiar briefing do criativo`.
+- O texto completo e o PDF passaram a incluir o guia de produção de cada criativo.
+- Adicionado evento interno seguro `creative_briefing_copied`, sem envio do conteúdo do briefing.
+- Atualizado E2E para validar os três criativos, cópia do briefing, PDF, histórico e mobile sem overflow.
+
 ## Briefing Mais Completo Da Campanha
 
 - Ampliado o formulário `/criar-campanha` com campos opcionais e estruturados para tom de comunicação, fotos/vídeos disponíveis, disponibilidade para responder WhatsApp e principal dificuldade atual.
