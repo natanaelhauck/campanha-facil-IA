@@ -49,6 +49,15 @@ export type CampaignFollowUpPeriod = {
   actions: string[];
 };
 
+export type CampaignSevenDayActionPlanItem = {
+  day: string;
+  title: string;
+  objective: string;
+  tasks: string[];
+  expectedOutcome: string;
+  warning: string;
+};
+
 export type CampaignSetupGuide = {
   objective: string;
   channel: string;
@@ -109,6 +118,7 @@ export type CampaignPlanResult = {
   creativePack?: CampaignCreative[];
   whatsappScript?: CampaignWhatsappScript;
   simpleMetricsGuide?: CampaignSimpleMetricsGuide;
+  sevenDayActionPlan?: CampaignSevenDayActionPlanItem[];
 };
 
 export type CampaignPlanHistoryItem = {

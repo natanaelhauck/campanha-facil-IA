@@ -12,6 +12,7 @@ Status: concluída como primeira versão visual funcional. Deve continuar recebe
 - Briefing ampliado com campos estruturados para tom de comunicação, fotos/vídeos disponíveis, disponibilidade no WhatsApp e dificuldade atual.
 - Carregamento dos dados salvos ao voltar de `/resultado` para ajustar informações.
 - Resultado simulado em `/resultado`, com plano inicial personalizado.
+- Plano de ação de 7 dias para guiar a primeira semana depois da geração.
 - Personalização local com `localStorage`.
 - Histórico local com até 10 planos, abertura e exclusão individual.
 - Textos de anúncio copiáveis.
@@ -64,6 +65,7 @@ Status: em evolução. A base técnica funciona com OpenAI, Gemini e fallback mo
 - Três guias de criativos com objetivo, cena, materiais, passos de produção, dica de Canva, legenda, CTA, prompt visual, erros a evitar e briefing copiável.
 - Roteiro de atendimento no WhatsApp com respostas copiáveis.
 - Guia simples de métricas e sinais para esperar ou ajustar.
+- Plano de ação de 7 dias gerado junto com o pacote, sem aumento automático de orçamento.
 - Leitura compatível de planos antigos salvos sem as novas seções.
 - Prompt e mock usando os novos campos do briefing quando preenchidos, sem inventar dados ausentes.
 

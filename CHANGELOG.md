@@ -2,6 +2,16 @@
 
 Todas as mudanças relevantes do projeto serão resumidas neste arquivo.
 
+## Plano De Ação De 7 Dias
+
+- Adicionado `sevenDayActionPlan` ao resultado da campanha, com exatamente sete dias em respostas novas de IA.
+- Cada dia inclui título, objetivo, tarefas práticas, entrega esperada e cuidado para evitar decisões apressadas.
+- Atualizados schema, validação, prompt e mock para gerar uma rotina simples da primeira semana.
+- Adicionada seção `Plano de ação de 7 dias` em `/resultado`, ocultada para planos antigos sem esse campo.
+- Adicionado botão `Copiar plano de ação`, com evento seguro `action_plan_copied`.
+- O texto completo e o PDF passaram a incluir o plano de ação quando disponível.
+- E2E atualizado para validar os sete dias, cópia da rotina, PDF, histórico e mobile sem overflow.
+
 ## Guia De Criativos Da Campanha
 
 - Evoluído o `creativePack` para incluir objetivo, guia de cena, materiais necessários, dica de layout no Canva, passos de produção, erros a evitar e briefing pronto para copiar.

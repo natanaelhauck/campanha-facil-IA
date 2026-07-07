@@ -40,6 +40,12 @@ O `creativePack` gera exatamente três briefings de criativos. Cada briefing ori
 
 Nenhuma imagem real é gerada nesta fase. O pacote serve como guia prático para produzir com celular, Canva, designer ou futura ferramenta de imagem, sempre com revisão humana antes de publicar.
 
+## Plano De Ação De 7 Dias
+
+O resultado também inclui um plano de ação de 7 dias, com tarefas simples para revisar a oferta, preparar o canal, produzir criativos, organizar materiais, configurar a campanha, acompanhar sinais e decidir se mantém, ajusta ou pausa.
+
+Esse plano é orientativo e não recomenda aumento automático de orçamento. Ele aparece no resultado, no texto completo copiado e no PDF quando está disponível.
+
 ## Configuração Da IA
 
 Copie `.env.example` para `.env.local` e preencha a chave quando quiser testar geração real:

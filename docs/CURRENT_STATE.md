@@ -64,12 +64,14 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Estado vazio amigável em `/resultado` quando não há dados salvos.
 - Textos de anúncio com botão para copiar.
 - Próximos passos, checklist, ideias de criativos e acompanhamento em 3, 7 e 14 dias.
+- Plano de ação de 7 dias com tarefas práticas, entrega esperada e cuidado de cada dia.
 - Configuração sugerida da campanha com objetivo, canal, verba, região, público e duração do primeiro teste.
 - Pacote com três briefings de criativos, incluindo legenda, prompt visual e dica de produção.
 - Guia prático de produção em cada criativo, com objetivo, cena, materiais, passos, dica de Canva, erros a evitar e briefing pronto para copiar.
 - Roteiro de atendimento no WhatsApp com respostas copiáveis.
 - Guia simples de métricas, bons sinais, alertas e momento de esperar ou ajustar.
 - Ação `Copiar plano completo`, que formata o pacote em texto simples para WhatsApp, Google Docs, Notion ou e-mail.
+- Ação `Copiar plano de ação`, que copia somente a rotina de 7 dias sem dados técnicos.
 - Ação `Baixar PDF`, que exporta o mesmo conteúdo em um documento paginado e organizado diretamente no navegador.
 - Navegação rápida em `/resultado` para configuração, criativos, WhatsApp, métricas e checklist, exibindo apenas seções disponíveis.
 - Compatibilidade com dados antigos no `localStorage`: campos opcionais de briefing ausentes viram vazio e planos antigos continuam renderizando sem erro.
@@ -78,7 +80,7 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Suíte E2E versionada com fluxo principal desktop e validação mobile em 390 px.
 - Ambiente E2E isolado, com servidor dedicado e `AI_PROVIDER=mock` forçado.
 - Cenários E2E para payload excessivo e rate limit, sem chamadas externas.
-- Camada interna de analytics com 14 eventos tipados, whitelist de propriedades e nenhum envio externo.
+- Camada interna de analytics com 15 eventos tipados, whitelist de propriedades e nenhum envio externo.
 - Analytics aceita apenas enums seguros para canal, experiência, tom de comunicação e disponibilidade de fotos/vídeos; textos livres do briefing continuam proibidos.
 - Logs de analytics somente em desenvolvimento; produção permanece no-op.
 - Página `/beta` com proposta, público, roteiro de teste, aviso orientativo, feedback e próximos recursos possíveis.
@@ -180,6 +182,7 @@ Para testar IA real localmente, copie `.env.example` para `.env.local`, escolha 
 - Pacote de execução mock com três criativos, roteiro de WhatsApp e métricas simples.
 - Cópia de legenda, prompt visual e resposta do WhatsApp.
 - Cópia do briefing completo de cada criativo com materiais, passos e erros a evitar.
+- Cópia do plano de ação de 7 dias com feedback `Plano de ação copiado`.
 - Cópia do plano completo com feedback `Plano copiado`, dados do briefing e as principais seções em texto simples.
 - Download do plano em PDF paginado, legível e sem dados técnicos do provider.
 - Navegação rápida e repetida entre as principais seções do resultado.

@@ -2,6 +2,7 @@ import type {
   CampaignCreative,
   CampaignFormData,
   CampaignPlanResult,
+  CampaignSevenDayActionPlanItem,
 } from "@/types/campaign";
 
 function valueOrFallback(value: string | undefined, fallback: string) {
@@ -82,6 +83,22 @@ export function formatCreativeBriefing(
   return lines.map(normalizeTextLine).join("\n");
 }
 
+export function formatSevenDayActionPlan(
+  plan: CampaignSevenDayActionPlanItem[],
+) {
+  return plan
+    .flatMap((item) => [
+      `${item.day}: ${item.title}`,
+      `Objetivo: ${item.objective}`,
+      "Tarefas:",
+      ...list(item.tasks),
+      `Entrega esperada: ${item.expectedOutcome}`,
+      `Cuidado: ${item.warning}`,
+    ])
+    .map(normalizeTextLine)
+    .join("\n");
+}
+
 export function formatCampaignPlanText(
   form: Partial<CampaignFormData> | null | undefined,
   plan: CampaignPlanResult,
@@ -143,6 +160,12 @@ export function formatCampaignPlanText(
       (step, index) => `${index + 1}. ${step.title}: ${step.description}`,
     ) ?? [],
   );
+
+  addSection(sections, "PLANO DE AÇÃO DE 7 DIAS", [
+    plan.sevenDayActionPlan
+      ? formatSevenDayActionPlan(plan.sevenDayActionPlan)
+      : undefined,
+  ]);
 
   addSection(
     sections,

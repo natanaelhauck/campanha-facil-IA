@@ -16,6 +16,7 @@ export const campaignPlanSchema = {
     "creativePack",
     "whatsappScript",
     "simpleMetricsGuide",
+    "sevenDayActionPlan",
     "disclaimer",
   ],
   properties: {
@@ -426,6 +427,67 @@ export const campaignPlanSchema = {
           maxLength: 220,
           description:
             "Situação em que faz sentido revisar oferta, atendimento ou criativo antes da verba.",
+        },
+      },
+    },
+    sevenDayActionPlan: {
+      type: "array",
+      minItems: 7,
+      maxItems: 7,
+      description:
+        "Plano simples de execução para os 7 primeiros dias após gerar o plano, sem promessa de resultado e sem aumento automático de orçamento.",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: [
+          "day",
+          "title",
+          "objective",
+          "tasks",
+          "expectedOutcome",
+          "warning",
+        ],
+        properties: {
+          day: {
+            type: "string",
+            maxLength: 20,
+            description:
+              "Dia do plano, usando Dia 1, Dia 2, Dia 3, Dia 4, Dia 5, Dia 6 e Dia 7.",
+          },
+          title: {
+            type: "string",
+            maxLength: 70,
+            description: "Título curto e prático para o dia.",
+          },
+          objective: {
+            type: "string",
+            maxLength: 160,
+            description:
+              "Objetivo do dia em linguagem simples, ligado ao canal, orçamento, criativos ou atendimento.",
+          },
+          tasks: {
+            type: "array",
+            minItems: 2,
+            maxItems: 4,
+            description:
+              "Tarefas curtas e práticas que uma pessoa leiga consegue executar.",
+            items: {
+              type: "string",
+              maxLength: 120,
+            },
+          },
+          expectedOutcome: {
+            type: "string",
+            maxLength: 160,
+            description:
+              "Resultado esperado como entrega prática do dia, sem prometer venda, lucro ou performance.",
+          },
+          warning: {
+            type: "string",
+            maxLength: 180,
+            description:
+              "Cuidado do dia, evitando pressa, excesso de mudanças, ações técnicas demais ou aumento automático de verba.",
+          },
         },
       },
     },

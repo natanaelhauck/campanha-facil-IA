@@ -119,11 +119,15 @@ test("protege o fluxo principal da campanha em modo mock", async ({
     "Roteiro de atendimento no WhatsApp",
     "Métricas simples para acompanhar",
     "Checklist antes de publicar",
+    "Plano de ação de 7 dias",
   ]) {
     await expect(
       page.getByRole("heading", { name: sectionTitle }),
     ).toBeVisible();
   }
+
+  const actionPlanSection = page.locator("#plano-7-dias");
+  await expect(actionPlanSection.getByText(/^Dia [1-7]$/)).toHaveCount(7);
 
   await page
     .getByRole("button", { name: "Copiar plano completo" })
@@ -152,6 +156,9 @@ test("protege o fluxo principal da campanha em modo mock", async ({
   expect(copiedPlan).toContain(
     `Principal dificuldade: ${campaignData.currentChallenge}`,
   );
+  expect(copiedPlan).toContain("PLANO DE AÇÃO DE 7 DIAS");
+  expect(copiedPlan).toContain("Dia 1: Revisar oferta e canal");
+  expect(copiedPlan).toContain("Dia 7: Decidir próximo ajuste");
   expect(copiedPlan).toContain("Materiais necessários:");
   expect(copiedPlan).toContain("Montagem no Canva:");
   expect(copiedPlan).toContain("Passos de produção:");
@@ -179,6 +186,16 @@ test("protege o fluxo principal da campanha em modo mock", async ({
   expect(copiedCreativeBriefing).toContain("CRIATIVO 1:");
   expect(copiedCreativeBriefing).toContain("Materiais necessários:");
   expect(copiedCreativeBriefing).toContain("Evite:");
+
+  await page.getByRole("button", { name: "Copiar plano de ação" }).click();
+  await expect(
+    page.getByRole("button", { name: "Plano de ação copiado" }),
+  ).toBeVisible();
+  const copiedActionPlan = await page.evaluate(() =>
+    navigator.clipboard.readText(),
+  );
+  expect(copiedActionPlan).toContain("Dia 1: Revisar oferta e canal");
+  expect(copiedActionPlan).toContain("Dia 7: Decidir próximo ajuste");
 
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: "Baixar PDF" }).click();
@@ -285,6 +302,7 @@ test("mantém o resultado utilizável em viewport mobile", async ({ page }) => {
   await expect(quickNavigation).toBeVisible();
 
   for (const linkName of [
+    "7 dias",
     "Configuração",
     "Criativos",
     "WhatsApp",

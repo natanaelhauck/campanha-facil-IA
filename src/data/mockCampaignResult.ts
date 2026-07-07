@@ -75,6 +75,113 @@ export const mockCampaignResult: CampaignPlanResult = {
       ],
     },
   ],
+  sevenDayActionPlan: [
+    {
+      day: "Dia 1",
+      title: "Revisar oferta e canal",
+      objective:
+        "Deixar a oferta clara e garantir que o canal principal consiga receber interessados.",
+      tasks: [
+        "Escreva a oferta em uma frase simples.",
+        "Confira se o WhatsApp, Instagram, site ou endereço está funcionando.",
+        "Prepare uma resposta inicial curta para novos contatos.",
+      ],
+      expectedOutcome:
+        "Oferta, canal e primeira resposta prontos para usar na campanha.",
+      warning:
+        "Não publique se ninguém puder responder os primeiros contatos com atenção.",
+    },
+    {
+      day: "Dia 2",
+      title: "Produzir os criativos",
+      objective:
+        "Criar fotos ou vídeos simples com base nos três briefings do pacote.",
+      tasks: [
+        "Separe o produto, serviço, ambiente ou pessoa que vai aparecer.",
+        "Grave ou fotografe com luz natural e celular firme.",
+        "Escolha os três materiais mais claros para usar.",
+      ],
+      expectedOutcome:
+        "Três materiais visuais reais separados para montar os anúncios.",
+      warning:
+        "Evite imagem escura, texto demais e promessa exagerada na peça.",
+    },
+    {
+      day: "Dia 3",
+      title: "Organizar textos e materiais",
+      objective:
+        "Deixar criativos, legendas, chamadas e respostas prontos antes de configurar.",
+      tasks: [
+        "Copie os textos de anúncio que fazem mais sentido.",
+        "Monte as peças no Canva ou editor simples.",
+        "Revise se a oferta e o CTA aparecem sem confusão.",
+      ],
+      expectedOutcome:
+        "Arquivos e textos organizados para configurar a campanha sem pressa.",
+      warning:
+        "Não coloque preço, desconto ou condição que não esteja confirmado.",
+    },
+    {
+      day: "Dia 4",
+      title: "Configurar a campanha",
+      objective:
+        "Montar uma campanha simples com região, canal e orçamento informados.",
+      tasks: [
+        "Escolha objetivo coerente com o canal principal.",
+        "Use apenas a região realmente atendida.",
+        "Aplique o orçamento diário informado sem opções avançadas.",
+      ],
+      expectedOutcome:
+        "Campanha configurada de forma simples e pronta para revisão final.",
+      warning:
+        "Não altere público, criativo e orçamento ao mesmo tempo no início.",
+    },
+    {
+      day: "Dia 5",
+      title: "Acompanhar primeiros sinais",
+      objective:
+        "Observar se a campanha está entregando e se as primeiras conversas fazem sentido.",
+      tasks: [
+        "Veja se há impressões, cliques e conversas.",
+        "Leia as mensagens recebidas e anote dúvidas repetidas.",
+        "Confira se os contatos são da região atendida.",
+      ],
+      expectedOutcome:
+        "Primeiros sinais registrados para comparar sem mexer na verba cedo.",
+      warning:
+        "Não conclua nada com poucas horas ou poucas conversas.",
+    },
+    {
+      day: "Dia 6",
+      title: "Comparar criativos e conversas",
+      objective:
+        "Entender quais peças e textos atraem contatos mais próximos da oferta.",
+      tasks: [
+        "Compare cliques, conversas e perguntas por criativo.",
+        "Separe dúvidas comuns para melhorar o atendimento.",
+        "Mantenha os criativos que geram conversas mais claras.",
+      ],
+      expectedOutcome:
+        "Lista simples do que parece claro e do que precisa ajuste.",
+      warning:
+        "Não paute a decisão só por clique; observe a qualidade da conversa.",
+    },
+    {
+      day: "Dia 7",
+      title: "Decidir próximo ajuste",
+      objective:
+        "Escolher entre manter, ajustar ou pausar com base nos sinais da semana.",
+      tasks: [
+        "Revise custo, conversas e qualidade dos contatos.",
+        "Escolha um único ajuste se algo estiver confuso.",
+        "Registre o que mudou para comparar depois.",
+      ],
+      expectedOutcome:
+        "Decisão simples para continuar com mais controle na semana seguinte.",
+      warning:
+        "Não aumente orçamento automaticamente; ajuste oferta, criativo ou atendimento primeiro.",
+    },
+  ],
   nextSteps: [
     {
       title: "Revise a oferta",
@@ -367,6 +474,120 @@ export function createMockCampaignPlan(
       whatNotToChangeEarly:
         "Não trocar público, criativo e orçamento ao mesmo tempo nos primeiros dias.",
     },
+    sevenDayActionPlan: [
+      {
+        day: "Dia 1",
+        title: "Revisar oferta e canal",
+        objective: fit(
+          `Deixar ${offer} claro e preparar ${mainChannel} para receber interessados.`,
+          160,
+        ),
+        tasks: [
+          fit(`Escreva ${offer} em uma frase simples.`, 120),
+          fit(`Confira se ${mainChannel} está funcionando.`, 120),
+          "Prepare uma resposta inicial curta para novos contatos.",
+        ],
+        expectedOutcome:
+          "Oferta, canal e primeira resposta prontos para usar na campanha.",
+        warning: fit(whatsappContext, 180),
+      },
+      {
+        day: "Dia 2",
+        title: "Produzir os criativos",
+        objective: fit(
+          `Criar fotos ou vídeos simples para mostrar ${offer} com clareza.`,
+          160,
+        ),
+        tasks: [
+          fit(`Separe material real de ${offer}.`, 120),
+          "Grave ou fotografe com luz natural e celular firme.",
+          fit(visualAssetsContext, 120),
+        ],
+        expectedOutcome:
+          "Três materiais visuais reais separados para montar os anúncios.",
+        warning:
+          "Evite imagem escura, texto demais e promessa exagerada na peça.",
+      },
+      {
+        day: "Dia 3",
+        title: "Organizar textos e materiais",
+        objective:
+          "Deixar criativos, legendas, chamadas e respostas prontos antes de configurar.",
+        tasks: [
+          "Copie os textos de anúncio que fazem mais sentido.",
+          "Monte as peças no Canva ou editor simples.",
+          fit(`Revise se ${differentiator} aparece de forma natural.`, 120),
+        ],
+        expectedOutcome:
+          "Arquivos e textos organizados para configurar a campanha sem pressa.",
+        warning:
+          "Não coloque preço, desconto ou condição que não esteja confirmado.",
+      },
+      {
+        day: "Dia 4",
+        title: "Configurar a campanha",
+        objective: fit(
+          `Montar uma campanha simples para ${goal}, usando ${dailyBudget}.`,
+          160,
+        ),
+        tasks: [
+          fit(`Escolha objetivo coerente com ${mainChannel}.`, 120),
+          fit(`Use apenas ${region} e a área realmente atendida.`, 120),
+          fit(`Aplique ${dailyBudget} sem opções avançadas.`, 120),
+        ],
+        expectedOutcome:
+          "Campanha configurada de forma simples e pronta para revisão final.",
+        warning:
+          "Não altere público, criativo e orçamento ao mesmo tempo no início.",
+      },
+      {
+        day: "Dia 5",
+        title: "Acompanhar primeiros sinais",
+        objective:
+          "Observar se a campanha está entregando e se as primeiras conversas fazem sentido.",
+        tasks: [
+          "Veja se há impressões, cliques e conversas.",
+          "Leia as mensagens recebidas e anote dúvidas repetidas.",
+          fit(`Confira se os contatos fazem sentido para ${audience}.`, 120),
+        ],
+        expectedOutcome:
+          "Primeiros sinais registrados para comparar sem mexer na verba cedo.",
+        warning:
+          "Não conclua nada com poucas horas ou poucas conversas.",
+      },
+      {
+        day: "Dia 6",
+        title: "Comparar criativos e conversas",
+        objective:
+          "Entender quais peças e textos atraem contatos mais próximos da oferta.",
+        tasks: [
+          "Compare cliques, conversas e perguntas por criativo.",
+          currentChallenge
+            ? fit(`Observe se ainda aparece: ${currentChallenge}.`, 120)
+            : "Separe dúvidas comuns para melhorar o atendimento.",
+          "Mantenha os criativos que geram conversas mais claras.",
+        ],
+        expectedOutcome:
+          "Lista simples do que parece claro e do que precisa ajuste.",
+        warning:
+          "Não paute a decisão só por clique; observe a qualidade da conversa.",
+      },
+      {
+        day: "Dia 7",
+        title: "Decidir próximo ajuste",
+        objective:
+          "Escolher entre manter, ajustar ou pausar com base nos sinais da semana.",
+        tasks: [
+          "Revise custo, conversas e qualidade dos contatos.",
+          "Escolha um único ajuste se algo estiver confuso.",
+          "Registre o que mudou para comparar depois.",
+        ],
+        expectedOutcome:
+          "Decisão simples para continuar com mais controle na semana seguinte.",
+        warning:
+          "Não aumente orçamento automaticamente; ajuste oferta, criativo ou atendimento primeiro.",
+      },
+    ],
     creativePack: [
       {
         title: "Oferta em destaque",

@@ -9,6 +9,7 @@ type CurrentCampaignPlanResult = CampaignPlanResult &
       | "creativePack"
       | "whatsappScript"
       | "simpleMetricsGuide"
+      | "sevenDayActionPlan"
     >
   >;
 
@@ -172,6 +173,23 @@ function isSimpleMetricsGuide(value: unknown) {
   );
 }
 
+function isSevenDayActionPlan(value: unknown) {
+  return (
+    Array.isArray(value) &&
+    value.length === 7 &&
+    value.every(
+      (item, index) =>
+        isRecord(item) &&
+        item.day === `Dia ${index + 1}` &&
+        isBoundedString(item.title, 70) &&
+        isBoundedString(item.objective, 160) &&
+        isBoundedStringArray(item.tasks, 2, 4, 120) &&
+        isBoundedString(item.expectedOutcome, 160) &&
+        isBoundedString(item.warning, 180),
+    )
+  );
+}
+
 function isOptionalSection(
   value: unknown,
   validator: (section: unknown) => boolean,
@@ -255,6 +273,7 @@ export function isCampaignPlanResult(
     isOptionalSection(value.creativePack, isCreativePack) &&
     isOptionalSection(value.whatsappScript, isWhatsappScript) &&
     isOptionalSection(value.simpleMetricsGuide, isSimpleMetricsGuide) &&
+    isOptionalSection(value.sevenDayActionPlan, isSevenDayActionPlan) &&
     !hasVagueNextStep(value.nextSteps) &&
     !hasUnsafeContent(value)
   );
@@ -269,6 +288,7 @@ export function isCurrentCampaignPlanResult(
     isCampaignSetupGuide(value.campaignSetupGuide) &&
     isCreativePack(value.creativePack, true) &&
     isWhatsappScript(value.whatsappScript) &&
-    isSimpleMetricsGuide(value.simpleMetricsGuide)
+    isSimpleMetricsGuide(value.simpleMetricsGuide) &&
+    isSevenDayActionPlan(value.sevenDayActionPlan)
   );
 }

@@ -10,6 +10,7 @@ const analyticsEventNames = [
   "campaign_plan_generation_failed",
   "campaign_plan_copied",
   "creative_briefing_copied",
+  "action_plan_copied",
   "campaign_pdf_downloaded",
   "campaign_history_opened",
   "campaign_history_item_opened",

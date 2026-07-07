@@ -15,12 +15,14 @@ import { isCampaignPlanResult } from "@/lib/campaignPlanValidation";
 import {
   formatCampaignPlanText,
   formatCreativeBriefing,
+  formatSevenDayActionPlan,
 } from "@/lib/formatCampaignPlanText";
 import type {
   CampaignCreative,
   CampaignFormData,
   CampaignPlanResult,
   CampaignPlanSource,
+  CampaignSevenDayActionPlanItem,
 } from "@/types/campaign";
 
 type CopyStatus = "idle" | "copied" | "error";
@@ -418,6 +420,67 @@ function CreativePackCard({
   );
 }
 
+function SevenDayActionPlanCard({
+  item,
+}: {
+  item: CampaignSevenDayActionPlanItem;
+}) {
+  return (
+    <article className="rounded-lg border border-stone-200 bg-stone-50 p-4">
+      <div className="flex items-start gap-3">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-stone-900 text-xs font-bold text-white">
+          {item.day.replace("Dia ", "")}
+        </span>
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wide text-emerald-800">
+            {item.day}
+          </p>
+          <h3 className="mt-1 text-base font-bold text-stone-950">
+            {item.title}
+          </h3>
+        </div>
+      </div>
+
+      <div className="mt-4 grid gap-3">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+            Objetivo
+          </p>
+          <p className="mt-1 text-sm leading-6 text-stone-800">
+            {item.objective}
+          </p>
+        </div>
+
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+            Tarefas
+          </p>
+          <ul className="mt-2 grid gap-2 text-sm leading-6 text-stone-800">
+            {item.tasks.map((task) => (
+              <li key={task} className="border-l-2 border-emerald-700 pl-3">
+                {task}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="rounded-md border border-emerald-200 bg-white p-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-emerald-800">
+            Entrega esperada
+          </p>
+          <p className="mt-1 text-sm leading-6 text-stone-800">
+            {item.expectedOutcome}
+          </p>
+        </div>
+
+        <p className="border-l-2 border-amber-500 pl-3 text-xs leading-5 text-stone-600">
+          <strong className="text-stone-900">Cuidado:</strong> {item.warning}
+        </p>
+      </div>
+    </article>
+  );
+}
+
 function EmptyResult() {
   return (
     <main className="min-h-screen bg-[#f7f8f5]">
@@ -543,7 +606,13 @@ export default function ResultPage() {
       ]
     : [];
   const fullPlanText = formatCampaignPlanText(form, plan);
+  const sevenDayActionPlanText = plan.sevenDayActionPlan
+    ? formatSevenDayActionPlan(plan.sevenDayActionPlan)
+    : "";
   const quickNavigation = [
+    ...(plan.sevenDayActionPlan
+      ? [{ label: "7 dias", target: "plano-7-dias" }]
+      : []),
     ...(plan.campaignSetupGuide
       ? [{ label: "Configuração", target: "configuracao" }]
       : []),
@@ -697,6 +766,39 @@ export default function ResultPage() {
               ))}
             </div>
           </ResultSection>
+
+          {plan.sevenDayActionPlan ? (
+            <ResultSection
+              id="plano-7-dias"
+              title="Plano de ação de 7 dias"
+              eyebrow="Rotina prática para executar"
+            >
+              <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <p className="max-w-3xl text-sm leading-6 text-stone-600">
+                  Use como roteiro da primeira semana. Revise cada tarefa antes
+                  de executar e mantenha decisões de verba conservadoras.
+                </p>
+                <CopyButton
+                  text={sevenDayActionPlanText}
+                  idleLabel="Copiar plano de ação"
+                  copiedLabel="Plano de ação copiado"
+                  onCopied={() =>
+                    trackEvent("action_plan_copied", {
+                      source: effectivePlanSource,
+                    })
+                  }
+                />
+              </div>
+              <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+                {plan.sevenDayActionPlan.map((item) => (
+                  <SevenDayActionPlanCard
+                    key={`${item.day}-${item.title}`}
+                    item={item}
+                  />
+                ))}
+              </div>
+            </ResultSection>
+          ) : null}
 
           <ResultSection title="Resumo do plano">
             <div className="grid gap-4 md:grid-cols-[1fr_1fr]">

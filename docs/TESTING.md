@@ -78,6 +78,7 @@ Os cenários atuais cobrem:
 - resposta da API com `source` e `provider` iguais a `mock`;
 - pacote com três criativos e as principais seções;
 - guia de produção nos três criativos e cópia do briefing completo;
+- plano de ação de 7 dias e cópia da rotina completa;
 - cópia do plano completo e feedback visual;
 - download do PDF;
 - retorno ao formulário com dados persistidos, incluindo tom, fotos/vídeos, disponibilidade no WhatsApp e dificuldade atual;
@@ -181,7 +182,7 @@ Após enviar o formulário:
 - Clique em `Ver próximos passos`, volte manualmente o scroll e clique novamente.
 - Confirme que a rolagem funciona repetidamente.
 - Clique em `Copiar plano completo` e confirme o feedback `Plano copiado`.
-- Cole o conteúdo em um editor de texto e confirme nome do negócio, dados do briefing, aviso orientativo, resumo, configuração, próximos passos, textos, criativos, materiais, passos de produção, erros a evitar, prompts, WhatsApp, checklist, métricas e acompanhamento.
+- Cole o conteúdo em um editor de texto e confirme nome do negócio, dados do briefing, aviso orientativo, resumo, configuração, próximos passos, plano de ação de 7 dias, textos, criativos, materiais, passos de produção, erros a evitar, prompts, WhatsApp, checklist, métricas e acompanhamento.
 - Confirme que o texto copiado não contém JSON nem informações técnicas de provider/source.
 - Clique em `Baixar PDF`, aguarde o feedback `PDF baixado` e confirme que o arquivo foi salvo com o nome do negócio.
 - Abra o PDF e confira título, aviso orientativo, seções separadas, quebras de linha, acentos, múltiplas páginas e rodapés.
@@ -192,6 +193,7 @@ Após enviar o formulário:
 - Clique em pelo menos um botão `Copiar texto` e confirme o feedback `Copiado` ou o erro amigável.
 - Confirme que as seções `Configuração sugerida da campanha`, `Pacote de criativos`, `Roteiro de atendimento no WhatsApp` e `Métricas simples para acompanhar` aparecem no plano novo.
 - Confirme que o pacote contém exatamente três criativos e informa que nenhuma imagem foi gerada.
+- Confirme que o plano de ação contém exatamente sete dias e que `Copiar plano de ação` funciona.
 - Copie uma legenda, um prompt visual, um briefing completo de criativo e uma resposta do WhatsApp; confirme o feedback `Copiado` ou `Briefing copiado`.
 - Confirme que não há recomendação automática para aumentar verba.
 - Clique em `Voltar ao topo`, role manualmente para baixo e clique novamente.
@@ -200,7 +202,7 @@ Após enviar o formulário:
 ## Como Testar Compatibilidade Com Plano Antigo
 
 1. Gere um plano mock novo e copie o valor de `campaign-plan-result`.
-2. Em uma cópia do objeto, remova `campaignSetupGuide`, `creativePack`, `whatsappScript` e `simpleMetricsGuide`.
+2. Em uma cópia do objeto, remova `campaignSetupGuide`, `creativePack`, `whatsappScript`, `simpleMetricsGuide` e `sevenDayActionPlan`.
 3. Salve o objeto antigo novamente em `campaign-plan-result`.
 4. Recarregue `/resultado`.
 
@@ -213,6 +215,7 @@ Resultado esperado:
 - `Baixar PDF` continua funcionando e gera o documento sem os blocos opcionais ausentes.
 - A página não usa fallback por ausência exclusiva desses campos e não apresenta erro.
 - `Ajustar informações`, `Ver próximos passos`, cópia de textos e `Voltar ao topo` continuam funcionando.
+- A seção `Plano de ação de 7 dias` fica oculta quando ausente.
 
 ## Como Testar Compatibilidade Com Formulário Antigo
 
@@ -295,7 +298,7 @@ Use apenas uma chave de desenvolvimento em `.env.local`.
 - Confirme que o texto continua em português do Brasil, simples, orientativo e sem promessa de venda ou resultado garantido.
 - Confirme que existem exatamente cinco próximos passos, todos com ações concretas, sem instruções vagas como aprender sobre anúncios ou revisar políticas.
 - Confirme que os três textos cumprem papéis diferentes: abordagem direta, benefício ou diferencial e convite leve para conversa.
-- Confirme que as quatro novas seções vieram preenchidas e que `creativePack` contém exatamente três itens.
+- Confirme que as quatro novas seções vieram preenchidas, que `creativePack` contém exatamente três itens e que `sevenDayActionPlan` contém exatamente sete dias.
 - Confirme que os prompts visuais são briefings, sem afirmar que imagens foram geradas.
 - Confirme que as respostas de WhatsApp não inventam preço, desconto ou urgência.
 - Confirme que as métricas são explicadas em linguagem simples.
