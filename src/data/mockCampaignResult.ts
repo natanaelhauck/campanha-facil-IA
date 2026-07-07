@@ -212,34 +212,71 @@ export function createMockCampaignPlan(
   const differentiator = display(form.differentiator, "atendimento confiável");
   const mainChannel = display(form.mainChannel, "canal principal");
   const experienceLevel = display(form.experienceLevel, "não informado");
+  const communicationTone = display(form.communicationTone, "");
+  const hasVisualAssets = display(form.hasVisualAssets, "");
+  const hasWhatsappResponder = display(form.hasWhatsappResponder, "");
+  const currentChallenge = display(form.currentChallenge, "");
+  const toneContext = communicationTone
+    ? ` Use um tom ${communicationTone.toLowerCase()} nos textos.`
+    : "";
+  const visualAssetsContext =
+    hasVisualAssets === "Sim, tenho fotos ou vídeos"
+      ? "Aproveite as fotos ou vídeos que o negócio já tem e escolha os mais claros."
+      : hasVisualAssets === "Tenho pouco material"
+        ? "Comece com o pouco material disponível e grave cenas simples para complementar."
+        : hasVisualAssets === "Ainda não tenho"
+          ? "Produza fotos ou vídeos simples com celular antes de publicar."
+          : "Use fotos ou vídeos reais e simples da oferta.";
+  const whatsappContext =
+    hasWhatsappResponder === "Sim, durante o horário comercial"
+      ? "Mantenha respostas prontas para atender durante o horário comercial."
+      : hasWhatsappResponder === "Sim, mas com pouca disponibilidade"
+        ? "Avise horários de resposta e use mensagens salvas para não deixar contatos sem retorno."
+        : hasWhatsappResponder === "Ainda não tenho alguém definido"
+          ? "Defina quem vai responder antes de ligar uma campanha focada em WhatsApp."
+          : "Confira se existe alguém pronto para responder os contatos.";
+  const challengeContext = currentChallenge
+    ? ` Dificuldade informada: ${currentChallenge}.`
+    : "";
 
   return {
     ...mockCampaignResult,
-    summary: `Plano inicial para ${businessName}, um ${businessType} em ${region}, com foco em divulgar ${offer} e gerar ${goal} pelo canal ${mainChannel}.`,
+    summary: `Plano inicial para ${businessName}, um ${businessType} em ${region}, com foco em divulgar ${offer} e gerar ${goal} pelo canal ${mainChannel}.${challengeContext}`,
     recommendedObjective: `Para o objetivo informado, ${goal}, comece com uma campanha focada em contato direto pelo ${mainChannel}. ${mockCampaignResult.recommendedObjective}`,
     suggestedAudience: `Use como base: ${audience}. Inclua ${region} e evite segmentações muito estreitas no primeiro teste. ${mockCampaignResult.suggestedAudience}`,
     budgetGuidance: `Orçamento informado: ${dailyBudget}. ${mockCampaignResult.budgetGuidance}`,
     adTexts: [
       {
         title: "Texto 1",
-        text: `${businessName} ajuda quem procura ${offer} em ${region}. Fale pelo ${mainChannel} e tire suas dúvidas de forma simples.`,
+        text: fit(
+          `${businessName} ajuda quem procura ${offer} em ${region}. Fale pelo ${mainChannel} e tire suas dúvidas de forma simples.${toneContext}`,
+          300,
+        ),
       },
       {
         title: "Texto 2",
-        text: `Está buscando ${offer}? Conheça o atendimento da ${businessName} e veja como o diferencial "${differentiator}" pode ajudar.`,
+        text: fit(
+          `Está buscando ${offer}? Conheça o atendimento da ${businessName} e veja como o diferencial "${differentiator}" pode ajudar.${toneContext}`,
+          300,
+        ),
       },
       {
         title: "Texto 3",
-        text: `Quer saber mais sobre ${offer}? Chame a ${businessName} pelo ${mainChannel} e converse com a gente sem compromisso.`,
+        text: fit(
+          `Quer saber mais sobre ${offer}? Chame a ${businessName} pelo ${mainChannel} e converse com a gente sem compromisso.${toneContext}`,
+          300,
+        ),
       },
     ],
     creativeIdeas: [
       `Mostre ${offer} em uma imagem real, destacando ${differentiator}.`,
-      ...mockCampaignResult.creativeIdeas,
+      visualAssetsContext,
+      ...mockCampaignResult.creativeIdeas.slice(0, 2),
     ],
     prePublishChecklist: [
       `O canal principal (${mainChannel}) está pronto para receber contatos.`,
-      ...mockCampaignResult.prePublishChecklist,
+      whatsappContext,
+      ...mockCampaignResult.prePublishChecklist.slice(0, 4),
     ],
     campaignSetupGuide: {
       objective: fit(
@@ -269,12 +306,12 @@ export function createMockCampaignPlan(
         title: "Oferta em destaque",
         format: "Feed quadrado",
         visualIdea: fit(
-          `Fotografe ${offer} em uma situação real e destaque visualmente ${differentiator}.`,
+          `Fotografe ${offer} em uma situação real e destaque visualmente ${differentiator}. ${visualAssetsContext}`,
           220,
         ),
         textOnCreative: fit(`Conheça ${offer}`, 100),
         caption: fit(
-          `${businessName} apresenta ${offer} para quem está em ${region}. ${differentiator}. Fale pelo ${mainChannel} e tire suas dúvidas.`,
+          `${businessName} apresenta ${offer} para quem está em ${region}. ${differentiator}. Fale pelo ${mainChannel} e tire suas dúvidas.${toneContext}`,
           300,
         ),
         callToAction: fit(`Falar pelo ${mainChannel}`, 80),
@@ -289,12 +326,12 @@ export function createMockCampaignPlan(
         title: "Bastidores da oferta",
         format: "Story/Reels vertical",
         visualIdea: fit(
-          `Grave três cenas curtas mostrando a preparação, um detalhe e a entrega de ${offer}.`,
+          `Grave três cenas curtas mostrando a preparação, um detalhe e a entrega de ${offer}. ${visualAssetsContext}`,
           220,
         ),
         textOnCreative: "Veja como preparamos tudo",
         caption: fit(
-          `Veja um pouco do cuidado da ${businessName} com ${offer}. Quer entender como funciona? Converse com a gente pelo ${mainChannel}.`,
+          `Veja um pouco do cuidado da ${businessName} com ${offer}. Quer entender como funciona? Converse com a gente pelo ${mainChannel}.${toneContext}`,
           300,
         ),
         callToAction: fit(`Chamar no ${mainChannel}`, 80),
@@ -314,7 +351,7 @@ export function createMockCampaignPlan(
         ),
         textOnCreative: fit(differentiator, 100),
         caption: fit(
-          `Procurando ${offer} em ${region}? Conheça como a ${businessName} trabalha e envie uma mensagem para tirar suas dúvidas.`,
+          `Procurando ${offer} em ${region}? Conheça como a ${businessName} trabalha e envie uma mensagem para tirar suas dúvidas.${toneContext}`,
           300,
         ),
         callToAction: "Tirar uma dúvida",
@@ -328,7 +365,7 @@ export function createMockCampaignPlan(
     ],
     whatsappScript: {
       firstReply: fit(
-        `Olá! Obrigado por chamar a ${businessName}. Você quer saber mais sobre ${offer} ou tem uma dúvida específica?`,
+        `Olá! Obrigado por chamar a ${businessName}. Você quer saber mais sobre ${offer} ou tem uma dúvida específica? ${whatsappContext}`,
         240,
       ),
       priceReply: fit(
@@ -355,12 +392,11 @@ export function createMockCampaignPlan(
       },
       {
         title: `Prepare o ${mainChannel}`,
-        description:
-          "Confira se o canal está funcionando, com alguém pronto para responder os primeiros contatos.",
+        description: whatsappContext,
       },
       {
         title: "Separe criativos reais",
-        description: `Use fotos ou vídeos simples que mostrem ${offer} e reforcem ${differentiator}.`,
+        description: `Use fotos ou vídeos simples que mostrem ${offer} e reforcem ${differentiator}. ${visualAssetsContext}`,
       },
       {
         title: "Configure com verba controlada",
@@ -372,6 +408,20 @@ export function createMockCampaignPlan(
           "Observe dúvidas frequentes, qualidade dos contatos e sinais comerciais antes de fazer ajustes maiores.",
       },
     ],
+    simpleMetricsGuide: {
+      ...mockCampaignResult.simpleMetricsGuide!,
+      warningSigns: [
+        ...(currentChallenge
+          ? [
+              `A dificuldade "${currentChallenge}" continua aparecendo nas conversas.`,
+            ]
+          : []),
+        ...mockCampaignResult.simpleMetricsGuide!.warningSigns,
+      ],
+      whenToAdjust: currentChallenge
+        ? `Ajuste primeiro oferta, criativo ou atendimento se a dificuldade "${currentChallenge}" continuar se repetindo.`
+        : mockCampaignResult.simpleMetricsGuide!.whenToAdjust,
+    },
     disclaimer: `Plano inicial orientativo para o nível de experiência "${experienceLevel}". Ele não garante vendas, lucro, aprovação de anúncios ou performance.`,
   };
 }

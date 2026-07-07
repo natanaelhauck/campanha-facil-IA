@@ -74,11 +74,12 @@ O `playwright.config.ts` inicia o Next.js em `http://127.0.0.1:3100`, não reuti
 Os cenários atuais cobrem:
 
 - fluxo completo da home ao resultado;
+- preenchimento dos campos opcionais do briefing ampliado;
 - resposta da API com `source` e `provider` iguais a `mock`;
 - pacote com três criativos e as principais seções;
 - cópia do plano completo e feedback visual;
 - download do PDF;
-- retorno ao formulário com dados persistidos;
+- retorno ao formulário com dados persistidos, incluindo tom, fotos/vídeos, disponibilidade no WhatsApp e dificuldade atual;
 - edição e regeneração do resultado;
 - viewport mobile de 390 px sem overflow horizontal;
 - disponibilidade da navegação rápida no mobile.
@@ -108,7 +109,7 @@ Quando `NEXT_PUBLIC_FEEDBACK_URL` ou `NEXT_PUBLIC_HELP_URL` estiver vazia, o bot
 - Abra o console do navegador e percorra formulário, resultado e histórico.
 - Confirme que as mensagens `[analytics]` usam somente eventos documentados.
 - Confirme que propriedades contêm apenas enums, booleanos e categorias genéricas.
-- Não devem aparecer nome do negócio, cidade, oferta, público, orçamento ou conteúdo textual.
+- Não devem aparecer nome do negócio, cidade, oferta, público, dificuldade atual, orçamento ou conteúdo textual.
 - Em build de produção, `trackEvent` deve permanecer no-op.
 - Não existe requisição de rede para PostHog ou outro provedor nesta fase.
 
@@ -153,6 +154,7 @@ Relatórios, traces, screenshots e vídeos produzidos pelo Playwright são artef
 
 - Verifique se o formulário está organizado por seções.
 - Confirme que todos os campos principais estão visíveis.
+- Confirme que os campos opcionais estão indicados como opcionais e usam selects.
 - Confirme que campos obrigatórios usam validação HTML.
 - Preencha exemplos realistas.
 - Envie o formulário.
@@ -169,7 +171,7 @@ Relatórios, traces, screenshots e vídeos produzidos pelo Playwright são artef
 Após enviar o formulário:
 
 - Confirme que a página mostra o nome do negócio.
-- Confirme que oferta, cidade/região, objetivo, orçamento, público, diferencial, canal e experiência aparecem no plano.
+- Confirme que oferta, cidade/região, objetivo, orçamento, público, diferencial, canal, experiência e campos opcionais preenchidos aparecem no plano quando úteis.
 - Confirme que o resultado usa `campaign-plan-result` quando essa chave existe.
 - Se `campaign-plan-result` estiver inválido, confirme que a página usa fallback local e não quebra.
 - Confirme que o aviso de orientação sem garantia está visível.
@@ -178,7 +180,7 @@ Após enviar o formulário:
 - Clique em `Ver próximos passos`, volte manualmente o scroll e clique novamente.
 - Confirme que a rolagem funciona repetidamente.
 - Clique em `Copiar plano completo` e confirme o feedback `Plano copiado`.
-- Cole o conteúdo em um editor de texto e confirme nome do negócio, aviso orientativo, resumo, configuração, próximos passos, textos, criativos, prompts, WhatsApp, checklist, métricas e acompanhamento.
+- Cole o conteúdo em um editor de texto e confirme nome do negócio, dados do briefing, aviso orientativo, resumo, configuração, próximos passos, textos, criativos, prompts, WhatsApp, checklist, métricas e acompanhamento.
 - Confirme que o texto copiado não contém JSON nem informações técnicas de provider/source.
 - Clique em `Baixar PDF`, aguarde o feedback `PDF baixado` e confirme que o arquivo foi salvo com o nome do negócio.
 - Abra o PDF e confira título, aviso orientativo, seções separadas, quebras de linha, acentos, múltiplas páginas e rodapés.
@@ -210,6 +212,14 @@ Resultado esperado:
 - `Baixar PDF` continua funcionando e gera o documento sem os blocos opcionais ausentes.
 - A página não usa fallback por ausência exclusiva desses campos e não apresenta erro.
 - `Ajustar informações`, `Ver próximos passos`, cópia de textos e `Voltar ao topo` continuam funcionando.
+
+## Como Testar Compatibilidade Com Formulário Antigo
+
+1. Salve em `campaign-form-data` um objeto sem `communicationTone`, `hasVisualAssets`, `hasWhatsappResponder` e `currentChallenge`.
+2. Abra `/criar-campanha`.
+3. Confirme que os campos antigos aparecem preenchidos.
+4. Confirme que os novos campos opcionais aparecem vazios.
+5. Gere o plano em modo mock e confirme que `/resultado`, histórico, cópia e PDF continuam funcionando.
 
 ## Como Testar /resultado Sem localStorage
 

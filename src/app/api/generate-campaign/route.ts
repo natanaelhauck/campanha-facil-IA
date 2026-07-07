@@ -17,9 +17,29 @@ type ValidationResult =
     };
 
 const maxRequestBodyBytes = 8_000;
-const maxTotalInputLength = 1_500;
+const maxTotalInputLength = 1_800;
 
-const fieldLimits: Record<keyof CampaignFormData, number> = {
+const requiredFields = [
+  "businessName",
+  "businessType",
+  "region",
+  "offer",
+  "goal",
+  "dailyBudget",
+  "audience",
+  "differentiator",
+  "mainChannel",
+  "experienceLevel",
+] as const satisfies Array<keyof CampaignFormData>;
+
+const optionalFields = [
+  "communicationTone",
+  "hasVisualAssets",
+  "hasWhatsappResponder",
+  "currentChallenge",
+] as const satisfies Array<keyof CampaignFormData>;
+
+const fieldLimits: Record<keyof Required<CampaignFormData>, number> = {
   businessName: 80,
   businessType: 80,
   region: 100,
@@ -30,9 +50,13 @@ const fieldLimits: Record<keyof CampaignFormData, number> = {
   differentiator: 300,
   mainChannel: 40,
   experienceLevel: 40,
+  communicationTone: 40,
+  hasVisualAssets: 40,
+  hasWhatsappResponder: 60,
+  currentChallenge: 120,
 };
 
-const fieldLabels: Record<keyof CampaignFormData, string> = {
+const fieldLabels: Record<keyof Required<CampaignFormData>, string> = {
   businessName: "nome do negócio",
   businessType: "tipo de negócio",
   region: "cidade ou região",
@@ -43,6 +67,10 @@ const fieldLabels: Record<keyof CampaignFormData, string> = {
   differentiator: "diferencial da empresa",
   mainChannel: "canal principal",
   experienceLevel: "experiência com anúncios",
+  communicationTone: "tom de comunicação",
+  hasVisualAssets: "fotos ou vídeos disponíveis",
+  hasWhatsappResponder: "disponibilidade para responder WhatsApp",
+  currentChallenge: "principal dificuldade atual",
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -113,7 +141,7 @@ function normalizeCampaignPayload(value: unknown): ValidationResult {
   const normalized = {} as CampaignFormData;
   let totalLength = 0;
 
-  for (const field of Object.keys(fieldLimits) as Array<keyof CampaignFormData>) {
+  for (const field of requiredFields) {
     const fieldValue = payload[field];
 
     if (typeof fieldValue !== "string" || fieldValue.trim().length === 0) {
@@ -125,6 +153,41 @@ function normalizeCampaignPayload(value: unknown): ValidationResult {
     }
 
     const normalizedValue = fieldValue.trim().replace(/\s+/g, " ");
+    const maxLength = fieldLimits[field];
+
+    if (normalizedValue.length > maxLength) {
+      return {
+        ok: false,
+        error: `O campo ${fieldLabels[field]} está longo demais. Resuma a informação antes de gerar o plano.`,
+        status: 400,
+      };
+    }
+
+    totalLength += normalizedValue.length;
+    normalized[field] = normalizedValue;
+  }
+
+  for (const field of optionalFields) {
+    const fieldValue = payload[field];
+
+    if (fieldValue === undefined || fieldValue === null) {
+      continue;
+    }
+
+    if (typeof fieldValue !== "string") {
+      return {
+        ok: false,
+        error: "Envie os dados do formulário em um formato válido.",
+        status: 400,
+      };
+    }
+
+    const normalizedValue = fieldValue.trim().replace(/\s+/g, " ");
+
+    if (!normalizedValue) {
+      continue;
+    }
+
     const maxLength = fieldLimits[field];
 
     if (normalizedValue.length > maxLength) {

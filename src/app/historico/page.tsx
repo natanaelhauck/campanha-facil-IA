@@ -67,6 +67,8 @@ export default function CampaignHistoryPage() {
       ...getSafeCampaignAnalyticsContext(
         item.formData.mainChannel,
         item.formData.experienceLevel,
+        item.formData.communicationTone,
+        item.formData.hasVisualAssets,
       ),
       source: item.source,
       provider: item.provider,

@@ -14,7 +14,7 @@ export const campaignPlanProviderStorageKey = "campaign-plan-provider";
 export const campaignPlanHistoryStorageKey = "campaign-plan-history";
 export const campaignPlanHistoryLimit = 10;
 
-const formFields: Array<keyof CampaignFormData> = [
+const requiredFormFields: Array<keyof CampaignFormData> = [
   "businessName",
   "businessType",
   "region",
@@ -25,6 +25,13 @@ const formFields: Array<keyof CampaignFormData> = [
   "differentiator",
   "mainChannel",
   "experienceLevel",
+];
+
+const optionalFormFields: Array<keyof CampaignFormData> = [
+  "communicationTone",
+  "hasVisualAssets",
+  "hasWhatsappResponder",
+  "currentChallenge",
 ];
 
 type AddCampaignPlanHistoryInput = {
@@ -41,7 +48,11 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 function isCampaignFormData(value: unknown): value is CampaignFormData {
   return (
     isRecord(value) &&
-    formFields.every((field) => typeof value[field] === "string")
+    requiredFormFields.every((field) => typeof value[field] === "string") &&
+    optionalFormFields.every(
+      (field) =>
+        value[field] === undefined || typeof value[field] === "string",
+    )
   );
 }
 

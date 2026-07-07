@@ -41,6 +41,10 @@ const initialForm: CampaignFormData = {
   differentiator: "",
   mainChannel: "",
   experienceLevel: "",
+  communicationTone: "",
+  hasVisualAssets: "",
+  hasWhatsappResponder: "",
+  currentChallenge: "",
 };
 
 function parseSavedForm(value: string | null): CampaignFormData | null {
@@ -66,6 +70,10 @@ function parseSavedForm(value: string | null): CampaignFormData | null {
       differentiator: parsed.differentiator ?? "",
       mainChannel: parsed.mainChannel ?? "",
       experienceLevel: parsed.experienceLevel ?? "",
+      communicationTone: parsed.communicationTone ?? "",
+      hasVisualAssets: parsed.hasVisualAssets ?? "",
+      hasWhatsappResponder: parsed.hasWhatsappResponder ?? "",
+      currentChallenge: parsed.currentChallenge ?? "",
     };
   } catch {
     return null;
@@ -136,6 +144,8 @@ export default function CreateCampaignPage() {
     const safeCampaignContext = getSafeCampaignAnalyticsContext(
       form.mainChannel,
       form.experienceLevel,
+      form.communicationTone,
+      form.hasVisualAssets,
     );
     let errorCategory: AnalyticsErrorCategory = "unknown";
 
@@ -237,7 +247,7 @@ export default function CreateCampaignPage() {
           <FormSection
             number="1"
             title="Sobre o negócio"
-            description="Comece com o nome e o tipo de negócio para o plano falar da sua realidade."
+            description="Comece com o nome, tipo de negócio e área atendida para o plano falar da sua realidade."
           >
             <Input
               label="Nome do negócio"
@@ -258,6 +268,15 @@ export default function CreateCampaignPage() {
               onChange={(event) =>
                 updateField("businessType", event.target.value)
               }
+              required
+            />
+            <Input
+              label="Cidade, bairro ou região atendida"
+              name="region"
+              placeholder="Ex: Curitiba, bairro Centro ou região metropolitana"
+              helpText="Pode ser uma cidade, bairro, região ou área de entrega."
+              value={form.region}
+              onChange={(event) => updateField("region", event.target.value)}
               required
             />
           </FormSection>
@@ -287,22 +306,30 @@ export default function CreateCampaignPage() {
               helpText="Conte por que alguém deveria escolher você em vez de outra opção."
               required
             />
+            <Select
+              label="Tom de comunicação (opcional)"
+              name="communicationTone"
+              value={form.communicationTone}
+              onChange={(event) =>
+                updateField("communicationTone", event.target.value)
+              }
+              placeholder="Escolha se já tiver preferência"
+              helpText="Ajuda a adaptar os textos sem mudar a promessa da oferta."
+              options={[
+                "Simples e direto",
+                "Profissional",
+                "Divertido",
+                "Premium",
+                "Acolhedor",
+              ]}
+            />
           </FormSection>
 
           <FormSection
             number="3"
-            title="Público e região"
-            description="Diga onde você atende e quem costuma ter mais interesse na oferta."
+            title="Público e dificuldade"
+            description="Diga quem costuma ter mais interesse e qual barreira a campanha precisa ajudar a resolver."
           >
-            <Input
-              label="Cidade ou região atendida"
-              name="region"
-              placeholder="Ex: Curitiba e região metropolitana"
-              helpText="Pode ser uma cidade, bairro, região ou área de entrega."
-              value={form.region}
-              onChange={(event) => updateField("region", event.target.value)}
-              required
-            />
             <Textarea
               label="Quem você quer alcançar"
               name="audience"
@@ -311,6 +338,23 @@ export default function CreateCampaignPage() {
               placeholder="Ex: moradores próximos, famílias com crianças, pequenos empresários"
               helpText="Pense em quem compra, onde vive e qual problema quer resolver."
               required
+            />
+            <Select
+              label="Principal dificuldade atual (opcional)"
+              name="currentChallenge"
+              value={form.currentChallenge}
+              onChange={(event) =>
+                updateField("currentChallenge", event.target.value)
+              }
+              placeholder="Escolha a dificuldade mais próxima"
+              helpText="Use apenas se isso ajudar a explicar o momento do negócio."
+              options={[
+                "Poucas pessoas chamam no WhatsApp",
+                "Muitos perguntam preço e somem",
+                "Pouca gente conhece o negócio",
+                "Não sei que foto ou vídeo usar",
+                "Não sei se o anúncio está funcionando",
+              ]}
             />
           </FormSection>
 
@@ -373,6 +417,36 @@ export default function CreateCampaignPage() {
                 "Anuncio com frequência",
               ]}
               required
+            />
+            <Select
+              label="Você já tem fotos ou vídeos? (opcional)"
+              name="hasVisualAssets"
+              value={form.hasVisualAssets}
+              onChange={(event) =>
+                updateField("hasVisualAssets", event.target.value)
+              }
+              placeholder="Escolha a situação atual"
+              helpText="Ajuda o plano a sugerir criativos realistas para começar."
+              options={[
+                "Sim, tenho fotos ou vídeos",
+                "Tenho pouco material",
+                "Ainda não tenho",
+              ]}
+            />
+            <Select
+              label="Tem alguém para responder WhatsApp? (opcional)"
+              name="hasWhatsappResponder"
+              value={form.hasWhatsappResponder}
+              onChange={(event) =>
+                updateField("hasWhatsappResponder", event.target.value)
+              }
+              placeholder="Escolha a rotina mais próxima"
+              helpText="Se ninguém puder responder rápido, o plano ajusta o preparo do atendimento."
+              options={[
+                "Sim, durante o horário comercial",
+                "Sim, mas com pouca disponibilidade",
+                "Ainda não tenho alguém definido",
+              ]}
             />
           </FormSection>
 

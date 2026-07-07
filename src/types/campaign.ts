@@ -9,6 +9,10 @@ export type CampaignFormData = {
   differentiator: string;
   mainChannel: string;
   experienceLevel: string;
+  communicationTone?: string;
+  hasVisualAssets?: string;
+  hasWhatsappResponder?: string;
+  currentChallenge?: string;
 };
 
 export type CampaignPlanSource = "ai" | "mock";

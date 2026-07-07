@@ -63,7 +63,7 @@ playwright.config.ts
 1. O usuário acessa `/`.
 2. A home apresenta a proposta de valor, uma prévia do plano, benefícios e a seção `#como-funciona`.
 3. O usuário clica em `Criar minha campanha` ou `Começar`.
-4. Em `/criar-campanha`, preenche um formulário guiado por seções: negócio, oferta, público/região e configuração inicial.
+4. Em `/criar-campanha`, preenche um formulário guiado por seções: negócio/região, oferta, público/dificuldade e configuração inicial.
 5. Ao enviar, o formulário chama `POST /api/generate-campaign`.
 6. A rota valida os campos obrigatórios e chama o serviço de geração.
 7. O serviço lê `AI_PROVIDER` e seleciona `mock`, `openai` ou `gemini`.
@@ -87,7 +87,7 @@ As chaves atuais são:
 
 O `localStorage` é usado apenas como persistência temporária do MVP. Ele não substitui banco de dados e não deve ser usado para dados sensíveis.
 
-Em `/criar-campanha`, a leitura acontece no client com `useEffect`, parse seguro e preenchimento do formulário quando há dados válidos. Isso permite editar informações anteriores ao voltar de `/resultado`.
+Em `/criar-campanha`, a leitura acontece no client com `useEffect`, parse seguro e preenchimento do formulário quando há dados válidos. Isso permite editar informações anteriores ao voltar de `/resultado`. Os campos opcionais do briefing usam fallback vazio, então dados antigos sem `communicationTone`, `hasVisualAssets`, `hasWhatsappResponder` ou `currentChallenge` continuam válidos.
 
 Em `/resultado`, a leitura também acontece no client, com `useEffect`, `try/catch` no `JSON.parse` e estado amigável quando os dados não existem ou são inválidos. A página prioriza `campaign-plan-result` quando ele existe. Planos antigos sem o pacote de execução continuam válidos; as novas seções são opcionais na leitura e não são renderizadas quando ausentes.
 
@@ -100,13 +100,14 @@ O histórico é local e pode desaparecer quando o usuário limpa dados do navega
 A camada de provedores fica em `src/lib/ai/` e `src/app/api/generate-campaign/route.ts`.
 
 - `buildCampaignPrompt.ts` monta instruções em português do Brasil para um pacote com configuração, três briefings criativos, roteiro de atendimento, métricas simples, orçamento conservador e nenhuma promessa de resultado.
+- O prompt envia somente campos preenchidos do formulário e orienta os providers a usar tom de comunicação, fotos/vídeos disponíveis, disponibilidade no WhatsApp e dificuldade atual sem inventar dados ausentes.
 - `campaignPlanSchema.ts` exige três textos de anúncio, cinco próximos passos, acompanhamento em 3, 7 e 14 dias e as quatro seções do pacote de execução.
 - `generateCampaignPlan.ts` seleciona `mock`, OpenAI ou Gemini e centraliza o fallback.
 - `generateCampaignPlanWithOpenAI.ts` usa OpenAI Responses API com Structured Outputs.
 - `generateCampaignPlanWithGemini.ts` usa `@google/genai`, `generateContent`, JSON Schema e validação local.
 - `campaignPlanProvider.ts` contém o contrato comum, modelos padrão e parse seguro do plano.
 - `campaignPlanValidation.ts` aceita planos legados sem as novas seções para leitura do `localStorage`, mas exige o pacote completo nas respostas novas dos providers. Também valida quantidades, limites e promessas claras.
-- A rota `POST /api/generate-campaign` aceita dados do formulário, limita tamanho do payload, valida campos obrigatórios, normaliza textos e retorna `{ success, data, source, provider, warning }`.
+- A rota `POST /api/generate-campaign` aceita dados do formulário, limita tamanho do payload, valida campos obrigatórios, normaliza textos, aceita extras opcionais do briefing e retorna `{ success, data, source, provider, warning }`.
 - A rota `GET /api/health` retorna somente status, identificador do app, timestamp e ambiente normalizado, com cache desabilitado.
 - As duas rotas declaram runtime Node.js explicitamente para manter compatibilidade previsível na Vercel.
 - O body é lido como stream até o limite de 8 KB, evitando manter um payload arbitrariamente grande em memória antes da rejeição. A rota aceita somente `application/json`.
@@ -147,7 +148,7 @@ Os motivos também distinguem timeout sem expor mensagem bruta, stack trace, cha
 
 - O prompt delimita os dados do usuário como conteúdo não confiável e instrui o modelo a ignorar tentativas de mudar regras, papel ou revelar instruções.
 - Essa mitigação não torna modelos imunes a prompt injection. Schema estrito, validação local e ausência de ferramentas com efeitos reais continuam sendo as barreiras principais.
-- O limite de body, os limites por campo e o total de 1.500 caracteres reduzem abuso e custo por chamada.
+- O limite de body, os limites por campo e o total de 1.800 caracteres reduzem abuso e custo por chamada.
 - O timeout limita espera no servidor, mas uma operação já aceita pelo provedor ainda pode gerar cobrança mesmo quando o cliente abandona a resposta.
 - O rate limit em memória é útil em desenvolvimento, servidor único e como proteção parcial por instância aquecida.
 - Em serverless, reinícios e múltiplas instâncias mantêm contadores independentes. `x-forwarded-for` só é confiável quando o proxy de entrada remove valores enviados diretamente pelo cliente.
@@ -162,7 +163,7 @@ Os motivos também distinguem timeout sem expor mensagem bruta, stack trace, cha
 - `downloadCampaignPlanPdf.ts` recebe o texto já formatado, cria um PDF A4 com quebra de linhas, múltiplas páginas, títulos e rodapés e inicia o download no navegador.
 - O módulo de PDF e o `jsPDF` são carregados por import dinâmico somente quando o usuário solicita o download, evitando custo no carregamento inicial da página.
 - A navegação rápida de `/resultado` aponta para IDs estáveis e inclui somente seções presentes no plano. Os destinos usam o mesmo comportamento repetível de rolagem suave do componente `Button`.
-- O formulário em `/criar-campanha` usa validação HTML simples com campos obrigatórios.
+- O formulário em `/criar-campanha` usa validação HTML simples com campos obrigatórios e selects opcionais para sinais do briefing ampliado.
 - O envio do formulário mantém a chave `campaign-form-data` compatível com `/resultado` e adiciona o plano salvo quando a API responde.
 - O envio também adiciona uma cópia validável ao histórico local sem impedir o fluxo principal caso essa gravação secundária falhe.
 
@@ -170,7 +171,7 @@ Os motivos também distinguem timeout sem expor mensagem bruta, stack trace, cha
 
 A instrumentação atual não usa SDK externo, cookies ou persistência. Os eventos cobrem formulário, geração, cópia, PDF, histórico, ajuste de informações e interações da validação beta.
 
-As únicas propriedades aceitas são origem, provedor, canal normalizado, nível de experiência normalizado, presença de histórico, status do resultado e categoria genérica de erro. Nome do negócio, localização, oferta, público, orçamento e qualquer texto livre são proibidos.
+As únicas propriedades aceitas são origem, provedor, canal normalizado, nível de experiência normalizado, tom de comunicação normalizado, disponibilidade de fotos/vídeos normalizada, presença de histórico, status do resultado e categoria genérica de erro. Nome do negócio, localização, oferta, público, dificuldade atual, orçamento e qualquer texto livre são proibidos.
 
 A proteção existe em dois níveis: o tipo `AnalyticsProperties` restringe os pontos de chamada e `sanitizeProperties` reconstrói uma whitelist antes de qualquer log. Uma futura integração com PostHog deve ser implementada apenas dentro de `trackEvent` e preservar essas regras.
 
@@ -199,7 +200,7 @@ A metadata raiz identifica a versão como beta e usa `noindex`/`nofollow`. `robo
 
 ## Testes E2E
 
-A suíte em `tests/e2e/main-flow.spec.ts` usa `@playwright/test` com Chromium. Ela protege o fluxo principal em desktop, incluindo formulário, resposta mock, resultado, aviso orientativo, três criativos, seções do pacote, cópia, PDF, persistência, edição, regeneração, histórico local e páginas legais.
+A suíte em `tests/e2e/main-flow.spec.ts` usa `@playwright/test` com Chromium. Ela protege o fluxo principal em desktop, incluindo formulário com briefing ampliado, resposta mock, resultado, aviso orientativo, três criativos, seções do pacote, cópia, PDF, persistência dos novos campos, edição, regeneração, histórico local e páginas legais.
 
 Um segundo cenário usa viewport de 390 px para verificar overflow horizontal e acesso à navegação rápida. A suíte também valida criação, restauração, exclusão, estado vazio e JSON corrompido no histórico. `api-security.spec.ts` valida o limite de body e o bloqueio temporário por frequência. `deployment-readiness.spec.ts` valida `/api/health`, ausência de campos extras, cache desabilitado e bloqueio de indexação. O `playwright.config.ts` inicia um servidor dedicado na porta 3100 com `AI_PROVIDER=mock`, geração real desabilitada e chaves de provedores vazias. O servidor não é reutilizado, evitando que os testes se conectem acidentalmente a uma instância configurada com IA real.
 

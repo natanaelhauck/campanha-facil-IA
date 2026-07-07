@@ -36,11 +36,13 @@ A API tipada e a sanitização em runtime aceitam somente:
 - `provider`: `mock`, `openai` ou `gemini`;
 - `channel`: enum normalizado, sem texto livre;
 - `experienceLevel`: enum normalizado, sem texto livre;
+- `communicationTone`: enum normalizado, sem texto livre;
+- `hasVisualAssets`: enum normalizado, sem texto livre;
 - `hasHistoryItem`: booleano;
 - `resultStatus`: `success` ou `failure`;
 - `errorCategory`: categoria genérica e fechada.
 
-Canal e experiência são transformados em identificadores técnicos como `whatsapp`, `physical_store`, `never` ou `frequent`. Valores desconhecidos viram `unknown`.
+Canal, experiência, tom de comunicação e disponibilidade de fotos/vídeos são transformados em identificadores técnicos como `whatsapp`, `physical_store`, `never`, `frequent`, `fun` ou `partial`. Valores desconhecidos viram `unknown`.
 
 ## Dados Proibidos
 
@@ -51,6 +53,7 @@ Nunca registrar em analytics:
 - produto, serviço ou oferta;
 - público desejado;
 - diferencial;
+- dificuldade atual;
 - orçamento informado;
 - textos, legendas, prompts ou respostas de WhatsApp;
 - conteúdo do plano ou do formulário;

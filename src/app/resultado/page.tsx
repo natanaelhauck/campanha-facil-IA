@@ -46,6 +46,10 @@ function parseCampaignForm(value: string | null): CampaignFormData | null {
       differentiator: parsed.differentiator ?? "",
       mainChannel: parsed.mainChannel ?? "",
       experienceLevel: parsed.experienceLevel ?? "",
+      communicationTone: parsed.communicationTone ?? "",
+      hasVisualAssets: parsed.hasVisualAssets ?? "",
+      hasWhatsappResponder: parsed.hasWhatsappResponder ?? "",
+      currentChallenge: parsed.currentChallenge ?? "",
     };
   } catch {
     return null;
@@ -379,6 +383,12 @@ export default function ResultPage() {
   const audience = display(form.audience, "pessoas com interesse na oferta");
   const mainChannel = display(form.mainChannel, "canal principal");
   const experienceLevel = display(form.experienceLevel, "não informado");
+  const optionalBriefingDetails = [
+    form.communicationTone ? `tom ${form.communicationTone}` : "",
+    form.hasVisualAssets ? form.hasVisualAssets : "",
+    form.hasWhatsappResponder ? form.hasWhatsappResponder : "",
+    form.currentChallenge ? `dificuldade: ${form.currentChallenge}` : "",
+  ].filter(Boolean);
   const plan = savedPlan ?? createMockCampaignPlan(form);
   const effectivePlanSource: CampaignPlanSource = savedPlan
     ? (planSource ?? "mock")
@@ -589,7 +599,10 @@ export default function ResultPage() {
                 Dados usados: <strong>{businessName}</strong>,{" "}
                 <strong>{businessType}</strong>, <strong>{offer}</strong>,{" "}
                 <strong>{region}</strong>, canal <strong>{mainChannel}</strong>{" "}
-                e experiência <strong>{experienceLevel}</strong>.
+                e experiência <strong>{experienceLevel}</strong>
+                {optionalBriefingDetails.length > 0
+                  ? `, com ${optionalBriefingDetails.join(", ")}.`
+                  : "."}
               </p>
             </div>
           </ResultSection>

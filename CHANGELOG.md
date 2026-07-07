@@ -2,6 +2,17 @@
 
 Todas as mudanças relevantes do projeto serão resumidas neste arquivo.
 
+## Briefing Mais Completo Da Campanha
+
+- Ampliado o formulário `/criar-campanha` com campos opcionais e estruturados para tom de comunicação, fotos/vídeos disponíveis, disponibilidade para responder WhatsApp e principal dificuldade atual.
+- Reorganizadas as seções do formulário para manter o preenchimento simples para pessoas leigas.
+- Atualizados tipos, validação do endpoint, parsers de `localStorage` e histórico para preservar dados antigos sem os novos campos.
+- Atualizado o prompt compartilhado por OpenAI e Gemini para enviar apenas campos preenchidos e usar o novo briefing sem inventar informações.
+- Atualizado o mock para adaptar criativos, WhatsApp, próximos passos e métricas aos novos campos quando informados.
+- O texto copiado e o PDF passaram a incluir uma seção de dados do briefing.
+- Analytics interno passou a aceitar apenas enums seguros para tom de comunicação e disponibilidade de fotos/vídeos.
+- E2E atualizado para preencher o novo formulário, validar resultado, histórico, PDF, preservação ao ajustar informações e mobile sem overflow.
+
 ## Validação Beta Controlada
 
 - Criada a página `/beta` com proposta, público, roteiro de teste, limites e próximos recursos possíveis.

@@ -51,6 +51,32 @@ export function formatCampaignPlanText(
     "Aviso: este é um plano inicial orientativo. Revise as informações antes de publicar. O conteúdo não garante vendas, lucro ou performance.",
   ];
 
+  addSection(sections, "DADOS DO BRIEFING", [
+    form?.businessType ? `Tipo de negócio: ${form.businessType}` : undefined,
+    form?.offer ? `Oferta principal: ${form.offer}` : undefined,
+    form?.differentiator ? `Diferencial: ${form.differentiator}` : undefined,
+    form?.audience ? `Público ideal: ${form.audience}` : undefined,
+    form?.region ? `Região: ${form.region}` : undefined,
+    form?.mainChannel ? `Canal principal: ${form.mainChannel}` : undefined,
+    form?.dailyBudget ? `Orçamento diário: ${form.dailyBudget}` : undefined,
+    form?.experienceLevel
+      ? `Experiência com anúncios: ${form.experienceLevel}`
+      : undefined,
+    form?.goal ? `Objetivo principal: ${form.goal}` : undefined,
+    form?.communicationTone
+      ? `Tom de comunicação: ${form.communicationTone}`
+      : undefined,
+    form?.hasVisualAssets
+      ? `Fotos ou vídeos: ${form.hasVisualAssets}`
+      : undefined,
+    form?.hasWhatsappResponder
+      ? `Disponibilidade no WhatsApp: ${form.hasWhatsappResponder}`
+      : undefined,
+    form?.currentChallenge
+      ? `Principal dificuldade: ${form.currentChallenge}`
+      : undefined,
+  ]);
+
   addSection(sections, "RESUMO", [plan.summary]);
 
   const setup = plan.campaignSetupGuide;

@@ -9,6 +9,7 @@ Status: concluída como primeira versão visual funcional. Deve continuar recebe
 - Página inicial explicando a proposta.
 - Página inicial com hero, prévia do plano, benefícios, seção "Para quem é" e "Como funciona".
 - Formulário guiado em `/criar-campanha`, organizado por seções.
+- Briefing ampliado com campos estruturados para tom de comunicação, fotos/vídeos disponíveis, disponibilidade no WhatsApp e dificuldade atual.
 - Carregamento dos dados salvos ao voltar de `/resultado` para ajustar informações.
 - Resultado simulado em `/resultado`, com plano inicial personalizado.
 - Personalização local com `localStorage`.
@@ -64,6 +65,7 @@ Status: em evolução. A base técnica funciona com OpenAI, Gemini e fallback mo
 - Roteiro de atendimento no WhatsApp com respostas copiáveis.
 - Guia simples de métricas e sinais para esperar ou ajustar.
 - Leitura compatível de planos antigos salvos sem as novas seções.
+- Prompt e mock usando os novos campos do briefing quando preenchidos, sem inventar dados ausentes.
 
 ### Entregas Pendentes
 

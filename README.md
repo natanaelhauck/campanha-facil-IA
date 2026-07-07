@@ -28,6 +28,12 @@ Cada geração concluída é adicionada ao histórico disponível em `/historico
 
 O histórico existe somente no navegador atual: não há conta, login ou sincronização. Limpar os dados do site pode apagar os planos salvos. Supabase e persistência por usuário continuam reservados para uma fase futura.
 
+## Briefing Da Campanha
+
+O formulário em `/criar-campanha` coleta os campos essenciais do plano: negócio, tipo, oferta principal, diferencial, público ideal, região, objetivo, canal, orçamento diário e experiência com anúncios.
+
+Também existem campos opcionais e estruturados para melhorar a personalização sem exigir texto longo: tom de comunicação, disponibilidade de fotos ou vídeos, disponibilidade para responder WhatsApp e principal dificuldade atual. Dados antigos salvos no `localStorage` continuam válidos; campos opcionais ausentes são tratados como vazios.
+
 ## Configuração Da IA
 
 Copie `.env.example` para `.env.local` e preencha a chave quando quiser testar geração real:
@@ -59,6 +65,7 @@ Em desenvolvimento, a resposta do endpoint inclui um bloco `debug` sem dados sen
 - Chamadas OpenAI e Gemini usam timeout configurável entre 5 e 60 segundos, com padrão de 30 segundos.
 - Os dois provedores executam uma única tentativa por geração, evitando custo duplicado por retry automático.
 - O endpoint limita o body a 8 KB, valida campos e restringe o total útil informado pelo usuário.
+- Campos opcionais de briefing são usados no prompt e no mock somente quando preenchidos; o sistema não inventa informações ausentes.
 - Um rate limit em memória permite 10 requisições por IP a cada 60 segundos por padrão.
 - O rate limit é apenas uma proteção local por processo. Em produção serverless, múltiplas instâncias não compartilham contadores; antes do beta público, use uma camada distribuída ou o rate limit da plataforma.
 - Dados do formulário são tratados como contexto não confiável no prompt e a resposta continua sujeita ao schema e à validação local.

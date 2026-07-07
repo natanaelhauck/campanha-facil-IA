@@ -34,13 +34,15 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 
 - Home em `/` com proposta de valor, prévia do plano, benefícios, seção "Para quem é" e "Como funciona".
 - Formulário guiado em `/criar-campanha`, organizado por seções.
+- Briefing ampliado com oferta principal, diferencial, público ideal, região, canal, orçamento, experiência, objetivo, tom de comunicação, fotos/vídeos disponíveis, disponibilidade para WhatsApp e principal dificuldade atual.
+- Novos campos de briefing são estruturados e opcionais quando possível, preservando um fluxo simples para pessoas leigas.
 - Salvamento dos dados do formulário no `localStorage` com a chave `campaign-form-data`.
 - Chamada para `POST /api/generate-campaign` ao enviar o formulário.
 - Seleção segura por `AI_PROVIDER`: `mock`, `openai` ou `gemini`, com padrão `mock`.
 - Geração com OpenAI Responses API ou Google Gemini API quando o provedor e a chave estão configurados.
 - Modelos configuráveis por `OPENAI_MODEL` e `GEMINI_MODEL`.
 - Limite de saída por `OPENAI_MAX_OUTPUT_TOKENS`, com padrão 4200 para comportar o pacote estruturado.
-- Validação de payload com campos obrigatórios, limites por campo e limite total de entrada.
+- Validação de payload com campos obrigatórios, campos opcionais de briefing, limites por campo e limite total de entrada.
 - Validação do plano com três textos de anúncio, cinco próximos passos concretos, acompanhamento ordenado em 3, 7 e 14 dias e rejeição de promessas ou orientações vagas.
 - Fallback mock automático quando não há chave, quando a IA está desabilitada ou quando a geração falha.
 - Diagnóstico seguro em desenvolvimento com motivo do fallback, sem expor chave, payload ou resposta bruta.
@@ -48,7 +50,7 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Chamadas OpenAI e Gemini com timeout configurável e uma única tentativa por geração.
 - Body limitado a 8 KB durante a leitura, content type JSON obrigatório e limites por campo mantidos.
 - Rate limit em memória por cliente, com resposta `429` e `Retry-After` ao exceder a janela.
-- Prompt com delimitação explícita de dados não confiáveis e validação estrutural da saída.
+- Prompt com delimitação explícita de dados não confiáveis, filtragem de campos vazios e validação estrutural da saída.
 - Salvamento do plano gerado no `localStorage` com a chave `campaign-plan-result`.
 - Salvamento da origem do plano com a chave `campaign-plan-source`.
 - Salvamento do provedor efetivo com a chave `campaign-plan-provider`.
@@ -69,13 +71,14 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Ação `Copiar plano completo`, que formata o pacote em texto simples para WhatsApp, Google Docs, Notion ou e-mail.
 - Ação `Baixar PDF`, que exporta o mesmo conteúdo em um documento paginado e organizado diretamente no navegador.
 - Navegação rápida em `/resultado` para configuração, criativos, WhatsApp, métricas e checklist, exibindo apenas seções disponíveis.
-- Compatibilidade com planos antigos no `localStorage`: as novas seções são opcionais na leitura e ocultadas quando ausentes.
+- Compatibilidade com dados antigos no `localStorage`: campos opcionais de briefing ausentes viram vazio e planos antigos continuam renderizando sem erro.
 - Botões de rolagem por âncora com `scrollIntoView`, funcionando repetidamente.
 - Layout responsivo validado manualmente em largura mobile.
 - Suíte E2E versionada com fluxo principal desktop e validação mobile em 390 px.
 - Ambiente E2E isolado, com servidor dedicado e `AI_PROVIDER=mock` forçado.
 - Cenários E2E para payload excessivo e rate limit, sem chamadas externas.
 - Camada interna de analytics com 13 eventos tipados, whitelist de propriedades e nenhum envio externo.
+- Analytics aceita apenas enums seguros para canal, experiência, tom de comunicação e disponibilidade de fotos/vídeos; textos livres do briefing continuam proibidos.
 - Logs de analytics somente em desenvolvimento; produção permanece no-op.
 - Página `/beta` com proposta, público, roteiro de teste, aviso orientativo, feedback e próximos recursos possíveis.
 - Link discreto para o programa beta no rodapé.
@@ -134,7 +137,7 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 
 - Regularizar a cota/faturamento do projeto OpenAI usado no desenvolvimento.
 - Repetir um único teste de geração real após a cota estar disponível.
-- Calibrar o prompt refinado com amostras de diferentes tipos de negócio.
+- Calibrar o prompt refinado com amostras de diferentes tipos de negócio e combinações do briefing ampliado.
 - Planejar limites de uso e custo por geração antes de liberar publicamente.
 - Implementar limite por usuário/IP em fase futura.
 - Melhorar observabilidade sem registrar dados sensíveis.
@@ -165,7 +168,7 @@ Para testar IA real localmente, copie `.env.example` para `.env.local`, escolha 
 - CTA `Criar minha campanha`.
 - CTA `Começar` no header.
 - Botão `Ver como funciona` com rolagem repetida.
-- Formulário guiado com preenchimento e persistência.
+- Formulário guiado com preenchimento, campos opcionais do briefing e persistência.
 - Resultado personalizado com dados do formulário e plano salvo.
 - Fallback mock sem `OPENAI_API_KEY`.
 - Fallback mock com Gemini sem chave ou indisponível.
@@ -175,7 +178,7 @@ Para testar IA real localmente, copie `.env.example` para `.env.local`, escolha 
 - Botões `Copiar texto`.
 - Pacote de execução mock com três criativos, roteiro de WhatsApp e métricas simples.
 - Cópia de legenda, prompt visual e resposta do WhatsApp.
-- Cópia do plano completo com feedback `Plano copiado` e as principais seções em texto simples.
+- Cópia do plano completo com feedback `Plano copiado`, dados do briefing e as principais seções em texto simples.
 - Download do plano em PDF paginado, legível e sem dados técnicos do provider.
 - Navegação rápida e repetida entre as principais seções do resultado.
 - Plano antigo sem as quatro novas seções renderizando sem erro.

@@ -41,11 +41,23 @@ type AnalyticsExperienceLevel =
   | "frequent"
   | "unknown";
 
+type AnalyticsCommunicationTone =
+  | "simple"
+  | "professional"
+  | "fun"
+  | "premium"
+  | "warm"
+  | "unknown";
+
+type AnalyticsVisualAssets = "yes" | "no" | "partial" | "unknown";
+
 type AnalyticsProperties = {
   source?: CampaignPlanSource;
   provider?: CampaignAIProvider;
   channel?: AnalyticsChannel;
   experienceLevel?: AnalyticsExperienceLevel;
+  communicationTone?: AnalyticsCommunicationTone;
+  hasVisualAssets?: AnalyticsVisualAssets;
   hasHistoryItem?: boolean;
   resultStatus?: "success" | "failure";
   errorCategory?: AnalyticsErrorCategory;
@@ -76,13 +88,43 @@ function normalizeExperienceLevel(
   return levels[value] ?? "unknown";
 }
 
+function normalizeCommunicationTone(
+  value: string | undefined,
+): AnalyticsCommunicationTone {
+  const tones: Record<string, AnalyticsCommunicationTone> = {
+    "Simples e direto": "simple",
+    "Profissional": "professional",
+    "Divertido": "fun",
+    "Premium": "premium",
+    "Acolhedor": "warm",
+  };
+
+  return value ? (tones[value] ?? "unknown") : "unknown";
+}
+
+function normalizeVisualAssets(
+  value: string | undefined,
+): AnalyticsVisualAssets {
+  const assetStatus: Record<string, AnalyticsVisualAssets> = {
+    "Sim, tenho fotos ou vídeos": "yes",
+    "Tenho pouco material": "partial",
+    "Ainda não tenho": "no",
+  };
+
+  return value ? (assetStatus[value] ?? "unknown") : "unknown";
+}
+
 export function getSafeCampaignAnalyticsContext(
   channel: string,
   experienceLevel: string,
+  communicationTone?: string,
+  hasVisualAssets?: string,
 ) {
   return {
     channel: normalizeChannel(channel),
     experienceLevel: normalizeExperienceLevel(experienceLevel),
+    communicationTone: normalizeCommunicationTone(communicationTone),
+    hasVisualAssets: normalizeVisualAssets(hasVisualAssets),
   } satisfies AnalyticsProperties;
 }
 
@@ -118,6 +160,26 @@ function sanitizeProperties(properties: AnalyticsProperties) {
     properties.experienceLevel === "unknown"
   ) {
     safeProperties.experienceLevel = properties.experienceLevel;
+  }
+
+  if (
+    properties.communicationTone === "simple" ||
+    properties.communicationTone === "professional" ||
+    properties.communicationTone === "fun" ||
+    properties.communicationTone === "premium" ||
+    properties.communicationTone === "warm" ||
+    properties.communicationTone === "unknown"
+  ) {
+    safeProperties.communicationTone = properties.communicationTone;
+  }
+
+  if (
+    properties.hasVisualAssets === "yes" ||
+    properties.hasVisualAssets === "no" ||
+    properties.hasVisualAssets === "partial" ||
+    properties.hasVisualAssets === "unknown"
+  ) {
+    safeProperties.hasVisualAssets = properties.hasVisualAssets;
   }
 
   if (typeof properties.hasHistoryItem === "boolean") {

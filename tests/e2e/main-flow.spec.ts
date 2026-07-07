@@ -11,6 +11,10 @@ const campaignData = {
   mainChannel: "WhatsApp",
   dailyBudget: "R$ 25 por dia",
   experienceLevel: "Nunca anunciei",
+  communicationTone: "Divertido",
+  hasVisualAssets: "Tenho pouco material",
+  hasWhatsappResponder: "Sim, mas com pouca disponibilidade",
+  currentChallenge: "Muitos perguntam preço e somem",
 };
 
 async function fillCampaignForm(page: Page) {
@@ -30,6 +34,18 @@ async function fillCampaignForm(page: Page) {
   await page
     .locator('[name="experienceLevel"]')
     .selectOption(campaignData.experienceLevel);
+  await page
+    .locator('[name="communicationTone"]')
+    .selectOption(campaignData.communicationTone);
+  await page
+    .locator('[name="hasVisualAssets"]')
+    .selectOption(campaignData.hasVisualAssets);
+  await page
+    .locator('[name="hasWhatsappResponder"]')
+    .selectOption(campaignData.hasWhatsappResponder);
+  await page
+    .locator('[name="currentChallenge"]')
+    .selectOption(campaignData.currentChallenge);
 }
 
 async function generateMockPlan(page: Page) {
@@ -123,6 +139,19 @@ test("protege o fluxo principal da campanha em modo mock", async ({
   expect(copiedPlan).toContain(
     "este é um plano inicial orientativo. Revise as informações antes de publicar.",
   );
+  expect(copiedPlan).toContain("DADOS DO BRIEFING");
+  expect(copiedPlan).toContain(
+    `Tom de comunicação: ${campaignData.communicationTone}`,
+  );
+  expect(copiedPlan).toContain(
+    `Fotos ou vídeos: ${campaignData.hasVisualAssets}`,
+  );
+  expect(copiedPlan).toContain(
+    `Disponibilidade no WhatsApp: ${campaignData.hasWhatsappResponder}`,
+  );
+  expect(copiedPlan).toContain(
+    `Principal dificuldade: ${campaignData.currentChallenge}`,
+  );
   expect(copiedPlan).toContain(
     "O conteúdo não garante vendas, lucro ou performance.",
   );
@@ -144,6 +173,18 @@ test("protege o fluxo principal da campanha em modo mock", async ({
     campaignData.businessName,
   );
   await expect(page.locator('[name="offer"]')).toHaveValue(campaignData.offer);
+  await expect(page.locator('[name="communicationTone"]')).toHaveValue(
+    campaignData.communicationTone,
+  );
+  await expect(page.locator('[name="hasVisualAssets"]')).toHaveValue(
+    campaignData.hasVisualAssets,
+  );
+  await expect(page.locator('[name="hasWhatsappResponder"]')).toHaveValue(
+    campaignData.hasWhatsappResponder,
+  );
+  await expect(page.locator('[name="currentChallenge"]')).toHaveValue(
+    campaignData.currentChallenge,
+  );
 
   const updatedBusinessName = "Pizzaria Bairro Feliz Centro";
   await page.locator('[name="businessName"]').fill(updatedBusinessName);
