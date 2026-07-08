@@ -76,10 +76,12 @@ Os cenários atuais cobrem:
 - fluxo completo da home ao resultado;
 - preenchimento dos campos opcionais do briefing ampliado;
 - resposta da API com `source` e `provider` iguais a `mock`;
-- pacote com três criativos e as principais seções;
+- painel `Campanha pronta para revisão` com resumo acionável da campanha;
+- material de apoio com plano completo, PDF e detalhes longos;
+- pacote com três criativos e as principais seções dentro do material de apoio;
 - guia de produção nos três criativos e cópia do briefing completo;
 - plano de ação de 7 dias e cópia da rotina completa;
-- bloco `Comece por aqui`, seções recolhíveis, abertura manual e abertura pela navegação rápida;
+- cópia da campanha pronta e abertura do plano completo pela navegação rápida;
 - cópia do plano completo e feedback visual;
 - download do PDF;
 - retorno ao formulário com dados persistidos, incluindo tom, fotos/vídeos, disponibilidade no WhatsApp e dificuldade atual;
@@ -180,19 +182,20 @@ Após enviar o formulário:
 - Se `campaign-plan-result` estiver inválido, confirme que a página usa fallback local e não quebra.
 - Confirme que o aviso de orientação sem garantia está visível.
 - Confirme que não há tela de erro do Next.js.
-- Confirme que a seção `O que fazer primeiro` está visível.
-- Confirme que `Comece por aqui`, `O que fazer primeiro`, `Plano de ação de 7 dias`, `Textos de anúncio` e `Pacote de criativos` ficam abertos por padrão.
-- Confirme que `Configuração sugerida da campanha`, `Roteiro de atendimento no WhatsApp`, `Métricas simples para acompanhar`, `Checklist antes de publicar` e `Acompanhamento em 3, 7 e 14 dias` exibem o cabeçalho e podem abrir pelo botão `Mostrar`.
+- Confirme que `Campanha pronta para revisão`, `Passos para colocar no ar`, `Textos principais do anúncio` e `Criativo principal recomendado` ficam visíveis no primeiro contato.
+- Confirme que `Material de apoio` fica recolhido por padrão e abre pelo botão `Mostrar` ou pela navegação rápida.
+- Confirme que `Configuração sugerida da campanha`, `Roteiro de atendimento no WhatsApp`, `Métricas simples para acompanhar`, `Checklist antes de publicar`, `Plano de ação de 7 dias` e `Pacote de criativos` continuam disponíveis dentro do material de apoio.
 - Clique em `Ver próximos passos`, volte manualmente o scroll e clique novamente.
 - Confirme que a rolagem funciona repetidamente.
-- Clique em `Copiar plano completo` e confirme o feedback `Plano copiado`.
+- Clique em `Copiar campanha pronta` e confirme o feedback `Campanha copiada`.
+- Abra `Material de apoio`, clique em `Copiar plano completo` e confirme o feedback `Plano copiado`.
 - Cole o conteúdo em um editor de texto e confirme nome do negócio, dados do briefing, aviso orientativo, resumo, configuração, próximos passos, plano de ação de 7 dias, textos, criativos, materiais, passos de produção, erros a evitar, prompts, WhatsApp, checklist, métricas e acompanhamento.
 - Confirme que o texto copiado não contém JSON nem informações técnicas de provider/source.
 - Clique em `Baixar PDF`, aguarde o feedback `PDF baixado` e confirme que o arquivo foi salvo com o nome do negócio.
 - Abra o PDF e confira título, aviso orientativo, seções separadas, quebras de linha, acentos, múltiplas páginas e rodapés.
 - Confirme que palavras como `Pizzaria`, `WhatsApp`, `bairro` e `orçamento` aparecem inteiras e que há espaços naturais depois de pontuação.
 - Confirme que o PDF contém as mesmas seções principais do texto completo, sem JSON, provider/source ou promessa de resultado.
-- Use a navegação rápida para `Textos`, `Configuração`, `Criativos`, `WhatsApp`, `Métricas`, `Checklist` e `Acompanhamento`.
+- Use a navegação rápida para `Campanha`, `Passos`, `Textos`, `Criativo` e `Plano completo`.
 - Volte manualmente e clique novamente em cada destino para confirmar que a rolagem funciona mesmo com o mesmo hash na URL.
 - Confirme que atalhos para seções recolhidas abrem o conteúdo antes de rolar.
 - Clique em pelo menos um botão `Copiar texto` e confirme o feedback `Copiado` ou o erro amigável.

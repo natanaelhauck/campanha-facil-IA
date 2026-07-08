@@ -102,6 +102,21 @@ export type CampaignSimpleMetricsGuide = {
   whenToAdjust: string;
 };
 
+export type CampaignDraft = {
+  platform: "meta_ads";
+  objective: string;
+  audience: string;
+  location: string;
+  budget: string;
+  duration: string;
+  placements: string;
+  adCopy: string;
+  creativeBrief: string;
+  whatsappScript?: string;
+  safetyNotes: string[];
+  nextSteps: string[];
+};
+
 export type CampaignPlanResult = {
   summary: string;
   recommendedObjective: string;

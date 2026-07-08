@@ -19,6 +19,7 @@ import {
 } from "@/lib/formatCampaignPlanText";
 import type {
   CampaignCreative,
+  CampaignDraft,
   CampaignFormData,
   CampaignPlanResult,
   CampaignPlanSource,
@@ -33,6 +34,7 @@ type ResultSectionId =
   | "metricas"
   | "checklist"
   | "acompanhamento"
+  | "plano-completo"
   | "ideias-criativos"
   | "passo-a-passo";
 
@@ -42,6 +44,7 @@ const collapsibleResultSectionIds = new Set<string>([
   "metricas",
   "checklist",
   "acompanhamento",
+  "plano-completo",
   "ideias-criativos",
   "passo-a-passo",
 ]);
@@ -83,6 +86,10 @@ function display(value: string, fallback: string) {
   return value.trim() || fallback;
 }
 
+function optionalDisplay(value: string | undefined, fallback: string) {
+  return value?.trim() || fallback;
+}
+
 function parseCampaignPlan(value: string | null): CampaignPlanResult | null {
   if (!value) {
     return null;
@@ -102,6 +109,98 @@ function parsePlanSource(value: string | null): CampaignPlanSource | null {
 
 function isResultSectionId(value: string): value is ResultSectionId {
   return collapsibleResultSectionIds.has(value);
+}
+
+function buildCampaignDraft(
+  form: CampaignFormData,
+  plan: CampaignPlanResult,
+): CampaignDraft {
+  const setup = plan.campaignSetupGuide;
+  const primaryCreative = plan.creativePack?.[0];
+  const firstAdText = plan.adTexts[0];
+  const firstNextStep = plan.nextSteps[0];
+  const creativeBrief = [
+    primaryCreative?.readyToUseBriefing,
+    primaryCreative?.sceneGuide,
+    primaryCreative?.visualIdea,
+    plan.creativeIdeas[0],
+  ].find((value) => value?.trim());
+
+  return {
+    platform: "meta_ads",
+    objective: optionalDisplay(
+      setup?.objective || plan.recommendedObjective || form.goal,
+      "Revisar objetivo da campanha",
+    ),
+    audience: optionalDisplay(
+      setup?.audience || plan.suggestedAudience || form.audience,
+      "Público a revisar antes de publicar",
+    ),
+    location: optionalDisplay(
+      setup?.location || form.region,
+      "Região informada no briefing",
+    ),
+    budget: optionalDisplay(
+      setup?.initialBudget || plan.budgetGuidance || form.dailyBudget,
+      "Orçamento inicial informado",
+    ),
+    duration: optionalDisplay(
+      setup?.durationSuggestion,
+      "Teste inicial de 7 dias antes de decidir ajustes",
+    ),
+    placements: optionalDisplay(
+      setup?.channel || form.mainChannel,
+      "Meta Ads com canal principal informado",
+    ),
+    adCopy: optionalDisplay(
+      firstAdText?.text,
+      "Escolha um texto de anúncio antes de publicar.",
+    ),
+    creativeBrief: optionalDisplay(
+      creativeBrief,
+      "Produza uma imagem ou vídeo simples mostrando a oferta real.",
+    ),
+    whatsappScript: plan.whatsappScript?.firstReply,
+    safetyNotes: [
+      plan.disclaimer,
+      setup?.whatNotToChangeEarly,
+      "Revise tudo antes de publicar. Este rascunho não conecta nem altera campanhas reais.",
+    ].filter((note): note is string => Boolean(note?.trim())),
+    nextSteps: [
+      firstNextStep
+        ? `${firstNextStep.title}: ${firstNextStep.description}`
+        : "Revise objetivo, público, orçamento, anúncio e criativo.",
+      ...(plan.sevenDayActionPlan?.[0]?.tasks ?? []),
+    ].slice(0, 5),
+  };
+}
+
+function formatCampaignDraftText(draft: CampaignDraft) {
+  return [
+    "CAMPANHA PRONTA PARA REVISÃO",
+    `Plataforma: ${draft.platform}`,
+    `Objetivo: ${draft.objective}`,
+    `Público: ${draft.audience}`,
+    `Localização: ${draft.location}`,
+    `Orçamento: ${draft.budget}`,
+    `Duração: ${draft.duration}`,
+    `Canal/posicionamento: ${draft.placements}`,
+    "",
+    "Texto principal do anúncio:",
+    draft.adCopy,
+    "",
+    "Criativo principal:",
+    draft.creativeBrief,
+    ...(draft.whatsappScript
+      ? ["", "Primeira resposta no WhatsApp:", draft.whatsappScript]
+      : []),
+    "",
+    "Próximas ações:",
+    ...draft.nextSteps.map((step, index) => `${index + 1}. ${step}`),
+    "",
+    "Cuidados:",
+    ...draft.safetyNotes.map((note) => `- ${note}`),
+  ].join("\n");
 }
 
 function ResultSection({
@@ -291,6 +390,112 @@ function CopyableAdText({ index, text }: { index: number; text: string }) {
         </div>
         <CopyButton text={text} idleLabel="Copiar texto" />
       </div>
+    </article>
+  );
+}
+
+function DraftReviewCard({
+  label,
+  value,
+  tone = "neutral",
+}: {
+  label: string;
+  value: string;
+  tone?: "neutral" | "strong";
+}) {
+  return (
+    <article
+      className={
+        tone === "strong"
+          ? "rounded-lg border border-emerald-200 bg-emerald-50 p-4"
+          : "rounded-lg border border-stone-200 bg-white p-4"
+      }
+    >
+      <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+        {label}
+      </p>
+      <p className="mt-2 text-sm font-bold leading-6 text-stone-950">
+        {value}
+      </p>
+    </article>
+  );
+}
+
+function CampaignLaunchSteps({ steps }: { steps: string[] }) {
+  return (
+    <ol className="grid gap-3 md:grid-cols-5">
+      {steps.slice(0, 5).map((step, index) => (
+        <li key={step} className="rounded-lg border border-stone-200 bg-white p-4">
+          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-stone-900 text-xs font-bold text-white">
+            {index + 1}
+          </span>
+          <p className="mt-3 text-xs leading-5 text-stone-700">{step}</p>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+function PrimaryCreativeSummary({
+  creative,
+  fallbackIdea,
+  onBriefingCopied,
+}: {
+  creative?: CampaignCreative;
+  fallbackIdea: string;
+  onBriefingCopied?: () => void;
+}) {
+  const briefingText = creative
+    ? formatCreativeBriefing(creative, 1)
+    : fallbackIdea;
+
+  return (
+    <article className="rounded-lg border border-stone-200 bg-white p-5 shadow-sm">
+      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wide text-emerald-800">
+            Produção do anúncio
+          </p>
+          <h2 className="mt-2 text-xl font-bold text-stone-950">
+            Criativo principal recomendado
+          </h2>
+          <h3 className="mt-1 text-base font-bold text-stone-800">
+            {creative?.title ?? "Produza uma peça simples com a oferta"}
+          </h3>
+          <p className="mt-3 max-w-3xl text-sm leading-6 text-stone-700">
+            {creative?.sceneGuide ?? creative?.visualIdea ?? fallbackIdea}
+          </p>
+        </div>
+        <CopyButton
+          text={briefingText}
+          idleLabel="Copiar briefing do criativo"
+          copiedLabel="Briefing copiado"
+          onCopied={onBriefingCopied}
+        />
+      </div>
+
+      <div className="mt-4 grid gap-3 md:grid-cols-3">
+        <DraftReviewCard
+          label="Formato"
+          value={creative?.format ?? "Imagem ou vídeo simples"}
+        />
+        <DraftReviewCard
+          label="Texto na peça"
+          value={creative?.textOnCreative ?? "Mostre a oferta principal"}
+        />
+        <DraftReviewCard
+          label="Chamada"
+          value={creative?.callToAction ?? "Chamar no WhatsApp"}
+          tone="strong"
+        />
+      </div>
+
+      {creative?.avoid?.length ? (
+        <p className="mt-4 border-l-2 border-amber-500 pl-3 text-xs leading-5 text-stone-600">
+          <strong className="text-stone-900">Evite:</strong>{" "}
+          {creative.avoid[0]}
+        </p>
+      ) : null}
     </article>
   );
 }
@@ -666,6 +871,16 @@ export default function ResultPage() {
       ]
     : [];
   const fullPlanText = formatCampaignPlanText(form, plan);
+  const campaignDraft = buildCampaignDraft(form, plan);
+  const campaignDraftText = formatCampaignDraftText(campaignDraft);
+  const primaryCreative = plan.creativePack?.[0];
+  const publishSteps = [
+    `Revise o público: ${campaignDraft.audience}`,
+    "Copie a configuração da campanha pronta.",
+    "Copie o texto do anúncio que combina melhor com a oferta.",
+    "Prepare a imagem ou vídeo do criativo principal.",
+    "Publique no Gerenciador de Anúncios e acompanhe sem aumentar verba no impulso.",
+  ];
   const sevenDayActionPlanText = plan.sevenDayActionPlan
     ? formatSevenDayActionPlan(plan.sevenDayActionPlan)
     : "";
@@ -685,6 +900,12 @@ export default function ResultPage() {
       sectionId,
       expanded,
     });
+
+    if (sectionId === "plano-completo" && expanded) {
+      trackEvent("result_full_plan_opened", {
+        source: effectivePlanSource,
+      });
+    }
   };
   const openResultSection = (target: string) => {
     if (isResultSectionId(target) && !isResultSectionOpen(target)) {
@@ -692,22 +913,11 @@ export default function ResultPage() {
     }
   };
   const quickNavigation = [
-    ...(plan.sevenDayActionPlan
-      ? [{ label: "7 dias", target: "plano-7-dias" }]
-      : []),
+    { label: "Campanha", target: "campanha-pronta" },
+    { label: "Passos", target: "passos-publicar" },
     { label: "Textos", target: "textos-anuncio" },
-    ...(plan.campaignSetupGuide
-      ? [{ label: "Configuração", target: "configuracao" }]
-      : []),
-    { label: "Criativos", target: "criativos" },
-    ...(plan.whatsappScript
-      ? [{ label: "WhatsApp", target: "whatsapp" }]
-      : []),
-    ...(plan.simpleMetricsGuide
-      ? [{ label: "Métricas", target: "metricas" }]
-      : []),
-    { label: "Checklist", target: "checklist" },
-    { label: "Acompanhamento", target: "acompanhamento" },
+    { label: "Criativo", target: "criativo-principal" },
+    { label: "Plano completo", target: "plano-completo" },
   ];
 
   return (
@@ -724,28 +934,18 @@ export default function ResultPage() {
                 Resultado para {businessName}
               </h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-stone-700">
-                Um pacote simples para configurar a campanha, preparar
-                criativos, responder contatos e acompanhar os primeiros sinais
-                sem prometer resultado garantido.
+                Uma campanha organizada para revisar objetivo, público,
+                orçamento, anúncio e próximo passo antes de publicar.
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row md:flex-col">
               <CopyButton
-                text={fullPlanText}
-                idleLabel="Copiar plano completo"
-                copiedLabel="Plano copiado"
+                text={campaignDraftText}
+                idleLabel="Copiar campanha pronta"
+                copiedLabel="Campanha copiada"
                 prominent
                 onCopied={() =>
-                  trackEvent("campaign_plan_copied", {
-                    source: effectivePlanSource,
-                  })
-                }
-              />
-              <PdfDownloadButton
-                text={fullPlanText}
-                businessName={businessName}
-                onDownloaded={() =>
-                  trackEvent("campaign_pdf_downloaded", {
+                  trackEvent("campaign_draft_copied", {
                     source: effectivePlanSource,
                   })
                 }
@@ -761,7 +961,15 @@ export default function ResultPage() {
               >
                 Ajustar informações
               </Button>
-              <Button href="#proximos-passos" variant="secondary">
+              <Button
+                href="#passos-publicar"
+                variant="secondary"
+                onNavigate={() =>
+                  trackEvent("result_primary_action_clicked", {
+                    source: effectivePlanSource,
+                  })
+                }
+              >
                 Ver próximos passos
               </Button>
             </div>
@@ -828,31 +1036,135 @@ export default function ResultPage() {
 
         <div className="grid gap-5">
           <ResultSection
-            title="Comece por aqui"
-            eyebrow="Sequência simples"
+            id="campanha-pronta"
+            title="Campanha pronta para revisão"
+            eyebrow="Rascunho estruturado para Meta Ads"
           >
-            <ol className="grid gap-3 md:grid-cols-5">
-              {[
-                "Copie o plano completo se quiser revisar em outro lugar.",
-                "Leia os próximos passos e marque o que já está pronto.",
-                "Produza os criativos antes de tentar configurar tudo.",
-                "Siga o plano de 7 dias sem aumentar verba no impulso.",
-                "Baixe o PDF se quiser guardar ou enviar para alguém.",
-              ].map((step, index) => (
-                <li
-                  key={step}
-                  className="rounded-lg border border-stone-200 bg-stone-50 p-4"
-                >
-                  <span className="flex h-7 w-7 items-center justify-center rounded-md bg-stone-900 text-xs font-bold text-white">
-                    {index + 1}
-                  </span>
-                  <p className="mt-3 text-xs leading-5 text-stone-700">
-                    {step}
-                  </p>
-                </li>
-              ))}
-            </ol>
+            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+              <DraftReviewCard
+                label="Objetivo da campanha"
+                value={campaignDraft.objective}
+                tone="strong"
+              />
+              <DraftReviewCard
+                label="Público recomendado"
+                value={campaignDraft.audience}
+              />
+              <DraftReviewCard
+                label="Região"
+                value={campaignDraft.location}
+              />
+              <DraftReviewCard
+                label="Orçamento"
+                value={campaignDraft.budget}
+              />
+              <DraftReviewCard
+                label="Duração"
+                value={campaignDraft.duration}
+              />
+              <DraftReviewCard
+                label="Canal/posicionamento"
+                value={campaignDraft.placements}
+              />
+              <DraftReviewCard
+                label="CTA principal"
+                value={primaryCreative?.callToAction ?? "Chamar no WhatsApp"}
+              />
+              <DraftReviewCard
+                label="Próxima ação"
+                value={campaignDraft.nextSteps[0]}
+                tone="strong"
+              />
+            </div>
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+              <CopyButton
+                text={campaignDraftText}
+                idleLabel="Copiar campanha pronta"
+                copiedLabel="Campanha copiada"
+                onCopied={() =>
+                  trackEvent("campaign_draft_copied", {
+                    source: effectivePlanSource,
+                  })
+                }
+              />
+              <Button
+                href="#plano-completo"
+                variant="secondary"
+                onNavigate={() => openResultSection("plano-completo")}
+              >
+                Ver plano completo
+              </Button>
+            </div>
           </ResultSection>
+
+          <ResultSection
+            id="passos-publicar"
+            title="Passos para colocar no ar"
+            eyebrow="No máximo 5 ações"
+          >
+            <CampaignLaunchSteps steps={publishSteps} />
+          </ResultSection>
+
+          <ResultSection
+            id="textos-anuncio"
+            title="Textos principais do anúncio"
+            eyebrow="Escolha um para começar"
+          >
+            <div className="grid gap-3">
+              {plan.adTexts.slice(0, 3).map((adText, index) => (
+                <CopyableAdText
+                  key={`${adText.title}-${adText.text}`}
+                  index={index + 1}
+                  text={adText.text}
+                />
+              ))}
+            </div>
+          </ResultSection>
+
+          <div id="criativo-principal" className="scroll-mt-4">
+            <PrimaryCreativeSummary
+              creative={primaryCreative}
+              fallbackIdea={campaignDraft.creativeBrief}
+              onBriefingCopied={() =>
+                trackEvent("creative_briefing_copied", {
+                  source: effectivePlanSource,
+                })
+              }
+            />
+          </div>
+
+          <ResultSection
+            id="plano-completo"
+            title="Material de apoio"
+            eyebrow="Plano completo, PDF e detalhes"
+            collapsible
+            isOpen={isResultSectionOpen("plano-completo")}
+            onToggle={(expanded) =>
+              setResultSectionOpen("plano-completo", expanded)
+            }
+          >
+            <div className="mb-5 grid gap-3 sm:grid-cols-2">
+              <CopyButton
+                text={fullPlanText}
+                idleLabel="Copiar plano completo"
+                copiedLabel="Plano copiado"
+                prominent
+                onCopied={() =>
+                  trackEvent("campaign_plan_copied", {
+                    source: effectivePlanSource,
+                  })
+                }
+              />
+              <PdfDownloadButton
+                text={fullPlanText}
+                businessName={businessName}
+                onDownloaded={() =>
+                  trackEvent("campaign_pdf_downloaded", {
+                    source: effectivePlanSource,
+                  })
+                }
+              />
+            </div>
 
           <ResultSection
             id="proximos-passos"
@@ -1014,7 +1326,7 @@ export default function ResultPage() {
           <ResultSection
             title="Textos de anúncio"
             eyebrow="Use como ponto de partida"
-            id="textos-anuncio"
+            id="textos-completos"
           >
             <div className="grid gap-3">
               {plan.adTexts.map((adText, index) => (
@@ -1205,6 +1517,8 @@ export default function ResultPage() {
               </div>
             </ResultSection>
           ) : null}
+
+          </ResultSection>
 
           <BetaFeedbackCard />
 

@@ -62,8 +62,9 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Resultado em `/resultado` usando o plano salvo ou fallback local quando necessário.
 - Indicação discreta da origem do plano: IA ou demonstração.
 - Estado vazio amigável em `/resultado` quando não há dados salvos.
-- Bloco `Comece por aqui` em `/resultado`, com orientação curta para copiar o plano, revisar próximos passos, produzir criativos, seguir os 7 dias e baixar PDF.
-- Organização de `/resultado` com seções recolhíveis acessíveis, mantendo abertos os blocos principais e recolhendo conteúdos de consulta para reduzir rolagem.
+- `/resultado` prioriza um painel de lançamento com `Campanha pronta para revisão`, mostrando objetivo, público, região, orçamento, duração, canal, CTA e próxima ação.
+- A página deriva um `campaignDraft` estruturado para Meta Ads a partir do plano atual, sem integração real, token, publicação ou chamada externa.
+- O plano completo fica como `Material de apoio` recolhido por padrão, mantendo PDF, cópia completa e detalhes longos disponíveis.
 - Textos de anúncio com botão para copiar.
 - Próximos passos, checklist, ideias de criativos e acompanhamento em 3, 7 e 14 dias.
 - Plano de ação de 7 dias com tarefas práticas, entrega esperada e cuidado de cada dia.
@@ -72,17 +73,18 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Guia prático de produção em cada criativo, com objetivo, cena, materiais, passos, dica de Canva, erros a evitar e briefing pronto para copiar.
 - Roteiro de atendimento no WhatsApp com respostas copiáveis.
 - Guia simples de métricas, bons sinais, alertas e momento de esperar ou ajustar.
+- Ação `Copiar campanha pronta`, que copia o rascunho estruturado da campanha para revisão.
 - Ação `Copiar plano completo`, que formata o pacote em texto simples para WhatsApp, Google Docs, Notion ou e-mail.
 - Ação `Copiar plano de ação`, que copia somente a rotina de 7 dias sem dados técnicos.
 - Ação `Baixar PDF`, que exporta o mesmo conteúdo em um documento paginado e organizado diretamente no navegador.
-- Navegação rápida em `/resultado` para textos, configuração, criativos, WhatsApp, métricas, checklist e acompanhamento, exibindo apenas seções disponíveis quando aplicável e abrindo seções recolhidas antes de rolar.
+- Navegação rápida em `/resultado` focada em campanha, passos, textos, criativo principal e plano completo.
 - Compatibilidade com dados antigos no `localStorage`: campos opcionais de briefing ausentes viram vazio e planos antigos continuam renderizando sem erro.
 - Botões de rolagem por âncora com `scrollIntoView`, funcionando repetidamente.
 - Layout responsivo validado manualmente em largura mobile.
 - Suíte E2E versionada com fluxo principal desktop e validação mobile em 390 px.
 - Ambiente E2E isolado, com servidor dedicado e `AI_PROVIDER=mock` forçado.
 - Cenários E2E para payload excessivo e rate limit, sem chamadas externas.
-- Camada interna de analytics com 16 eventos tipados, whitelist de propriedades e nenhum envio externo.
+- Camada interna de analytics com 19 eventos tipados, whitelist de propriedades e nenhum envio externo.
 - Analytics aceita apenas enums seguros para canal, experiência, tom de comunicação e disponibilidade de fotos/vídeos; textos livres do briefing continuam proibidos.
 - Logs de analytics somente em desenvolvimento; produção permanece no-op.
 - Página `/beta` com proposta, público, roteiro de teste, aviso orientativo, feedback e próximos recursos possíveis.
@@ -185,9 +187,10 @@ Para testar IA real localmente, copie `.env.example` para `.env.local`, escolha 
 - Cópia de legenda, prompt visual e resposta do WhatsApp.
 - Cópia do briefing completo de cada criativo com materiais, passos e erros a evitar.
 - Cópia do plano de ação de 7 dias com feedback `Plano de ação copiado`.
-- Cópia do plano completo com feedback `Plano copiado`, dados do briefing e as principais seções em texto simples.
+- Cópia da campanha pronta com feedback `Campanha copiada`.
+- Cópia do plano completo com feedback `Plano copiado`, dados do briefing e as principais seções em texto simples dentro do material de apoio.
 - Download do plano em PDF paginado, legível e sem dados técnicos do provider.
-- Seções recolhíveis de `/resultado`, incluindo abertura manual e abertura pela navegação rápida.
+- Painel inicial de campanha pronta, passos de publicação, textos principais, criativo principal e material de apoio recolhido.
 - Navegação rápida e repetida entre as principais seções do resultado.
 - Plano antigo sem as quatro novas seções renderizando sem erro.
 - Resultado responsivo sem overflow horizontal em largura de 390px.

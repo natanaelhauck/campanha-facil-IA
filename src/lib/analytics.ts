@@ -9,9 +9,12 @@ const analyticsEventNames = [
   "campaign_plan_generated",
   "campaign_plan_generation_failed",
   "campaign_plan_copied",
+  "campaign_draft_copied",
   "creative_briefing_copied",
   "action_plan_copied",
   "result_section_toggled",
+  "result_full_plan_opened",
+  "result_primary_action_clicked",
   "campaign_pdf_downloaded",
   "campaign_history_opened",
   "campaign_history_item_opened",
@@ -59,6 +62,7 @@ type AnalyticsResultSectionId =
   | "metricas"
   | "checklist"
   | "acompanhamento"
+  | "plano-completo"
   | "ideias-criativos"
   | "passo-a-passo";
 
@@ -205,6 +209,7 @@ function sanitizeProperties(properties: AnalyticsProperties) {
     properties.sectionId === "metricas" ||
     properties.sectionId === "checklist" ||
     properties.sectionId === "acompanhamento" ||
+    properties.sectionId === "plano-completo" ||
     properties.sectionId === "ideias-criativos" ||
     properties.sectionId === "passo-a-passo"
   ) {

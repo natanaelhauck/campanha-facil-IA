@@ -106,15 +106,44 @@ test("protege o fluxo principal da campanha em modo mock", async ({
     ),
   ).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: "Comece por aqui" }),
+    page.getByRole("heading", { name: "Campanha pronta para revisão" }),
   ).toBeVisible();
-  await expect(page.getByText(/^Criativo [1-3]$/)).toHaveCount(3);
+  await expect(
+    page.getByRole("heading", { name: "Passos para colocar no ar" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Textos principais do anúncio" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Criativo principal recomendado" }),
+  ).toBeVisible();
   await expect(
     page.getByRole("link", { name: "Enviar feedback" }),
   ).toHaveAttribute("href", "https://example.com/feedback");
   await expect(
     page.getByRole("link", { name: "Quero ajuda para configurar" }),
   ).toHaveAttribute("href", "https://wa.me/5500000000000");
+
+  await page
+    .getByRole("button", { name: "Copiar campanha pronta" })
+    .first()
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Campanha copiada" }),
+  ).toBeVisible();
+  const copiedCampaignDraft = await page.evaluate(() =>
+    navigator.clipboard.readText(),
+  );
+  expect(copiedCampaignDraft).toContain("CAMPANHA PRONTA PARA REVISÃO");
+  expect(copiedCampaignDraft).toContain("Plataforma: meta_ads");
+
+  await expect(page.locator("#plano-completo-conteudo")).toBeHidden();
+  await page
+    .getByRole("navigation", { name: "Navegação rápida do plano" })
+    .getByRole("link", { name: "Plano completo", exact: true })
+    .click();
+  await expect(page).toHaveURL(/#plano-completo$/);
+  await expect(page.locator("#plano-completo-conteudo")).toBeVisible();
 
   for (const sectionTitle of [
     "Configuração sugerida da campanha",
@@ -131,6 +160,7 @@ test("protege o fluxo principal da campanha em modo mock", async ({
 
   const actionPlanSection = page.locator("#plano-7-dias");
   await expect(actionPlanSection.getByText(/^Dia [1-7]$/)).toHaveCount(7);
+  await expect(page.locator("#criativos").getByText(/^Criativo [1-3]$/)).toHaveCount(3);
 
   await expect(page.locator("#configuracao-conteudo")).toBeHidden();
   await page
@@ -139,14 +169,6 @@ test("protege o fluxo principal da campanha em modo mock", async ({
     })
     .click();
   await expect(page.locator("#configuracao-conteudo")).toBeVisible();
-
-  await expect(page.locator("#metricas-conteudo")).toBeHidden();
-  await page
-    .getByRole("navigation", { name: "Navegação rápida do plano" })
-    .getByRole("link", { name: "Métricas", exact: true })
-    .click();
-  await expect(page).toHaveURL(/#metricas$/);
-  await expect(page.locator("#metricas-conteudo")).toBeVisible();
 
   await page
     .getByRole("button", { name: "Copiar plano completo" })
@@ -191,7 +213,7 @@ test("protege o fluxo principal da campanha em modo mock", async ({
 
   await expect(
     page.getByRole("button", { name: "Copiar briefing do criativo" }),
-  ).toHaveCount(3);
+  ).toHaveCount(4);
   await page
     .getByRole("button", { name: "Copiar briefing do criativo" })
     .first()
@@ -230,7 +252,9 @@ test("protege o fluxo principal da campanha em modo mock", async ({
     .click();
   await page.getByRole("button", { name: "Copiar resposta" }).first().click();
   await expect(
-    page.getByRole("button", { name: "Copiado", exact: true }),
+    page
+      .locator("#whatsapp-conteudo")
+      .getByRole("button", { name: "Copiado", exact: true }),
   ).toBeVisible();
   const copiedWhatsappReply = await page.evaluate(() =>
     navigator.clipboard.readText(),
@@ -342,14 +366,11 @@ test("mantém o resultado utilizável em viewport mobile", async ({ page }) => {
   await expect(quickNavigation).toBeVisible();
 
   for (const linkName of [
-    "7 dias",
+    "Campanha",
+    "Passos",
     "Textos",
-    "Configuração",
-    "Criativos",
-    "WhatsApp",
-    "Métricas",
-    "Checklist",
-    "Acompanhamento",
+    "Criativo",
+    "Plano completo",
   ]) {
     await expect(
       quickNavigation.getByRole("link", { name: linkName, exact: true }),
@@ -357,12 +378,12 @@ test("mantém o resultado utilizável em viewport mobile", async ({ page }) => {
   }
 
   await quickNavigation
-    .getByRole("link", { name: "Checklist", exact: true })
+    .getByRole("link", { name: "Plano completo", exact: true })
     .click();
-  await expect(page).toHaveURL(/#checklist$/);
-  await expect(page.locator("#checklist-conteudo")).toBeVisible();
+  await expect(page).toHaveURL(/#plano-completo$/);
+  await expect(page.locator("#plano-completo-conteudo")).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: "Checklist antes de publicar" }),
+    page.getByRole("heading", { name: "Material de apoio" }),
   ).toBeVisible();
 });
 

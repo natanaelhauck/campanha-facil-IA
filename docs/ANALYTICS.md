@@ -19,9 +19,12 @@ O projeto possui uma camada interna em `src/lib/analytics.ts`, sem PostHog ou qu
 | `campaign_plan_generated` | Plano gerado e salvo com sucesso |
 | `campaign_plan_generation_failed` | Falha genérica na geração ou persistência atual |
 | `campaign_plan_copied` | Cópia do plano completo |
+| `campaign_draft_copied` | Cópia da campanha pronta para revisão |
 | `creative_briefing_copied` | Cópia do briefing completo de um criativo |
 | `action_plan_copied` | Cópia do plano de ação de 7 dias |
 | `result_section_toggled` | Abertura ou recolhimento de uma seção do resultado |
+| `result_full_plan_opened` | Abertura do material de apoio com o plano completo |
+| `result_primary_action_clicked` | Clique em ação primária do painel de resultado |
 | `campaign_pdf_downloaded` | PDF gerado e baixado |
 | `campaign_history_opened` | Abertura do histórico local |
 | `campaign_history_item_opened` | Restauração de um plano anterior |
@@ -65,7 +68,7 @@ Nunca registrar em analytics:
 - IDs do histórico;
 - chaves, headers, stack traces ou mensagens brutas de provedores.
 
-Os eventos `creative_briefing_copied` e `action_plan_copied` podem receber apenas `source` e não incluem título, legenda, prompt, briefing, tarefas ou qualquer texto do plano. O evento `result_section_toggled` pode receber apenas `sectionId` e `expanded`. Os três eventos do beta são emitidos sem propriedades. As URLs de destino, conteúdo do plano e informações do formulário não entram no evento.
+Os eventos `campaign_draft_copied`, `creative_briefing_copied`, `action_plan_copied`, `result_full_plan_opened` e `result_primary_action_clicked` podem receber apenas `source` e não incluem objetivo, público, texto, título, legenda, prompt, briefing, tarefas ou qualquer texto do plano. O evento `result_section_toggled` pode receber apenas `sectionId` e `expanded`. Os três eventos do beta são emitidos sem propriedades. As URLs de destino, conteúdo do plano e informações do formulário não entram no evento.
 
 ## Integração Futura
 

@@ -158,21 +158,24 @@ Os motivos também distinguem timeout sem expor mensagem bruta, stack trace, cha
 
 - `analytics.ts` oferece `trackEvent` com nomes e propriedades tipados, sanitização por whitelist, log seguro somente em `development` e no-op em `production`.
 - O componente `Button` trata links internos com hash usando `scrollIntoView({ behavior: "smooth" })`, para que botões como `Ver como funciona`, `Ver próximos passos` e `Voltar ao topo` funcionem repetidamente.
-- A página `/resultado` usa `navigator.clipboard.writeText` para copiar o plano completo, textos de anúncio, legendas, prompts visuais e respostas do WhatsApp, com feedback simples de sucesso ou erro.
-- A página `/resultado` usa seções recolhíveis acessíveis para conteúdos de consulta. O cabeçalho da seção continua visível, o botão usa `aria-expanded`/`aria-controls` e a navegação rápida abre o destino antes de rolar.
+- A página `/resultado` deriva um `CampaignDraft` local a partir de `CampaignPlanResult` e do briefing salvo, preparando uma estrutura futura para Meta Ads sem implementar integração real.
+- O `CampaignDraft` contém plataforma, objetivo, público, localização, orçamento, duração, posicionamento, texto principal, briefing criativo, WhatsApp, cuidados e próximos passos.
+- A página `/resultado` usa `navigator.clipboard.writeText` para copiar a campanha pronta, o plano completo, textos de anúncio, legendas, prompts visuais e respostas do WhatsApp, com feedback simples de sucesso ou erro.
+- A página `/resultado` prioriza o painel `Campanha pronta para revisão`, passos para publicar, textos principais e criativo principal. O plano completo fica em `Material de apoio`, recolhido por padrão.
+- As seções recolhíveis usam botão com `aria-expanded`/`aria-controls`, e a navegação rápida abre o destino antes de rolar.
 - Cada criativo também possui um botão para copiar o briefing completo de produção, incluindo cena, materiais, passos, Canva e erros a evitar.
 - O plano de ação de 7 dias possui seção própria, aparece no texto/PDF e pode ser copiado sem registrar tarefas em analytics.
 - `formatCampaignPlanText.ts` transforma formulário e `CampaignPlanResult` em texto simples organizado. Seções opcionais ausentes são omitidas, sem JSON ou identificação técnica de provider/source.
 - `downloadCampaignPlanPdf.ts` recebe o texto já formatado, cria um PDF A4 com quebra de linhas, múltiplas páginas, títulos e rodapés e inicia o download no navegador.
 - O módulo de PDF e o `jsPDF` são carregados por import dinâmico somente quando o usuário solicita o download, evitando custo no carregamento inicial da página.
-- A navegação rápida de `/resultado` aponta para IDs estáveis e inclui somente seções presentes no plano quando aplicável. Os destinos usam o mesmo comportamento repetível de rolagem suave do componente `Button` e preservam compatibilidade com planos antigos.
+- A navegação rápida de `/resultado` aponta para os pontos principais de revisão: campanha, passos, textos, criativo principal e plano completo. Os destinos usam o mesmo comportamento repetível de rolagem suave do componente `Button` e preservam compatibilidade com planos antigos.
 - O formulário em `/criar-campanha` usa validação HTML simples com campos obrigatórios e selects opcionais para sinais do briefing ampliado.
 - O envio do formulário mantém a chave `campaign-form-data` compatível com `/resultado` e adiciona o plano salvo quando a API responde.
 - O envio também adiciona uma cópia validável ao histórico local sem impedir o fluxo principal caso essa gravação secundária falhe.
 
 ## Analytics Interno
 
-A instrumentação atual não usa SDK externo, cookies ou persistência. Os eventos cobrem formulário, geração, cópia, PDF, histórico, ajuste de informações, abertura de seções do resultado e interações da validação beta.
+A instrumentação atual não usa SDK externo, cookies ou persistência. Os eventos cobrem formulário, geração, cópia, PDF, histórico, ajuste de informações, campanha pronta, abertura do plano completo, abertura de seções do resultado e interações da validação beta.
 
 As únicas propriedades aceitas são origem, provedor, canal normalizado, nível de experiência normalizado, tom de comunicação normalizado, disponibilidade de fotos/vídeos normalizada, identificador técnico de seção do resultado, estado aberto/recolhido, presença de histórico, status do resultado e categoria genérica de erro. Nome do negócio, localização, oferta, público, dificuldade atual, orçamento e qualquer texto livre são proibidos.
 
@@ -203,7 +206,7 @@ A metadata raiz identifica a versão como beta e usa `noindex`/`nofollow`. `robo
 
 ## Testes E2E
 
-A suíte em `tests/e2e/main-flow.spec.ts` usa `@playwright/test` com Chromium. Ela protege o fluxo principal em desktop, incluindo formulário com briefing ampliado, resposta mock, resultado, aviso orientativo, três criativos, plano de ação de 7 dias, seções recolhíveis, cópia do briefing de criativo, seções do pacote, cópia, PDF, persistência dos novos campos, edição, regeneração, histórico local e páginas legais.
+A suíte em `tests/e2e/main-flow.spec.ts` usa `@playwright/test` com Chromium. Ela protege o fluxo principal em desktop, incluindo formulário com briefing ampliado, resposta mock, painel de campanha pronta, material de apoio, três criativos, plano de ação de 7 dias, cópia do briefing de criativo, cópia, PDF, persistência dos novos campos, edição, regeneração, histórico local e páginas legais.
 
 Um segundo cenário usa viewport de 390 px para verificar overflow horizontal, acesso à navegação rápida e abertura de seção recolhida pelo atalho. A suíte também valida criação, restauração, exclusão, estado vazio e JSON corrompido no histórico. `api-security.spec.ts` valida o limite de body e o bloqueio temporário por frequência. `deployment-readiness.spec.ts` valida `/api/health`, ausência de campos extras, cache desabilitado e bloqueio de indexação. O `playwright.config.ts` inicia um servidor dedicado na porta 3100 com `AI_PROVIDER=mock`, geração real desabilitada e chaves de provedores vazias. O servidor não é reutilizado, evitando que os testes se conectem acidentalmente a uma instância configurada com IA real.
 

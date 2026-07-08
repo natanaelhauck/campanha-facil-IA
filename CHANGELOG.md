@@ -2,6 +2,17 @@
 
 Todas as mudanças relevantes do projeto serão resumidas neste arquivo.
 
+## Resultado Como Campanha Guiada
+
+- Transformada a primeira dobra de `/resultado` em um painel de lançamento com `Campanha pronta para revisão`.
+- Adicionado tipo `CampaignDraft`, derivado do plano atual, com campos preparados para futura integração Meta Ads sem conexão real.
+- O painel agora destaca objetivo, público, região, orçamento, duração, canal, CTA e próxima ação.
+- Adicionadas seções abertas para passos de publicação, textos principais do anúncio e criativo principal recomendado.
+- O plano completo, PDF e detalhes longos foram movidos para `Material de apoio`, recolhido por padrão.
+- Adicionada cópia da campanha pronta com evento seguro `campaign_draft_copied`.
+- Adicionados eventos seguros `result_full_plan_opened` e `result_primary_action_clicked`, sem conteúdo sensível.
+- E2E atualizado para validar campanha pronta, material de apoio, cópias, PDF e mobile sem overflow.
+
 ## Resultado Em Seções Recolhíveis
 
 - Reorganizada a página `/resultado` com um bloco curto `Comece por aqui`.
