@@ -420,6 +420,22 @@ test("mantém estado vazio com histórico ausente ou corrompido", async ({
   ).toBeVisible();
 });
 
+test("mantem login opcional desligado sem quebrar modo visitante", async ({
+  page,
+}) => {
+  await page.goto("/entrar");
+
+  await expect(
+    page.getByRole("heading", { name: "Entrar no Campanha Fácil IA" }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Login ainda não está habilitado neste ambiente."),
+  ).toBeVisible();
+
+  await page.getByRole("link", { name: "Continuar como visitante" }).click();
+  await expect(page).toHaveURL(/\/criar-campanha$/);
+});
+
 test("mantém páginas institucionais acessíveis pelo rodapé", async ({
   page,
 }) => {

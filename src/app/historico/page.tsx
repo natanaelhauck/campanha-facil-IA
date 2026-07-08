@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/Button";
 import { Header } from "@/components/Header";
@@ -9,10 +9,11 @@ import {
   trackEvent,
 } from "@/lib/analytics";
 import {
-  readCampaignPlanHistory,
-  removeCampaignPlanFromHistory,
-  restoreCampaignPlanFromHistory,
-} from "@/lib/campaignPlanHistory";
+  deleteCampaignHistoryItem,
+  loadCampaignHistory,
+  type CampaignHistoryLoadResult,
+} from "@/lib/campaignStorage";
+import { restoreCampaignPlanFromHistory } from "@/lib/campaignPlanHistory";
 import type { CampaignPlanHistoryItem } from "@/types/campaign";
 
 function formatHistoryDate(value: string) {
@@ -30,28 +31,55 @@ function getSourceLabel(item: CampaignPlanHistoryItem) {
   return item.provider === "gemini" ? "IA · Gemini" : "IA · OpenAI";
 }
 
+function getHistoryNotice(state: CampaignHistoryLoadResult | null) {
+  if (state?.mode === "cloud") {
+    return "Estas campanhas foram salvas na sua conta. O histórico local deste navegador continua preservado.";
+  }
+
+  if (state?.isCloudEnabled && state.isAuthenticated) {
+    return "Não foi possível carregar a nuvem agora. O histórico local deste navegador continua disponível.";
+  }
+
+  if (state?.isCloudEnabled) {
+    return "Entre na sua conta para ver campanhas salvas em nuvem. Como visitante, os planos ficam neste navegador.";
+  }
+
+  return "Não há conta ou sincronização neste ambiente. Limpar os dados do navegador pode apagar todo o histórico.";
+}
+
 export default function CampaignHistoryPage() {
-  const [history, setHistory] = useState<CampaignPlanHistoryItem[]>([]);
+  const [historyState, setHistoryState] =
+    useState<CampaignHistoryLoadResult | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [restoreError, setRestoreError] = useState("");
   const hasTrackedHistoryOpen = useRef(false);
   const router = useRouter();
 
-  useEffect(() => {
-    if (hasTrackedHistoryOpen.current) {
-      return;
-    }
+  const refreshHistory = useCallback(async (trackOpen = false) => {
+    const result = await loadCampaignHistory(localStorage);
+    setHistoryState(result);
+    setIsLoading(false);
 
-    hasTrackedHistoryOpen.current = true;
-    queueMicrotask(() => {
-      const savedHistory = readCampaignPlanHistory(localStorage);
-      setHistory(savedHistory);
-      setIsLoading(false);
-      trackEvent("campaign_history_opened", {
-        hasHistoryItem: savedHistory.length > 0,
-      });
-    });
+    if (trackOpen && !hasTrackedHistoryOpen.current) {
+      hasTrackedHistoryOpen.current = true;
+
+      if (result.mode === "cloud") {
+        trackEvent("cloud_history_opened", {
+          hasHistoryItem: result.items.length > 0,
+        });
+      } else {
+        trackEvent("campaign_history_opened", {
+          hasHistoryItem: result.items.length > 0,
+        });
+      }
+    }
   }, []);
+
+  useEffect(() => {
+    queueMicrotask(() => {
+      void refreshHistory(true);
+    });
+  }, [refreshHistory]);
 
   function openPlan(item: CampaignPlanHistoryItem) {
     setRestoreError("");
@@ -78,14 +106,35 @@ export default function CampaignHistoryPage() {
     router.push("/resultado");
   }
 
-  function deletePlan(item: CampaignPlanHistoryItem) {
+  async function deletePlan(item: CampaignPlanHistoryItem) {
     setRestoreError("");
-    const nextHistory = removeCampaignPlanFromHistory(
+    const mode = historyState?.mode ?? "local";
+    const result = await deleteCampaignHistoryItem(
       localStorage,
+      mode,
       item.id,
     );
 
-    if (nextHistory.length < history.length) {
+    if (!result.ok) {
+      setRestoreError(
+        "Não foi possível excluir este plano agora. Tente novamente.",
+      );
+      return;
+    }
+
+    if (mode === "cloud") {
+      trackEvent("cloud_campaign_deleted", {
+        source: item.source,
+        provider: item.provider,
+        resultStatus: "success",
+      });
+      await refreshHistory();
+      return;
+    }
+
+    const nextHistory = result.items ?? [];
+
+    if (nextHistory.length < (historyState?.items.length ?? 0)) {
       trackEvent("campaign_history_item_deleted", {
         source: item.source,
         provider: item.provider,
@@ -94,8 +143,18 @@ export default function CampaignHistoryPage() {
       });
     }
 
-    setHistory(nextHistory);
+    setHistoryState((current) => ({
+      mode: "local",
+      items: nextHistory,
+      isCloudEnabled: current?.isCloudEnabled ?? false,
+      isAuthenticated: current?.isAuthenticated ?? false,
+      userEmail: current?.userEmail,
+      error: current?.error,
+    }));
   }
+
+  const history = historyState?.items ?? [];
+  const isCloudHistory = historyState?.mode === "cloud";
 
   return (
     <main className="min-h-screen bg-[#f7f8f5]">
@@ -106,14 +165,15 @@ export default function CampaignHistoryPage() {
           <div className="grid gap-6 bg-stone-950 p-6 text-white md:grid-cols-[1fr_auto] md:items-end md:p-8">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-200">
-                Arquivo local
+                {isCloudHistory ? "Arquivo em nuvem" : "Arquivo local"}
               </p>
               <h1 className="mt-3 text-3xl font-bold leading-tight md:text-4xl">
                 Histórico de planos
               </h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-stone-300">
-                Retome campanhas anteriores sem preencher tudo novamente.
-                Seus planos ficam somente neste navegador.
+                {isCloudHistory
+                  ? "Retome campanhas salvas na sua conta para revisar ou abrir novamente."
+                  : "Retome campanhas anteriores sem preencher tudo novamente."}
               </p>
             </div>
             <Button
@@ -125,10 +185,18 @@ export default function CampaignHistoryPage() {
           </div>
 
           <div className="border-t border-amber-200 bg-amber-50 px-6 py-4 text-sm leading-6 text-amber-950 md:px-8">
-            Não há conta ou sincronização nesta versão. Limpar os dados do
-            navegador pode apagar todo o histórico.
+            {getHistoryNotice(historyState)}
           </div>
         </div>
+
+        {historyState?.error ? (
+          <p
+            role="alert"
+            className="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950"
+          >
+            {historyState.error}
+          </p>
+        ) : null}
 
         {restoreError ? (
           <p
@@ -214,7 +282,7 @@ export default function CampaignHistoryPage() {
                     <Button
                       type="button"
                       variant="secondary"
-                      onClick={() => deletePlan(item)}
+                      onClick={() => void deletePlan(item)}
                       className="flex-1 whitespace-nowrap text-red-700 hover:border-red-300 hover:bg-red-50 md:flex-none"
                     >
                       Excluir

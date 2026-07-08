@@ -31,6 +31,9 @@ GEMINI_MODEL=gemini-2.5-flash
 AI_GENERATION_ENABLED=true
 NEXT_PUBLIC_FEEDBACK_URL=
 NEXT_PUBLIC_HELP_URL=
+NEXT_PUBLIC_SUPABASE_ENABLED=false
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
 ```
 
 Escolha apenas o provedor que deseja testar:
@@ -69,7 +72,7 @@ Para acompanhar a execução com o navegador visível:
 npm run test:e2e:headed
 ```
 
-O `playwright.config.ts` inicia o Next.js em `http://127.0.0.1:3100`, não reutiliza outro servidor e sobrescreve o ambiente com `AI_PROVIDER=mock`, `AI_GENERATION_ENABLED=false` e chaves vazias. Também configura URLs públicas fictícias para validar os CTAs e reduz o rate limit para cinco requisições por IP no cenário específico de segurança. Assim, a suíte não depende de `.env.local` e não faz chamadas reais para OpenAI ou Gemini.
+O `playwright.config.ts` inicia o Next.js em `http://127.0.0.1:3100`, não reutiliza outro servidor e sobrescreve o ambiente com `AI_PROVIDER=mock`, `AI_GENERATION_ENABLED=false`, chaves vazias e Supabase desligado. Também configura URLs públicas fictícias para validar os CTAs e reduz o rate limit para cinco requisições por IP no cenário específico de segurança. Assim, a suíte não depende de `.env.local`, não faz chamadas reais para OpenAI ou Gemini e não depende de projeto Supabase real.
 
 Os cenários atuais cobrem:
 
@@ -95,6 +98,7 @@ Os cenários atuais cobrem:
 - abertura e restauração de um plano anterior;
 - exclusão individual até chegar ao estado vazio;
 - estado vazio com histórico ausente ou JSON corrompido.
+- carregamento de `/entrar` com Supabase desligado e retorno ao modo visitante;
 - presença dos links globais de Privacidade e Termos;
 - carregamento e conteúdo essencial de `/privacidade` e `/termos`;
 - aviso orientativo e ausência de garantia na tela e no texto copiado.
@@ -263,7 +267,15 @@ Resultado esperado:
 - Exclua todos os itens e confirme o retorno ao estado vazio.
 - Salve um texto inválido em `campaign-plan-history`, recarregue e confirme que a página não quebra.
 - Confirme que o histórico contém no máximo os 10 planos mais recentes.
-- Limpar dados do site deve apagar o histórico; não existe sincronização ou recuperação por conta nesta versão.
+- Com Supabase desligado ou sem login, limpar dados do site deve apagar o histórico local.
+- Com Supabase habilitado e usuário logado, confirme que `/historico` exibe campanhas da conta, com estado de carregamento e erro amigável se a nuvem falhar.
+
+## Como Testar /entrar
+
+- Com `NEXT_PUBLIC_SUPABASE_ENABLED=false`, acesse `/entrar`.
+- Confirme a mensagem `Login ainda não está habilitado neste ambiente.`
+- Clique em `Continuar como visitante` e confirme que abre `/criar-campanha`.
+- Com Supabase habilitado em um ambiente local controlado, informe um e-mail de teste e confirme apenas o envio do magic link. Não registre o e-mail em analytics.
 
 ## Como Testar Páginas Legais
 

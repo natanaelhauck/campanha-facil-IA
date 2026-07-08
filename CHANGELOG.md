@@ -2,6 +2,18 @@
 
 Todas as mudanças relevantes do projeto serão resumidas neste arquivo.
 
+## Base Opcional De Contas E Histórico Em Nuvem
+
+- Adicionada dependência `@supabase/supabase-js` e configuração pública opcional `NEXT_PUBLIC_SUPABASE_ENABLED`, `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+- Criado cliente Supabase opcional, sem service role e sem inicialização quando a configuração está incompleta.
+- Criada página `/entrar` com magic link quando Supabase está habilitado e aviso amigável quando desligado.
+- Adicionada abstração `campaignStorage` para manter `localStorage` no modo visitante e usar a tabela `campaigns` quando houver sessão Supabase.
+- Atualizado `/historico` para continuar local sem Supabase e listar/remover campanhas em nuvem quando o usuário estiver logado.
+- Atualizado `/resultado` com botão opcional `Salvar na conta` apenas para usuários logados.
+- Criada migration SQL `supabase/migrations/001_create_campaigns.sql` com RLS por `auth.uid()`.
+- Adicionados eventos seguros `auth_page_viewed`, `login_magic_link_requested`, `cloud_campaign_saved`, `cloud_history_opened` e `cloud_campaign_deleted`, sem e-mail ou conteúdo de campanha.
+- Atualizados E2E e documentação para validar Supabase desligado e preservar o modo visitante.
+
 ## Resultado Como Campanha Guiada
 
 - Transformada a primeira dobra de `/resultado` em um painel de lançamento com `Campanha pronta para revisão`.

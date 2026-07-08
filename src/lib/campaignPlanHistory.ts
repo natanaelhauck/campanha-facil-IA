@@ -45,7 +45,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
-function isCampaignFormData(value: unknown): value is CampaignFormData {
+export function isCampaignFormData(value: unknown): value is CampaignFormData {
   return (
     isRecord(value) &&
     requiredFormFields.every((field) => typeof value[field] === "string") &&
@@ -56,11 +56,11 @@ function isCampaignFormData(value: unknown): value is CampaignFormData {
   );
 }
 
-function isPlanSource(value: unknown): value is CampaignPlanSource {
+export function isPlanSource(value: unknown): value is CampaignPlanSource {
   return value === "ai" || value === "mock";
 }
 
-function isAIProvider(value: unknown): value is CampaignAIProvider {
+export function isAIProvider(value: unknown): value is CampaignAIProvider {
   return value === "mock" || value === "openai" || value === "gemini";
 }
 

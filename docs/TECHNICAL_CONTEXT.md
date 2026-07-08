@@ -8,6 +8,7 @@
 - ESLint.
 - Playwright Test para testes E2E versionados.
 - jsPDF para geração client-side do documento exportável.
+- `@supabase/supabase-js` para base opcional de Auth e histórico em nuvem.
 - React Client Components para páginas que acessam `localStorage`.
 - Rota backend no App Router para geração de plano.
 - SDKs de OpenAI e Gemini usados apenas no servidor.
@@ -21,6 +22,7 @@ src/
     api/generate-campaign/route.ts
     beta/page.tsx
     criar-campanha/page.tsx
+    entrar/page.tsx
     historico/page.tsx
     privacidade/page.tsx
     resultado/page.tsx
@@ -42,6 +44,7 @@ src/
     Textarea.tsx
   data/mockCampaignResult.ts
   lib/analytics.ts
+  lib/campaignStorage.ts
   lib/campaignPlanHistory.ts
   lib/downloadCampaignPlanPdf.ts
   lib/formatCampaignPlanText.ts
@@ -50,12 +53,18 @@ src/
     campaignRateLimit.ts
     campaignPlanSchema.ts
     generateCampaignPlan.ts
+  lib/supabase/
+    auth.ts
+    client.ts
+    isSupabaseEnabled.ts
   types/campaign.ts
 tests/
   e2e/api-security.spec.ts
   e2e/deployment-readiness.spec.ts
   e2e/main-flow.spec.ts
 playwright.config.ts
+supabase/
+  migrations/001_create_campaigns.sql
 ```
 
 ## Fluxo Atual Completo
@@ -74,6 +83,7 @@ playwright.config.ts
 12. A página de resultado lê o plano salvo no client. Se não houver plano salvo, mantém fallback local com base nos dados do formulário.
 13. O usuário pode clicar em `Ajustar informações` para voltar ao formulário com os dados anteriores carregados.
 14. Em `/historico`, o usuário pode restaurar um item como plano atual ou excluí-lo.
+15. Se Supabase estiver habilitado e o usuário estiver logado, `/resultado` permite salvar a campanha na conta e `/historico` lista/remover itens da tabela `campaigns`.
 
 ## Uso Atual De localStorage
 
@@ -93,7 +103,24 @@ Em `/resultado`, a leitura também acontece no client, com `useEffect`, `try/cat
 
 `campaignPlanHistory.ts` centraliza as chaves atuais e valida cada item do histórico antes de usá-lo. Entradas inválidas são descartadas; JSON corrompido vira uma lista vazia. Ao abrir um item, formulário, plano, origem e provedor voltam para as chaves atuais antes do redirecionamento a `/resultado`.
 
-O histórico é local e pode desaparecer quando o usuário limpa dados do navegador, usa navegação privada ou troca de dispositivo. Ele não representa persistência de conta nem deve armazenar dados sensíveis.
+O histórico local pode desaparecer quando o usuário limpa dados do navegador, usa navegação privada ou troca de dispositivo. Ele não deve armazenar dados sensíveis e continua sendo o fallback do modo visitante.
+
+## Supabase Opcional
+
+A base de conta e histórico em nuvem é opcional. `src/lib/supabase/isSupabaseEnabled.ts` só habilita o cliente quando `NEXT_PUBLIC_SUPABASE_ENABLED=true`, `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY` estão preenchidas.
+
+`src/lib/supabase/client.ts` cria um client browser com anon key pública e sessão persistida. Não existe `SUPABASE_SERVICE_ROLE_KEY` no frontend nem no `.env.example`.
+
+`src/lib/supabase/auth.ts` centraliza leitura de sessão, inscrição em mudanças de autenticação e sign out. `/entrar` usa magic link por e-mail quando Supabase está habilitado; caso contrário, mostra aviso amigável e mantém o fluxo visitante.
+
+`src/lib/campaignStorage.ts` escolhe a origem do histórico:
+
+- Supabase desligado: `localStorage`.
+- Supabase ligado, usuário sem login: `localStorage`.
+- Supabase ligado, usuário logado: tabela `campaigns`.
+- Erro ao carregar nuvem: mensagem amigável e fallback para histórico local do navegador.
+
+A migration `supabase/migrations/001_create_campaigns.sql` cria a tabela `campaigns`, ativa RLS e limita `select`, `insert`, `update` e `delete` a `user_id = auth.uid()`.
 
 ## Geração Com IA
 
@@ -130,6 +157,9 @@ OPENAI_MAX_OUTPUT_TOKENS=4200
 GEMINI_API_KEY=
 GEMINI_MODEL=gemini-2.5-flash
 AI_GENERATION_ENABLED=true
+NEXT_PUBLIC_SUPABASE_ENABLED=false
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
 ```
 
 `.env.local` deve ficar local e ignorado pelo Git. A variável correta é `GEMINI_API_KEY`; `GEMINI_API_LEY` não é reconhecida. Sem chave real, o modo mock continua funcionando.
@@ -175,7 +205,9 @@ Os motivos também distinguem timeout sem expor mensagem bruta, stack trace, cha
 
 ## Analytics Interno
 
-A instrumentação atual não usa SDK externo, cookies ou persistência. Os eventos cobrem formulário, geração, cópia, PDF, histórico, ajuste de informações, campanha pronta, abertura do plano completo, abertura de seções do resultado e interações da validação beta.
+A instrumentação atual não usa SDK externo, cookies ou persistência. Os eventos cobrem formulário, geração, cópia, PDF, histórico, ajuste de informações, campanha pronta, abertura do plano completo, abertura de seções do resultado, conta/nuvem opcional e interações da validação beta.
+
+Eventos de conta/nuvem cobrem apenas ações seguras: abertura de `/entrar`, pedido de magic link, salvamento em nuvem, abertura do histórico em nuvem e exclusão de campanha em nuvem.
 
 As únicas propriedades aceitas são origem, provedor, canal normalizado, nível de experiência normalizado, tom de comunicação normalizado, disponibilidade de fotos/vídeos normalizada, identificador técnico de seção do resultado, estado aberto/recolhido, presença de histórico, status do resultado e categoria genérica de erro. Nome do negócio, localização, oferta, público, dificuldade atual, orçamento e qualquer texto livre são proibidos.
 
@@ -195,10 +227,10 @@ A metadata raiz identifica a versão como beta e usa `noindex`/`nofollow`. `robo
 
 ## O Que Ainda Não Existe
 
-- Não há Supabase.
-- Não há login.
-- Não há banco de dados.
-- Não há histórico remoto, sincronizado ou associado a usuário.
+- Não há Supabase obrigatório para visitantes.
+- Não há login completo de produto com perfil ou configurações de conta.
+- Não há banco de dados obrigatório fora da base opcional documentada.
+- Não há migração automática do histórico local para a nuvem.
 - Não há publicação automática de campanhas.
 - Não há integração com Meta Ads API.
 - Não há geração real de imagens; `aiImagePrompt` é apenas um briefing textual.
@@ -208,7 +240,7 @@ A metadata raiz identifica a versão como beta e usa `noindex`/`nofollow`. `robo
 
 A suíte em `tests/e2e/main-flow.spec.ts` usa `@playwright/test` com Chromium. Ela protege o fluxo principal em desktop, incluindo formulário com briefing ampliado, resposta mock, painel de campanha pronta, material de apoio, três criativos, plano de ação de 7 dias, cópia do briefing de criativo, cópia, PDF, persistência dos novos campos, edição, regeneração, histórico local e páginas legais.
 
-Um segundo cenário usa viewport de 390 px para verificar overflow horizontal, acesso à navegação rápida e abertura de seção recolhida pelo atalho. A suíte também valida criação, restauração, exclusão, estado vazio e JSON corrompido no histórico. `api-security.spec.ts` valida o limite de body e o bloqueio temporário por frequência. `deployment-readiness.spec.ts` valida `/api/health`, ausência de campos extras, cache desabilitado e bloqueio de indexação. O `playwright.config.ts` inicia um servidor dedicado na porta 3100 com `AI_PROVIDER=mock`, geração real desabilitada e chaves de provedores vazias. O servidor não é reutilizado, evitando que os testes se conectem acidentalmente a uma instância configurada com IA real.
+Um segundo cenário usa viewport de 390 px para verificar overflow horizontal, acesso à navegação rápida e abertura de seção recolhida pelo atalho. A suíte também valida criação, restauração, exclusão, estado vazio e JSON corrompido no histórico. `api-security.spec.ts` valida o limite de body e o bloqueio temporário por frequência. `deployment-readiness.spec.ts` valida `/api/health`, ausência de campos extras, cache desabilitado e bloqueio de indexação. O `playwright.config.ts` inicia um servidor dedicado na porta 3100 com `AI_PROVIDER=mock`, geração real desabilitada, chaves de provedores vazias e Supabase desligado. O servidor não é reutilizado, evitando que os testes se conectem acidentalmente a uma instância configurada com IA real ou Supabase real.
 
 Os comandos disponíveis são `npm run test:e2e` para execução headless e `npm run test:e2e:headed` para execução com navegador visível. O Chromium precisa ser instalado uma vez por máquina com `npx playwright install chromium`.
 
@@ -228,11 +260,10 @@ Pontos ainda pendentes para amadurecer a IA:
 
 ## Pontos Planejados Para Supabase
 
-- Usuários.
-- Campanhas salvas.
-- Resultados gerados.
-- Histórico de versões do plano.
-- Políticas de acesso por usuário.
+- Testar a base opcional com projeto real antes de ativar em beta.
+- Definir migração manual ou assistida do histórico local somente se houver necessidade.
+- Evoluir histórico de versões do plano.
+- Adicionar limites por usuário caso login entre no fluxo público.
 
 ## Decisões Técnicas Importantes
 

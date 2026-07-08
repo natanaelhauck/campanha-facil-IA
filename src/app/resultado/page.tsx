@@ -6,8 +6,10 @@ import { BetaFeedbackCard } from "@/components/BetaFeedbackCard";
 import { Header } from "@/components/Header";
 import { createMockCampaignPlan } from "@/data/mockCampaignResult";
 import { trackEvent } from "@/lib/analytics";
+import { saveCampaignToCloud } from "@/lib/campaignStorage";
 import {
   campaignFormStorageKey,
+  campaignPlanProviderStorageKey,
   campaignPlanSourceStorageKey,
   campaignPlanStorageKey,
 } from "@/lib/campaignPlanHistory";
@@ -17,7 +19,12 @@ import {
   formatCreativeBriefing,
   formatSevenDayActionPlan,
 } from "@/lib/formatCampaignPlanText";
+import {
+  getSupabaseAuthState,
+  type SupabaseAuthState,
+} from "@/lib/supabase/auth";
 import type {
+  CampaignAIProvider,
   CampaignCreative,
   CampaignDraft,
   CampaignFormData,
@@ -28,6 +35,7 @@ import type {
 
 type CopyStatus = "idle" | "copied" | "error";
 type PdfStatus = "idle" | "generating" | "downloaded" | "error";
+type CloudSaveStatus = "idle" | "saving" | "saved" | "error";
 type ResultSectionId =
   | "configuracao"
   | "whatsapp"
@@ -105,6 +113,12 @@ function parseCampaignPlan(value: string | null): CampaignPlanResult | null {
 
 function parsePlanSource(value: string | null): CampaignPlanSource | null {
   return value === "ai" || value === "mock" ? value : null;
+}
+
+function parseAIProvider(value: string | null): CampaignAIProvider | null {
+  return value === "mock" || value === "openai" || value === "gemini"
+    ? value
+    : null;
 }
 
 function isResultSectionId(value: string): value is ResultSectionId {
@@ -772,6 +786,17 @@ export default function ResultPage() {
   const [form, setForm] = useState<CampaignFormData | null>(null);
   const [savedPlan, setSavedPlan] = useState<CampaignPlanResult | null>(null);
   const [planSource, setPlanSource] = useState<CampaignPlanSource | null>(null);
+  const [planProvider, setPlanProvider] = useState<CampaignAIProvider | null>(
+    null,
+  );
+  const [authState, setAuthState] = useState<SupabaseAuthState>({
+    isEnabled: false,
+    isLoggedIn: false,
+  });
+  const [cloudSaveStatus, setCloudSaveStatus] =
+    useState<CloudSaveStatus>("idle");
+  const [cloudSaveMessage, setCloudSaveMessage] = useState("");
+  const [cloudSavedId, setCloudSavedId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedSections, setExpandedSections] = useState<
     Partial<Record<ResultSectionId, boolean>>
@@ -787,8 +812,12 @@ export default function ResultPage() {
       setPlanSource(
         parsePlanSource(localStorage.getItem(campaignPlanSourceStorageKey)),
       );
+      setPlanProvider(
+        parseAIProvider(localStorage.getItem(campaignPlanProviderStorageKey)),
+      );
       setIsLoading(false);
     });
+    void getSupabaseAuthState().then(setAuthState);
   }, []);
 
   if (isLoading) {
@@ -826,6 +855,9 @@ export default function ResultPage() {
   const plan = savedPlan ?? createMockCampaignPlan(form);
   const effectivePlanSource: CampaignPlanSource = savedPlan
     ? (planSource ?? "mock")
+    : "mock";
+  const effectivePlanProvider: CampaignAIProvider = savedPlan
+    ? (planProvider ?? "mock")
     : "mock";
   const sourceLabel =
     effectivePlanSource === "ai"
@@ -913,6 +945,37 @@ export default function ResultPage() {
       setResultSectionOpen(target, true);
     }
   };
+  const canSaveToCloud = authState.isEnabled && authState.isLoggedIn;
+  const handleSaveCampaignToCloud = async () => {
+    if (!canSaveToCloud || cloudSavedId) {
+      return;
+    }
+
+    setCloudSaveStatus("saving");
+    setCloudSaveMessage("");
+
+    const result = await saveCampaignToCloud({
+      formData: form,
+      planResult: plan,
+      source: effectivePlanSource,
+      provider: effectivePlanProvider,
+    });
+
+    if (!result.ok) {
+      setCloudSaveStatus("error");
+      setCloudSaveMessage(result.message);
+      return;
+    }
+
+    setCloudSavedId(result.id);
+    setCloudSaveStatus("saved");
+    setCloudSaveMessage("Campanha salva na sua conta.");
+    trackEvent("cloud_campaign_saved", {
+      source: effectivePlanSource,
+      provider: effectivePlanProvider,
+      resultStatus: "success",
+    });
+  };
   const quickNavigation = [
     { label: "Campanha", target: "campanha-pronta" },
     { label: "Passos", target: "passos-publicar" },
@@ -951,6 +1014,38 @@ export default function ResultPage() {
                   })
                 }
               />
+              {canSaveToCloud ? (
+                <div className="w-full">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => void handleSaveCampaignToCloud()}
+                    disabled={
+                      cloudSaveStatus === "saving" ||
+                      cloudSaveStatus === "saved"
+                    }
+                    className="w-full"
+                  >
+                    {cloudSaveStatus === "saving"
+                      ? "Salvando..."
+                      : cloudSaveStatus === "saved"
+                        ? "Salva na conta"
+                        : "Salvar na conta"}
+                  </Button>
+                  {cloudSaveMessage ? (
+                    <p
+                      role={cloudSaveStatus === "error" ? "alert" : "status"}
+                      className={`mt-2 text-xs leading-5 ${
+                        cloudSaveStatus === "error"
+                          ? "text-amber-800"
+                          : "text-emerald-800"
+                      }`}
+                    >
+                      {cloudSaveMessage}
+                    </p>
+                  ) : null}
+                </div>
+              ) : null}
               <Button
                 href="/criar-campanha"
                 variant="secondary"

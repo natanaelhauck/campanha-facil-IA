@@ -29,6 +29,11 @@ O projeto possui uma camada interna em `src/lib/analytics.ts`, sem PostHog ou qu
 | `campaign_history_opened` | Abertura do histórico local |
 | `campaign_history_item_opened` | Restauração de um plano anterior |
 | `campaign_history_item_deleted` | Exclusão de um item do histórico |
+| `auth_page_viewed` | Abertura da página `/entrar` |
+| `login_magic_link_requested` | Pedido de magic link enviado pelo Supabase |
+| `cloud_campaign_saved` | Campanha salva na conta quando Supabase está habilitado |
+| `cloud_history_opened` | Abertura do histórico em nuvem |
+| `cloud_campaign_deleted` | Exclusão de uma campanha salva em nuvem |
 | `campaign_adjust_clicked` | Retorno ao formulário para ajustes |
 | `beta_page_viewed` | Abertura da página do programa beta |
 | `feedback_clicked` | Clique no canal externo de feedback |
@@ -66,9 +71,11 @@ Nunca registrar em analytics:
 - textos, legendas, prompts ou respostas de WhatsApp;
 - conteúdo do plano ou do formulário;
 - IDs do histórico;
+- e-mail do usuário;
+- user id do Supabase;
 - chaves, headers, stack traces ou mensagens brutas de provedores.
 
-Os eventos `campaign_draft_copied`, `creative_briefing_copied`, `action_plan_copied`, `result_full_plan_opened` e `result_primary_action_clicked` podem receber apenas `source` e não incluem objetivo, público, texto, título, legenda, prompt, briefing, tarefas ou qualquer texto do plano. O evento `result_section_toggled` pode receber apenas `sectionId` e `expanded`. Os três eventos do beta são emitidos sem propriedades. As URLs de destino, conteúdo do plano e informações do formulário não entram no evento.
+Os eventos `campaign_draft_copied`, `creative_briefing_copied`, `action_plan_copied`, `result_full_plan_opened` e `result_primary_action_clicked` podem receber apenas `source` e não incluem objetivo, público, texto, título, legenda, prompt, briefing, tarefas ou qualquer texto do plano. O evento `result_section_toggled` pode receber apenas `sectionId` e `expanded`. Os eventos de conta/nuvem não recebem e-mail, user id, nome do negócio, conteúdo da campanha ou ID do histórico. Os três eventos do beta são emitidos sem propriedades. As URLs de destino, conteúdo do plano e informações do formulário não entram no evento.
 
 ## Integração Futura
 

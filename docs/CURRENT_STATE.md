@@ -29,6 +29,7 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - OpenAI SDK no backend
 - Google GenAI SDK no backend
 - `localStorage` para persistência temporária no navegador
+- Supabase JS no frontend, desligado por padrão e usado apenas quando as variáveis públicas estão completas
 
 ## Funcionalidades Existentes
 
@@ -55,6 +56,11 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Salvamento da origem do plano com a chave `campaign-plan-source`.
 - Salvamento do provedor efetivo com a chave `campaign-plan-provider`.
 - Histórico local em `/historico`, salvo na chave `campaign-plan-history` e limitado aos 10 planos mais recentes.
+- Base opcional de conta em `/entrar`, com magic link via Supabase quando habilitado.
+- Configuração pública `NEXT_PUBLIC_SUPABASE_ENABLED`, `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY`, desligada por padrão.
+- Cliente Supabase opcional que não inicializa quando URL/anon key estão ausentes ou quando a flag não é `true`.
+- Migration SQL para a tabela `campaigns`, com RLS e políticas por `auth.uid()`.
+- Abstração `campaignStorage` para listar/remover histórico local ou em nuvem conforme configuração e sessão.
 - Cada item do histórico preserva formulário, plano, data, negócio, objetivo, origem e provedor.
 - Ações para abrir um plano anterior, restaurando o estado atual, e excluir itens individualmente.
 - Leitura defensiva do histórico: conteúdo ausente, inválido ou corrompido resulta em estado vazio sem quebrar a interface.
@@ -74,6 +80,7 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Roteiro de atendimento no WhatsApp com respostas copiáveis.
 - Guia simples de métricas, bons sinais, alertas e momento de esperar ou ajustar.
 - Ação `Copiar campanha pronta`, que copia o rascunho estruturado da campanha para revisão.
+- Ação opcional `Salvar na conta` em `/resultado` quando Supabase está habilitado e o usuário está logado.
 - Ação `Copiar plano completo`, que formata o pacote em texto simples para WhatsApp, Google Docs, Notion ou e-mail.
 - Ação `Copiar plano de ação`, que copia somente a rotina de 7 dias sem dados técnicos.
 - Ação `Baixar PDF`, que exporta o mesmo conteúdo em um documento paginado e organizado diretamente no navegador.
@@ -84,7 +91,8 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Suíte E2E versionada com fluxo principal desktop e validação mobile em 390 px.
 - Ambiente E2E isolado, com servidor dedicado e `AI_PROVIDER=mock` forçado.
 - Cenários E2E para payload excessivo e rate limit, sem chamadas externas.
-- Camada interna de analytics com 19 eventos tipados, whitelist de propriedades e nenhum envio externo.
+- Camada interna de analytics com eventos tipados, whitelist de propriedades e nenhum envio externo.
+- Eventos seguros para conta/nuvem: `auth_page_viewed`, `login_magic_link_requested`, `cloud_campaign_saved`, `cloud_history_opened` e `cloud_campaign_deleted`.
 - Analytics aceita apenas enums seguros para canal, experiência, tom de comunicação e disponibilidade de fotos/vídeos; textos livres do briefing continuam proibidos.
 - Logs de analytics somente em desenvolvimento; produção permanece no-op.
 - Página `/beta` com proposta, público, roteiro de teste, aviso orientativo, feedback e próximos recursos possíveis.
@@ -101,10 +109,10 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 
 ## Funcionalidades Que Ainda Não Existem
 
-- Supabase.
-- Login.
-- Banco de dados.
-- Histórico sincronizado entre dispositivos ou associado a usuário.
+- Supabase obrigatório ou migração automática do histórico local.
+- Login completo de produto com perfis, preferências ou área de conta avançada.
+- Banco de dados obrigatório para visitantes.
+- Sincronização automática entre dispositivos sem login.
 - Publicação automática de campanhas.
 - Integração com Meta Ads API.
 - Geração real de imagens; os criativos atuais são briefings e prompts para produção futura.
@@ -124,7 +132,9 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 9. O usuário pode copiar itens isolados, copiar o plano completo em texto, baixar o pacote em PDF e navegar diretamente entre as principais seções.
 10. O usuário pode clicar em `Ajustar informações` para voltar ao formulário com os dados preenchidos.
 11. Cada geração bem-sucedida também entra no histórico local, mantendo no máximo 10 itens.
-12. Em `/historico`, o usuário pode abrir um plano anterior ou excluí-lo.
+12. Se Supabase estiver desligado ou o usuário não estiver logado, `/historico` continua usando `localStorage`.
+13. Se Supabase estiver habilitado e o usuário estiver logado, `/historico` lista campanhas salvas na conta.
+14. Em `/historico`, o usuário pode abrir um plano anterior ou excluí-lo.
 
 ## Principais Decisões
 
@@ -133,7 +143,7 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Usar `mock` como provedor padrão para impedir chamadas acidentais.
 - Manter fallback mock para desenvolvimento, falhas e ausência de chave.
 - Usar `localStorage` no MVP para evitar backend e banco de dados cedo demais.
-- Manter o histórico exclusivamente local nesta fase, sem simular conta ou sincronização.
+- Manter o histórico local como fallback principal e adicionar Supabase apenas como base opcional.
 - Centralizar analytics em uma camada interna e proibir texto livre ou identificação do negócio.
 - Não prometer venda, lucro, performance ou aprovação de anúncios.
 - Tratar o pacote gerado como orientação inicial que precisa de revisão humana.
@@ -196,6 +206,7 @@ Para testar IA real localmente, copie `.env.example` para `.env.local`, escolha 
 - Resultado responsivo sem overflow horizontal em largura de 390px.
 - Botões `Ver próximos passos` e `Voltar ao topo`.
 - Testes E2E do fluxo principal, cópia, PDF, persistência, regeneração e navegação mobile passando em Chromium.
+- `/entrar` com Supabase desligado exibindo aviso amigável e preservando modo visitante.
 - Testes de segurança do endpoint para body acima do limite e bloqueio `429` passando em mock.
 - Histórico local validado em E2E com criação, listagem, restauração, exclusão, estado vazio e conteúdo corrompido.
 - Links legais e carregamento de `/privacidade` e `/termos` validados em E2E.

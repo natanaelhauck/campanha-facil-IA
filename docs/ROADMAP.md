@@ -15,6 +15,9 @@ Status: concluída como primeira versão visual funcional. Deve continuar recebe
 - Plano de ação de 7 dias para guiar a primeira semana depois da geração.
 - Personalização local com `localStorage`.
 - Histórico local com até 10 planos, abertura e exclusão individual.
+- Base opcional de Supabase/Auth desligada por padrão, preservando modo visitante.
+- `/entrar` com magic link quando Supabase está habilitado e aviso amigável quando desligado.
+- Estrutura `campaigns` com RLS documentada para futuro histórico em nuvem.
 - Textos de anúncio copiáveis.
 - Próximos passos, checklist e acompanhamento em `/resultado`.
 - Botões de rolagem por âncora funcionando repetidamente.
@@ -131,7 +134,7 @@ Status: base documental e legal concluída, sem deploy realizado. A liberação 
 ### Fora Do Escopo Desta Preparação
 
 - Deploy real.
-- Supabase, banco de dados ou login.
+- Login obrigatório, migração automática de histórico local ou área de conta completa.
 - Meta Ads API.
 - PostHog ou outro analytics externo.
 
@@ -256,6 +259,6 @@ Status: base de recrutamento e feedback concluída; entrevistas e observação c
 
 ## Fase Futura: SaaS, Sincronização E Persistência Remota
 
-O histórico local atende ao MVP sem conta. Supabase, autenticação, sincronização entre dispositivos, histórico por usuário, limites de uso e eventual cobrança continuam possíveis, mas devem entrar quando houver validação de valor e necessidade clara de uso recorrente.
+O histórico local atende ao MVP sem conta. A base opcional de Supabase/Auth já prepara magic link, tabela `campaigns` com RLS e salvamento manual da campanha na conta quando habilitado. Sincronização ampla entre dispositivos, migração automática de histórico local, limites por usuário e eventual cobrança continuam possíveis, mas devem entrar quando houver validação de valor e necessidade clara de uso recorrente.
 
 Essa fase não deve antecipar integrações complexas nem transformar o produto em painel avançado antes de consolidar a experiência guiada.

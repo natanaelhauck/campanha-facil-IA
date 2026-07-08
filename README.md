@@ -22,11 +22,11 @@ npm run dev
 
 Depois acesse `http://localhost:3000`.
 
-## Histórico Local
+## Histórico Local E Nuvem Opcional
 
 Cada geração concluída é adicionada ao histórico disponível em `/historico`. Os 10 planos mais recentes ficam salvos na chave `campaign-plan-history` do `localStorage`, junto com formulário, resultado, origem e provedor.
 
-O histórico existe somente no navegador atual: não há conta, login ou sincronização. Limpar os dados do site pode apagar os planos salvos. Supabase e persistência por usuário continuam reservados para uma fase futura.
+O modo visitante continua usando somente o navegador atual: limpar os dados do site pode apagar os planos salvos. A base opcional de Supabase/Auth permite preparar salvamento em nuvem quando configurada, mas fica desligada por padrão e não substitui o histórico local.
 
 ## Briefing Da Campanha
 
@@ -62,6 +62,9 @@ OPENAI_MAX_OUTPUT_TOKENS=4200
 GEMINI_API_KEY=
 GEMINI_MODEL=gemini-2.5-flash
 AI_GENERATION_ENABLED=true
+NEXT_PUBLIC_SUPABASE_ENABLED=false
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
 ```
 
 Não versione `.env.local` nem chaves reais. A variável correta do Gemini é `GEMINI_API_KEY`.
@@ -69,6 +72,14 @@ Não versione `.env.local` nem chaves reais. A variável correta do Gemini é `G
 Use `AI_PROVIDER=mock` para executar sem API, `AI_PROVIDER=openai` para OpenAI ou `AI_PROVIDER=gemini` para Gemini. O padrão seguro, inclusive quando a variável está ausente, é `mock`. Se o provedor escolhido estiver sem chave, estiver desabilitado ou falhar, o endpoint usa fallback mock e o fluxo continua funcionando.
 
 Os modelos padrão são `gpt-4.1-mini` e `gemini-2.5-flash`, ambos configuráveis. O Gemini está disponível como alternativa de teste; limites gratuitos e disponibilidade dependem do projeto e do modelo e devem ser conferidos no [Google AI Studio](https://aistudio.google.com/).
+
+## Supabase Opcional
+
+`/entrar` oferece uma base de login por magic link quando `NEXT_PUBLIC_SUPABASE_ENABLED=true` e URL/anon key estão configuradas. Sem essas variáveis, a página mostra um aviso amigável e o app segue em modo visitante.
+
+Quando Supabase está habilitado e o usuário está logado, `/resultado` permite salvar a campanha na conta e `/historico` lista as campanhas em nuvem. Usuários visitantes, ambientes sem Supabase e usuários não logados continuam usando `localStorage`.
+
+Consulte [Setup opcional do Supabase](docs/SUPABASE_SETUP.md) para criar a tabela `campaigns`, ativar RLS, configurar magic link e definir variáveis na Vercel. Não use service role key no frontend.
 
 Em desenvolvimento, a resposta do endpoint inclui um bloco `debug` sem dados sensíveis, com modelo, estado da geração e motivo do fallback. Um erro `429` com código `insufficient_quota` indica falta de cota ou faturamento disponível no projeto OpenAI; nesse caso, o sistema mantém o plano de demonstração.
 
@@ -132,11 +143,12 @@ Na primeira configuração da máquina, instale o Chromium gerenciado pelo Playw
 - [Analytics e privacidade](docs/ANALYTICS.md)
 - [Preparação para deploy](docs/DEPLOYMENT.md)
 - [Validação beta controlada](docs/BETA_VALIDATION.md)
+- [Setup opcional do Supabase](docs/SUPABASE_SETUP.md)
 
 ## Próximos passos planejados
 
 - Testar e calibrar a geração real com o provedor escolhido.
 - Adotar rate limit distribuído e limites de custo antes do beta público com IA real.
-- Avaliar Supabase para sincronizar campanhas entre dispositivos.
-- Implementar login e histórico por usuário somente após validar recorrência.
+- Validar a base opcional de Supabase com usuários recorrentes antes de migrar qualquer histórico local.
+- Evoluir login e histórico por usuário somente se a recorrência justificar.
 - Evoluir o resultado com mais personalização por segmento.
