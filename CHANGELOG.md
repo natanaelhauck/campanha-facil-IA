@@ -2,6 +2,16 @@
 
 Todas as mudanças relevantes do projeto serão resumidas neste arquivo.
 
+## Resultado Em Seções Recolhíveis
+
+- Reorganizada a página `/resultado` com um bloco curto `Comece por aqui`.
+- Adicionado componente reutilizável de seção recolhível, com botão acessível, `aria-expanded` e `aria-controls`.
+- Mantidas abertas por padrão as seções principais: próximos passos, plano de ação de 7 dias, textos de anúncio e pacote de criativos.
+- Configuração, WhatsApp, métricas, checklist, passo a passo, ideias secundárias e acompanhamento passaram a poder ficar recolhidos por padrão.
+- A navegação rápida abre seções recolhidas antes de rolar para o destino, preservando IDs existentes.
+- Adicionado evento interno seguro `result_section_toggled`, sem conteúdo do plano.
+- E2E atualizado para validar abertura manual, abertura por atalho, cópias, PDF, histórico e mobile sem overflow.
+
 ## Plano De Ação De 7 Dias
 
 - Adicionado `sevenDayActionPlan` ao resultado da campanha, com exatamente sete dias em respostas novas de IA.

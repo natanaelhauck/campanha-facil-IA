@@ -21,6 +21,7 @@ O projeto possui uma camada interna em `src/lib/analytics.ts`, sem PostHog ou qu
 | `campaign_plan_copied` | Cópia do plano completo |
 | `creative_briefing_copied` | Cópia do briefing completo de um criativo |
 | `action_plan_copied` | Cópia do plano de ação de 7 dias |
+| `result_section_toggled` | Abertura ou recolhimento de uma seção do resultado |
 | `campaign_pdf_downloaded` | PDF gerado e baixado |
 | `campaign_history_opened` | Abertura do histórico local |
 | `campaign_history_item_opened` | Restauração de um plano anterior |
@@ -40,6 +41,8 @@ A API tipada e a sanitização em runtime aceitam somente:
 - `experienceLevel`: enum normalizado, sem texto livre;
 - `communicationTone`: enum normalizado, sem texto livre;
 - `hasVisualAssets`: enum normalizado, sem texto livre;
+- `sectionId`: identificador técnico de seção do resultado, sem texto do plano;
+- `expanded`: booleano indicando abertura ou recolhimento;
 - `hasHistoryItem`: booleano;
 - `resultStatus`: `success` ou `failure`;
 - `errorCategory`: categoria genérica e fechada.
@@ -62,7 +65,7 @@ Nunca registrar em analytics:
 - IDs do histórico;
 - chaves, headers, stack traces ou mensagens brutas de provedores.
 
-Os eventos `creative_briefing_copied` e `action_plan_copied` podem receber apenas `source` e não incluem título, legenda, prompt, briefing, tarefas ou qualquer texto do plano. Os três eventos do beta são emitidos sem propriedades. As URLs de destino, conteúdo do plano e informações do formulário não entram no evento.
+Os eventos `creative_briefing_copied` e `action_plan_copied` podem receber apenas `source` e não incluem título, legenda, prompt, briefing, tarefas ou qualquer texto do plano. O evento `result_section_toggled` pode receber apenas `sectionId` e `expanded`. Os três eventos do beta são emitidos sem propriedades. As URLs de destino, conteúdo do plano e informações do formulário não entram no evento.
 
 ## Integração Futura
 

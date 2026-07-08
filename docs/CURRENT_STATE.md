@@ -62,6 +62,8 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Resultado em `/resultado` usando o plano salvo ou fallback local quando necessário.
 - Indicação discreta da origem do plano: IA ou demonstração.
 - Estado vazio amigável em `/resultado` quando não há dados salvos.
+- Bloco `Comece por aqui` em `/resultado`, com orientação curta para copiar o plano, revisar próximos passos, produzir criativos, seguir os 7 dias e baixar PDF.
+- Organização de `/resultado` com seções recolhíveis acessíveis, mantendo abertos os blocos principais e recolhendo conteúdos de consulta para reduzir rolagem.
 - Textos de anúncio com botão para copiar.
 - Próximos passos, checklist, ideias de criativos e acompanhamento em 3, 7 e 14 dias.
 - Plano de ação de 7 dias com tarefas práticas, entrega esperada e cuidado de cada dia.
@@ -73,14 +75,14 @@ Próximos passos recomendados: consolidar a geração real de plano com IA, depo
 - Ação `Copiar plano completo`, que formata o pacote em texto simples para WhatsApp, Google Docs, Notion ou e-mail.
 - Ação `Copiar plano de ação`, que copia somente a rotina de 7 dias sem dados técnicos.
 - Ação `Baixar PDF`, que exporta o mesmo conteúdo em um documento paginado e organizado diretamente no navegador.
-- Navegação rápida em `/resultado` para configuração, criativos, WhatsApp, métricas e checklist, exibindo apenas seções disponíveis.
+- Navegação rápida em `/resultado` para textos, configuração, criativos, WhatsApp, métricas, checklist e acompanhamento, exibindo apenas seções disponíveis quando aplicável e abrindo seções recolhidas antes de rolar.
 - Compatibilidade com dados antigos no `localStorage`: campos opcionais de briefing ausentes viram vazio e planos antigos continuam renderizando sem erro.
 - Botões de rolagem por âncora com `scrollIntoView`, funcionando repetidamente.
 - Layout responsivo validado manualmente em largura mobile.
 - Suíte E2E versionada com fluxo principal desktop e validação mobile em 390 px.
 - Ambiente E2E isolado, com servidor dedicado e `AI_PROVIDER=mock` forçado.
 - Cenários E2E para payload excessivo e rate limit, sem chamadas externas.
-- Camada interna de analytics com 15 eventos tipados, whitelist de propriedades e nenhum envio externo.
+- Camada interna de analytics com 16 eventos tipados, whitelist de propriedades e nenhum envio externo.
 - Analytics aceita apenas enums seguros para canal, experiência, tom de comunicação e disponibilidade de fotos/vídeos; textos livres do briefing continuam proibidos.
 - Logs de analytics somente em desenvolvimento; produção permanece no-op.
 - Página `/beta` com proposta, público, roteiro de teste, aviso orientativo, feedback e próximos recursos possíveis.
@@ -185,6 +187,7 @@ Para testar IA real localmente, copie `.env.example` para `.env.local`, escolha 
 - Cópia do plano de ação de 7 dias com feedback `Plano de ação copiado`.
 - Cópia do plano completo com feedback `Plano copiado`, dados do briefing e as principais seções em texto simples.
 - Download do plano em PDF paginado, legível e sem dados técnicos do provider.
+- Seções recolhíveis de `/resultado`, incluindo abertura manual e abertura pela navegação rápida.
 - Navegação rápida e repetida entre as principais seções do resultado.
 - Plano antigo sem as quatro novas seções renderizando sem erro.
 - Resultado responsivo sem overflow horizontal em largura de 390px.

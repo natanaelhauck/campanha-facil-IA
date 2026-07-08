@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Button } from "@/components/Button";
 import { BetaFeedbackCard } from "@/components/BetaFeedbackCard";
 import { Header } from "@/components/Header";
@@ -27,6 +27,24 @@ import type {
 
 type CopyStatus = "idle" | "copied" | "error";
 type PdfStatus = "idle" | "generating" | "downloaded" | "error";
+type ResultSectionId =
+  | "configuracao"
+  | "whatsapp"
+  | "metricas"
+  | "checklist"
+  | "acompanhamento"
+  | "ideias-criativos"
+  | "passo-a-passo";
+
+const collapsibleResultSectionIds = new Set<string>([
+  "configuracao",
+  "whatsapp",
+  "metricas",
+  "checklist",
+  "acompanhamento",
+  "ideias-criativos",
+  "passo-a-passo",
+]);
 
 function parseCampaignForm(value: string | null): CampaignFormData | null {
   if (!value) {
@@ -82,29 +100,68 @@ function parsePlanSource(value: string | null): CampaignPlanSource | null {
   return value === "ai" || value === "mock" ? value : null;
 }
 
+function isResultSectionId(value: string): value is ResultSectionId {
+  return collapsibleResultSectionIds.has(value);
+}
+
 function ResultSection({
   id,
   title,
   eyebrow,
   children,
+  collapsible = false,
+  isOpen = true,
+  onToggle,
 }: {
   id?: string;
   title: string;
   eyebrow?: string;
-  children: React.ReactNode;
+  children: ReactNode;
+  collapsible?: boolean;
+  isOpen?: boolean;
+  onToggle?: (expanded: boolean) => void;
 }) {
+  const contentId = id ? `${id}-conteudo` : undefined;
+
   return (
     <section
       id={id}
       className="scroll-mt-4 rounded-lg border border-stone-200 bg-white p-5 shadow-sm md:p-6"
     >
-      {eyebrow ? (
-        <p className="text-xs font-semibold uppercase tracking-wide text-emerald-800">
-          {eyebrow}
-        </p>
-      ) : null}
-      <h2 className="text-xl font-bold text-stone-950">{title}</h2>
-      <div className="mt-4 text-sm leading-6 text-stone-700">{children}</div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          {eyebrow ? (
+            <p className="text-xs font-semibold uppercase tracking-wide text-emerald-800">
+              {eyebrow}
+            </p>
+          ) : null}
+          <h2 className="text-xl font-bold text-stone-950">{title}</h2>
+        </div>
+
+        {collapsible ? (
+          <button
+            type="button"
+            aria-expanded={isOpen}
+            aria-controls={contentId}
+            aria-label={`${isOpen ? "Ocultar" : "Mostrar"} ${title}`}
+            onClick={() => onToggle?.(!isOpen)}
+            className="inline-flex min-h-9 shrink-0 items-center justify-center rounded-md border border-stone-300 bg-white px-3 py-2 text-xs font-semibold text-stone-900 transition hover:border-emerald-700 hover:bg-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:ring-offset-2"
+          >
+            <span aria-hidden="true" className="mr-2 text-base leading-none">
+              {isOpen ? "-" : "+"}
+            </span>
+            {isOpen ? "Ocultar" : "Mostrar"}
+          </button>
+        ) : null}
+      </div>
+
+      <div
+        id={contentId}
+        hidden={collapsible && !isOpen}
+        className="mt-4 text-sm leading-6 text-stone-700"
+      >
+        {children}
+      </div>
     </section>
   );
 }
@@ -511,6 +568,9 @@ export default function ResultPage() {
   const [savedPlan, setSavedPlan] = useState<CampaignPlanResult | null>(null);
   const [planSource, setPlanSource] = useState<CampaignPlanSource | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [expandedSections, setExpandedSections] = useState<
+    Partial<Record<ResultSectionId, boolean>>
+  >({});
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -609,10 +669,33 @@ export default function ResultPage() {
   const sevenDayActionPlanText = plan.sevenDayActionPlan
     ? formatSevenDayActionPlan(plan.sevenDayActionPlan)
     : "";
+  const isResultSectionOpen = (
+    sectionId: ResultSectionId,
+    defaultOpen = false,
+  ) => expandedSections[sectionId] ?? defaultOpen;
+  const setResultSectionOpen = (
+    sectionId: ResultSectionId,
+    expanded: boolean,
+  ) => {
+    setExpandedSections((current) => ({
+      ...current,
+      [sectionId]: expanded,
+    }));
+    trackEvent("result_section_toggled", {
+      sectionId,
+      expanded,
+    });
+  };
+  const openResultSection = (target: string) => {
+    if (isResultSectionId(target) && !isResultSectionOpen(target)) {
+      setResultSectionOpen(target, true);
+    }
+  };
   const quickNavigation = [
     ...(plan.sevenDayActionPlan
       ? [{ label: "7 dias", target: "plano-7-dias" }]
       : []),
+    { label: "Textos", target: "textos-anuncio" },
     ...(plan.campaignSetupGuide
       ? [{ label: "Configuração", target: "configuracao" }]
       : []),
@@ -624,6 +707,7 @@ export default function ResultPage() {
       ? [{ label: "Métricas", target: "metricas" }]
       : []),
     { label: "Checklist", target: "checklist" },
+    { label: "Acompanhamento", target: "acompanhamento" },
   ];
 
   return (
@@ -730,6 +814,7 @@ export default function ResultPage() {
                 href={`#${item.target}`}
                 variant="secondary"
                 className="min-h-9 px-3 py-2 text-xs"
+                onNavigate={() => openResultSection(item.target)}
               >
                 {item.label}
               </Button>
@@ -742,6 +827,33 @@ export default function ResultPage() {
         </div>
 
         <div className="grid gap-5">
+          <ResultSection
+            title="Comece por aqui"
+            eyebrow="Sequência simples"
+          >
+            <ol className="grid gap-3 md:grid-cols-5">
+              {[
+                "Copie o plano completo se quiser revisar em outro lugar.",
+                "Leia os próximos passos e marque o que já está pronto.",
+                "Produza os criativos antes de tentar configurar tudo.",
+                "Siga o plano de 7 dias sem aumentar verba no impulso.",
+                "Baixe o PDF se quiser guardar ou enviar para alguém.",
+              ].map((step, index) => (
+                <li
+                  key={step}
+                  className="rounded-lg border border-stone-200 bg-stone-50 p-4"
+                >
+                  <span className="flex h-7 w-7 items-center justify-center rounded-md bg-stone-900 text-xs font-bold text-white">
+                    {index + 1}
+                  </span>
+                  <p className="mt-3 text-xs leading-5 text-stone-700">
+                    {step}
+                  </p>
+                </li>
+              ))}
+            </ol>
+          </ResultSection>
+
           <ResultSection
             id="proximos-passos"
             title="O que fazer primeiro"
@@ -839,6 +951,11 @@ export default function ResultPage() {
               id="configuracao"
               title="Configuração sugerida da campanha"
               eyebrow="Ficha pronta para consultar"
+              collapsible
+              isOpen={isResultSectionOpen("configuracao")}
+              onToggle={(expanded) =>
+                setResultSectionOpen("configuracao", expanded)
+              }
             >
               <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
                 {setupGuideItems.map(([label, value]) => (
@@ -897,6 +1014,7 @@ export default function ResultPage() {
           <ResultSection
             title="Textos de anúncio"
             eyebrow="Use como ponto de partida"
+            id="textos-anuncio"
           >
             <div className="grid gap-3">
               {plan.adTexts.map((adText, index) => (
@@ -914,6 +1032,11 @@ export default function ResultPage() {
               id="whatsapp"
               title="Roteiro de atendimento no WhatsApp"
               eyebrow="Respostas para adaptar antes de enviar"
+              collapsible
+              isOpen={isResultSectionOpen("whatsapp")}
+              onToggle={(expanded) =>
+                setResultSectionOpen("whatsapp", expanded)
+              }
             >
               <div className="grid gap-3 md:grid-cols-2">
                 {whatsappReplies.map(([label, reply], index) => (
@@ -943,8 +1066,17 @@ export default function ResultPage() {
           ) : null}
 
           <ResultSection
-            id={plan.creativePack ? undefined : "criativos"}
+            id={plan.creativePack ? "ideias-criativos" : "criativos"}
             title="Ideias de criativos"
+            collapsible={Boolean(plan.creativePack)}
+            isOpen={
+              plan.creativePack
+                ? isResultSectionOpen("ideias-criativos")
+                : true
+            }
+            onToggle={(expanded) =>
+              setResultSectionOpen("ideias-criativos", expanded)
+            }
           >
             <div className="grid gap-3 md:grid-cols-2">
               {plan.creativeIdeas.map((idea) => (
@@ -958,7 +1090,15 @@ export default function ResultPage() {
             </div>
           </ResultSection>
 
-          <ResultSection title="Passo a passo">
+          <ResultSection
+            id="passo-a-passo"
+            title="Passo a passo"
+            collapsible
+            isOpen={isResultSectionOpen("passo-a-passo")}
+            onToggle={(expanded) =>
+              setResultSectionOpen("passo-a-passo", expanded)
+            }
+          >
             <ol className="grid gap-3">
               {plan.setupSteps.map((step, index) => (
                 <li
@@ -974,7 +1114,15 @@ export default function ResultPage() {
             </ol>
           </ResultSection>
 
-          <ResultSection id="checklist" title="Checklist antes de publicar">
+          <ResultSection
+            id="checklist"
+            title="Checklist antes de publicar"
+            collapsible
+            isOpen={isResultSectionOpen("checklist")}
+            onToggle={(expanded) =>
+              setResultSectionOpen("checklist", expanded)
+            }
+          >
             <ul className="grid gap-3 md:grid-cols-2">
               {plan.prePublishChecklist.map((item) => (
                 <li key={item} className="flex gap-3 rounded-lg bg-stone-50 p-4">
@@ -992,6 +1140,11 @@ export default function ResultPage() {
               id="metricas"
               title="Métricas simples para acompanhar"
               eyebrow="Leia os sinais antes de mexer na verba"
+              collapsible
+              isOpen={isResultSectionOpen("metricas")}
+              onToggle={(expanded) =>
+                setResultSectionOpen("metricas", expanded)
+              }
             >
               <div className="grid gap-4 lg:grid-cols-3">
                 <div className="rounded-lg border border-stone-200 bg-stone-50 p-4">
@@ -1055,7 +1208,15 @@ export default function ResultPage() {
 
           <BetaFeedbackCard />
 
-          <ResultSection title="Acompanhamento em 3, 7 e 14 dias">
+          <ResultSection
+            id="acompanhamento"
+            title="Acompanhamento em 3, 7 e 14 dias"
+            collapsible
+            isOpen={isResultSectionOpen("acompanhamento")}
+            onToggle={(expanded) =>
+              setResultSectionOpen("acompanhamento", expanded)
+            }
+          >
             <div className="grid gap-4 md:grid-cols-3">
               {plan.followUpPlan.map((period) => (
                 <div key={period.period} className="rounded-lg bg-stone-50 p-4">

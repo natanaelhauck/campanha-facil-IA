@@ -79,12 +79,14 @@ Os cenários atuais cobrem:
 - pacote com três criativos e as principais seções;
 - guia de produção nos três criativos e cópia do briefing completo;
 - plano de ação de 7 dias e cópia da rotina completa;
+- bloco `Comece por aqui`, seções recolhíveis, abertura manual e abertura pela navegação rápida;
 - cópia do plano completo e feedback visual;
 - download do PDF;
 - retorno ao formulário com dados persistidos, incluindo tom, fotos/vídeos, disponibilidade no WhatsApp e dificuldade atual;
 - edição e regeneração do resultado;
 - viewport mobile de 390 px sem overflow horizontal;
 - disponibilidade da navegação rápida no mobile.
+- abertura de seção recolhida pela navegação rápida no mobile.
 - rejeição de body acima de 8 KB antes da geração;
 - bloqueio por rate limit com status `429` e header `Retry-After`.
 - criação de registros no histórico local;
@@ -179,6 +181,8 @@ Após enviar o formulário:
 - Confirme que o aviso de orientação sem garantia está visível.
 - Confirme que não há tela de erro do Next.js.
 - Confirme que a seção `O que fazer primeiro` está visível.
+- Confirme que `Comece por aqui`, `O que fazer primeiro`, `Plano de ação de 7 dias`, `Textos de anúncio` e `Pacote de criativos` ficam abertos por padrão.
+- Confirme que `Configuração sugerida da campanha`, `Roteiro de atendimento no WhatsApp`, `Métricas simples para acompanhar`, `Checklist antes de publicar` e `Acompanhamento em 3, 7 e 14 dias` exibem o cabeçalho e podem abrir pelo botão `Mostrar`.
 - Clique em `Ver próximos passos`, volte manualmente o scroll e clique novamente.
 - Confirme que a rolagem funciona repetidamente.
 - Clique em `Copiar plano completo` e confirme o feedback `Plano copiado`.
@@ -188,8 +192,9 @@ Após enviar o formulário:
 - Abra o PDF e confira título, aviso orientativo, seções separadas, quebras de linha, acentos, múltiplas páginas e rodapés.
 - Confirme que palavras como `Pizzaria`, `WhatsApp`, `bairro` e `orçamento` aparecem inteiras e que há espaços naturais depois de pontuação.
 - Confirme que o PDF contém as mesmas seções principais do texto completo, sem JSON, provider/source ou promessa de resultado.
-- Use a navegação rápida para `Configuração`, `Criativos`, `WhatsApp`, `Métricas` e `Checklist`.
+- Use a navegação rápida para `Textos`, `Configuração`, `Criativos`, `WhatsApp`, `Métricas`, `Checklist` e `Acompanhamento`.
 - Volte manualmente e clique novamente em cada destino para confirmar que a rolagem funciona mesmo com o mesmo hash na URL.
+- Confirme que atalhos para seções recolhidas abrem o conteúdo antes de rolar.
 - Clique em pelo menos um botão `Copiar texto` e confirme o feedback `Copiado` ou o erro amigável.
 - Confirme que as seções `Configuração sugerida da campanha`, `Pacote de criativos`, `Roteiro de atendimento no WhatsApp` e `Métricas simples para acompanhar` aparecem no plano novo.
 - Confirme que o pacote contém exatamente três criativos e informa que nenhuma imagem foi gerada.

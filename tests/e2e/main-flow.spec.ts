@@ -105,6 +105,9 @@ test("protege o fluxo principal da campanha em modo mock", async ({
       /Plano inicial orientativo.*não garante vendas, lucro, aprovação de anúncios ou performance/i,
     ),
   ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Comece por aqui" }),
+  ).toBeVisible();
   await expect(page.getByText(/^Criativo [1-3]$/)).toHaveCount(3);
   await expect(
     page.getByRole("link", { name: "Enviar feedback" }),
@@ -128,6 +131,22 @@ test("protege o fluxo principal da campanha em modo mock", async ({
 
   const actionPlanSection = page.locator("#plano-7-dias");
   await expect(actionPlanSection.getByText(/^Dia [1-7]$/)).toHaveCount(7);
+
+  await expect(page.locator("#configuracao-conteudo")).toBeHidden();
+  await page
+    .getByRole("button", {
+      name: "Mostrar Configuração sugerida da campanha",
+    })
+    .click();
+  await expect(page.locator("#configuracao-conteudo")).toBeVisible();
+
+  await expect(page.locator("#metricas-conteudo")).toBeHidden();
+  await page
+    .getByRole("navigation", { name: "Navegação rápida do plano" })
+    .getByRole("link", { name: "Métricas", exact: true })
+    .click();
+  await expect(page).toHaveURL(/#metricas$/);
+  await expect(page.locator("#metricas-conteudo")).toBeVisible();
 
   await page
     .getByRole("button", { name: "Copiar plano completo" })
@@ -196,6 +215,27 @@ test("protege o fluxo principal da campanha em modo mock", async ({
   );
   expect(copiedActionPlan).toContain("Dia 1: Revisar oferta e canal");
   expect(copiedActionPlan).toContain("Dia 7: Decidir próximo ajuste");
+
+  await page.getByRole("button", { name: "Copiar texto" }).first().click();
+  await expect(
+    page.getByRole("button", { name: "Copiado", exact: true }),
+  ).toBeVisible();
+  const copiedAdText = await page.evaluate(() => navigator.clipboard.readText());
+  expect(copiedAdText.length).toBeGreaterThan(20);
+
+  await page
+    .getByRole("button", {
+      name: "Mostrar Roteiro de atendimento no WhatsApp",
+    })
+    .click();
+  await page.getByRole("button", { name: "Copiar resposta" }).first().click();
+  await expect(
+    page.getByRole("button", { name: "Copiado", exact: true }),
+  ).toBeVisible();
+  const copiedWhatsappReply = await page.evaluate(() =>
+    navigator.clipboard.readText(),
+  );
+  expect(copiedWhatsappReply.length).toBeGreaterThan(20);
 
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: "Baixar PDF" }).click();
@@ -303,11 +343,13 @@ test("mantém o resultado utilizável em viewport mobile", async ({ page }) => {
 
   for (const linkName of [
     "7 dias",
+    "Textos",
     "Configuração",
     "Criativos",
     "WhatsApp",
     "Métricas",
     "Checklist",
+    "Acompanhamento",
   ]) {
     await expect(
       quickNavigation.getByRole("link", { name: linkName, exact: true }),
@@ -318,6 +360,7 @@ test("mantém o resultado utilizável em viewport mobile", async ({ page }) => {
     .getByRole("link", { name: "Checklist", exact: true })
     .click();
   await expect(page).toHaveURL(/#checklist$/);
+  await expect(page.locator("#checklist-conteudo")).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Checklist antes de publicar" }),
   ).toBeVisible();

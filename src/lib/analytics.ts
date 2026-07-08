@@ -11,6 +11,7 @@ const analyticsEventNames = [
   "campaign_plan_copied",
   "creative_briefing_copied",
   "action_plan_copied",
+  "result_section_toggled",
   "campaign_pdf_downloaded",
   "campaign_history_opened",
   "campaign_history_item_opened",
@@ -52,6 +53,14 @@ type AnalyticsCommunicationTone =
   | "unknown";
 
 type AnalyticsVisualAssets = "yes" | "no" | "partial" | "unknown";
+type AnalyticsResultSectionId =
+  | "configuracao"
+  | "whatsapp"
+  | "metricas"
+  | "checklist"
+  | "acompanhamento"
+  | "ideias-criativos"
+  | "passo-a-passo";
 
 type AnalyticsProperties = {
   source?: CampaignPlanSource;
@@ -60,6 +69,8 @@ type AnalyticsProperties = {
   experienceLevel?: AnalyticsExperienceLevel;
   communicationTone?: AnalyticsCommunicationTone;
   hasVisualAssets?: AnalyticsVisualAssets;
+  sectionId?: AnalyticsResultSectionId;
+  expanded?: boolean;
   hasHistoryItem?: boolean;
   resultStatus?: "success" | "failure";
   errorCategory?: AnalyticsErrorCategory;
@@ -186,6 +197,22 @@ function sanitizeProperties(properties: AnalyticsProperties) {
 
   if (typeof properties.hasHistoryItem === "boolean") {
     safeProperties.hasHistoryItem = properties.hasHistoryItem;
+  }
+
+  if (
+    properties.sectionId === "configuracao" ||
+    properties.sectionId === "whatsapp" ||
+    properties.sectionId === "metricas" ||
+    properties.sectionId === "checklist" ||
+    properties.sectionId === "acompanhamento" ||
+    properties.sectionId === "ideias-criativos" ||
+    properties.sectionId === "passo-a-passo"
+  ) {
+    safeProperties.sectionId = properties.sectionId;
+  }
+
+  if (typeof properties.expanded === "boolean") {
+    safeProperties.expanded = properties.expanded;
   }
 
   if (
