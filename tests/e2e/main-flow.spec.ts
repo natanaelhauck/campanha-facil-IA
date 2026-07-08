@@ -97,7 +97,12 @@ test("protege o fluxo principal da campanha em modo mock", async ({
   await expect(page.getByText("Plano inicial de demonstração")).toBeVisible();
   await expect(
     page.getByRole("heading", {
-      name: `Resultado para ${campaignData.businessName}`,
+      name: "Campanha pronta para revisão",
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByText(`Rascunho para ${campaignData.businessName}`, {
+      exact: false,
     }),
   ).toBeVisible();
   await expect(
@@ -295,7 +300,12 @@ test("protege o fluxo principal da campanha em modo mock", async ({
 
   await expect(
     page.getByRole("heading", {
-      name: `Resultado para ${updatedBusinessName}`,
+      name: "Campanha pronta para revisão",
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByText(`Rascunho para ${updatedBusinessName}`, {
+      exact: false,
     }),
   ).toBeVisible();
 
@@ -322,7 +332,12 @@ test("protege o fluxo principal da campanha em modo mock", async ({
   await expect(page).toHaveURL(/\/resultado$/);
   await expect(
     page.getByRole("heading", {
-      name: `Resultado para ${updatedBusinessName}`,
+      name: "Campanha pronta para revisão",
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByText(`Rascunho para ${updatedBusinessName}`, {
+      exact: false,
     }),
   ).toBeVisible();
 

@@ -874,6 +874,7 @@ export default function ResultPage() {
   const campaignDraft = buildCampaignDraft(form, plan);
   const campaignDraftText = formatCampaignDraftText(campaignDraft);
   const primaryCreative = plan.creativePack?.[0];
+  const primaryNextAction = plan.nextSteps[0]?.title ?? "Revisar campanha";
   const publishSteps = [
     `Revise o público: ${campaignDraft.audience}`,
     "Copie a configuração da campanha pronta.",
@@ -931,11 +932,11 @@ export default function ResultPage() {
                 {sourceLabel}
               </p>
               <h1 className="mt-3 max-w-3xl text-3xl font-bold leading-tight text-stone-950 md:text-4xl">
-                Resultado para {businessName}
+                Campanha pronta para revisão
               </h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-stone-700">
-                Uma campanha organizada para revisar objetivo, público,
-                orçamento, anúncio e próximo passo antes de publicar.
+                Rascunho para <strong>{businessName}</strong>: revise objetivo,
+                público, orçamento, anúncio e próximo passo antes de publicar.
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row md:flex-col">
@@ -975,36 +976,22 @@ export default function ResultPage() {
             </div>
           </div>
 
-          <div className="mt-6 grid gap-3 md:grid-cols-3">
-            <div className="rounded-lg bg-emerald-50 p-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-emerald-900">
-                Negócio
-              </p>
-              <p className="mt-2 text-sm font-bold text-stone-950">
-                {businessType}
-              </p>
-              <p className="mt-1 text-xs leading-5 text-stone-600">{region}</p>
-            </div>
-            <div className="rounded-lg bg-stone-100 p-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
-                Objetivo
-              </p>
-              <p className="mt-2 text-sm font-bold text-stone-950">{goal}</p>
-              <p className="mt-1 text-xs leading-5 text-stone-600">
-                Canal principal: {mainChannel}
-              </p>
-            </div>
-            <div className="rounded-lg bg-amber-50 p-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-amber-900">
-                Verba informada
-              </p>
-              <p className="mt-2 text-sm font-bold text-stone-950">
-                {dailyBudget}
-              </p>
-              <p className="mt-1 text-xs leading-5 text-stone-600">
-                Nível: {experienceLevel}
-              </p>
-            </div>
+          <div className="mt-6 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+            <DraftReviewCard
+              label="Objetivo"
+              value={campaignDraft.objective}
+              tone="strong"
+            />
+            <DraftReviewCard label="Público" value={campaignDraft.audience} />
+            <DraftReviewCard
+              label="Orçamento"
+              value={campaignDraft.budget}
+            />
+            <DraftReviewCard
+              label="Próxima ação"
+              value={primaryNextAction}
+              tone="strong"
+            />
           </div>
         </div>
 
@@ -1037,7 +1024,7 @@ export default function ResultPage() {
         <div className="grid gap-5">
           <ResultSection
             id="campanha-pronta"
-            title="Campanha pronta para revisão"
+            title="Revisão completa da campanha"
             eyebrow="Rascunho estruturado para Meta Ads"
           >
             <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
